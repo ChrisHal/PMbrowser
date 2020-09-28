@@ -83,10 +83,10 @@ void PMbrowserWindow::closeFile()
 {
     if(datfile) {
         // there is an open file
-        delete datfile; datfile = nullptr;
-        infile.close();
         ui->treePulse->clear();
         this->setWindowTitle(myAppName);
+        delete datfile; datfile = nullptr;
+        infile.close();
     }
 }
 void PMbrowserWindow::loadFile(QString filename)
@@ -161,14 +161,23 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
             indextrace = sweepitem->indexOfChild(item)+1;
     int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem)+1;
     QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
-
     ui->textEdit->append(tracename);
+    double sealresistance = trace->extractLongReal(TrSealResistance),
+            cslow = trace->extractLongReal(TrCSlow),
+            Rseries = 1.0/trace->extractLongReal(TrGSeries),
+            Vhold = trace->extractLongRealNoThrow(TrTrHolding);
+    QString info = QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\nVhold=%4 V").arg(sealresistance).arg(cslow).arg(Rseries).arg(Vhold);
+    ui->textEdit->append(info);
     (void)trace;
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     (void)previous;
+    if(!current) {
+        // strangely, this can get called with current = nullptr
+        return;
+    }
     QVariant v = current->data(0, Qt::UserRole);
     hkTreeNode* node = v.value<hkTreeNode*>();
     if(node) { // this is a trace item
