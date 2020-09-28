@@ -38,23 +38,20 @@ void PMbrowserWindow::populateTreeView()
     for(auto& groupe : pultree.GetRootNode().Children) {
         QString count=QString("%1").arg(++i), label;
   //        std::cout << grplabel << std::endl;
-        QLatin1String labelL1(groupe.getString(GrLabel).c_str());
-        label = labelL1;
+        label = groupe.getString(GrLabel).c_str();//labelL1;
         QStringList qsl;
-        qsl.append(count+" "+QString(label));
+        qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
         grpitem->setExpanded(true);
         grpitems.append(grpitem);
         int j=0;
         for(auto& series : groupe.Children) {
-            QLatin1String labelL1(series.getString(SeLabel).c_str());
-            QString label2 = QString("%1").arg(++j)+" "+QString(labelL1);
+            QString label2 = QString("%1").arg(++j)+" "+QString(series.getString(SeLabel).c_str());
             auto seriesitem =new QTreeWidgetItem(grpitem,QStringList(label2));
             seriesitem->setExpanded(true);
             int k = 0;
             for(auto& sweep : series.Children) {
-                QLatin1String labelL1(sweep.getString(SwLabel).c_str());
-                QString label3 = QString("sweep %1").arg(++k)+" "+QString(labelL1);
+                QString label3 = QString("sweep %1").arg(++k)+" "+QString(sweep.getString(SwLabel).c_str());
                 auto sweepitem = new QTreeWidgetItem(seriesitem,QStringList(label3));
                 sweepitem->setExpanded(true);
                 int l = 0;
