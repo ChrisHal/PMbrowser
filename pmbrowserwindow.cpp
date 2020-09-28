@@ -9,6 +9,8 @@
 #include "pmbrowserwindow.h"
 #include "ui_pmbrowserwindow.h"
 
+QString myAppName("PM browser");
+
 Q_DECLARE_METATYPE(hkTreeNode*)
 
 static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
@@ -84,6 +86,7 @@ void PMbrowserWindow::closeFile()
         delete datfile; datfile = nullptr;
         infile.close();
         ui->treePulse->clear();
+        this->setWindowTitle(myAppName);
     }
 }
 void PMbrowserWindow::loadFile(QString filename)
@@ -124,6 +127,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}
 {
     ui->setupUi(this);
+    this->setWindowTitle(myAppName);
 }
 
 PMbrowserWindow::~PMbrowserWindow()
@@ -141,7 +145,7 @@ void PMbrowserWindow::on_actionOpen_triggered()
     if(dialog.exec()) {
         currentFile = dialog.selectedFiles().at(0);
     }
-    this->setWindowTitle("PM Browser - "+currentFile.split("/").back());
+    this->setWindowTitle(myAppName + " - "+currentFile.split("/").back());
     ui->textEdit->append("loading file "+currentFile);
     loadFile(currentFile);
 }
@@ -166,8 +170,7 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     (void)previous;
     QVariant v = current->data(0, Qt::UserRole);
     hkTreeNode* node = v.value<hkTreeNode*>();
-    if(node) {
-        ui->textEdit->append("trace elected");
+    if(node) { // this is a trace item
         traceSelected(current, node);
     }
 }
