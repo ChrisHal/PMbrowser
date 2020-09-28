@@ -116,6 +116,7 @@ void PMbrowserWindow::loadFile(QString filename)
     if(datfile) {
         populateTreeView();
     }
+    this->setWindowTitle(myAppName + " - "+currentFile.split("/").back());
 }
 
 
@@ -142,7 +143,6 @@ void PMbrowserWindow::on_actionOpen_triggered()
     if(dialog.exec()) {
         currentFile = dialog.selectedFiles().at(0);
     }
-    this->setWindowTitle(myAppName + " - "+currentFile.split("/").back());
     ui->textEdit->append("loading file "+currentFile);
     loadFile(currentFile);
 }
