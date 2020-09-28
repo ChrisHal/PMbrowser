@@ -15,7 +15,8 @@ SOURCES += \
     hkTree.cpp \
     machineinfo.cpp \
     main.cpp \
-    pmbrowserwindow.cpp
+    pmbrowserwindow.cpp \
+    renderarea.cpp
 
 HEADERS += \
     DatFile.h \
@@ -24,10 +25,12 @@ HEADERS += \
     helpers.h \
     hkTree.h \
     machineinfo.h \
-    pmbrowserwindow.h
+    pmbrowserwindow.h \
+    renderarea.h
 
 FORMS += \
-    pmbrowserwindow.ui
+    pmbrowserwindow.ui \
+    renderarea.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
