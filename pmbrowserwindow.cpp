@@ -156,11 +156,12 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     QTreeWidgetItem* sweepitem = item->parent();
     QTreeWidgetItem* seriesitem = sweepitem->parent();
     QTreeWidgetItem* groupitem = seriesitem->parent();
-    int indexseries = groupitem->indexOfChild(seriesitem),
-            indexsweep = seriesitem->indexOfChild(sweepitem),
-            indextrace = sweepitem->indexOfChild(item);
-    int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem);
+    int indexseries = groupitem->indexOfChild(seriesitem)+1,
+            indexsweep = seriesitem->indexOfChild(sweepitem)+1,
+            indextrace = sweepitem->indexOfChild(item)+1;
+    int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem)+1;
     QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
+
     ui->textEdit->append(tracename);
     (void)trace;
 }
