@@ -80,6 +80,7 @@ void PMbrowserWindow::closeFile()
 {
     if(datfile) {
         // there is an open file
+        ui->renderArea->clearTrace();
         ui->treePulse->clear();
         this->setWindowTitle(myAppName);
         delete datfile; datfile = nullptr;
@@ -165,7 +166,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
             Vhold = trace->extractLongRealNoThrow(TrTrHolding);
     QString info = QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\nVhold=%4 V").arg(sealresistance).arg(cslow).arg(Rseries).arg(Vhold);
     ui->textEdit->append(info);
-    (void)trace;
+    ui->renderArea->renderTrace(trace, infile);
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)

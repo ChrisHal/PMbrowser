@@ -45,7 +45,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="RenderArea" name="widget" native="true">
+   <widget class="RenderArea" name="renderArea" native="true">
     <property name="geometry">
      <rect>
       <x>240</x>
@@ -87,7 +87,7 @@
   <customwidget>
    <class>RenderArea</class>
    <extends>QWidget</extends>
-   <header>renderarea.h</header>
+   <header location="global">renderarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
