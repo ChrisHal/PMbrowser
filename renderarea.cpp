@@ -35,15 +35,16 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
     } else {
         double x1 = x0 + (ndatapoints - 1) * deltax;
-        setScaling(x0, x1,y_min, y_max);
+        setScaling(x0, x1, y_min, y_max);
         path.moveTo(scaleToQPF(x0,data[0]));
         for(int i=0; i<data.size(); ++i) {
             path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
         }
         painter.drawPath(path);
         font = painter.font();
-        font.setPixelSize(12);
+        font.setPixelSize(16);
         painter.setFont(font);
+        painter.setPen(QColor(200, 0, 0)); // some red
         QString label = QString("%1 %2").arg(y_max).arg(yunit);
         painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
         label = QString("%1 %2").arg(y_min).arg(yunit);
