@@ -34,12 +34,24 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     if(data.size()==0) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
     } else {
-        setScaling(x0, x0+(ndatapoints-1)*deltax,y_min, y_max);
+        double x1 = x0 + (ndatapoints - 1) * deltax;
+        setScaling(x0, x1,y_min, y_max);
         path.moveTo(scaleToQPF(x0,data[0]));
         for(int i=0; i<data.size(); ++i) {
             path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
         }
         painter.drawPath(path);
+        font = painter.font();
+        font.setPixelSize(12);
+        painter.setFont(font);
+        QString label = QString("%1 %2").arg(y_max).arg(yunit);
+        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
+        label = QString("%1 %2").arg(y_min).arg(yunit);
+        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
+        label = QString("%1 %2").arg(x0).arg(xunit);
+        painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
+        label = QString("%1 %2").arg(x1).arg(xunit);
+        painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
     }
 }
 
