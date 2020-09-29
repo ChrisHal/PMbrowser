@@ -171,6 +171,11 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, infile);
 }
 
+void PMbrowserWindow::on_actionClose_triggered()
+{
+    closeFile();
+}
+
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     (void)previous;
