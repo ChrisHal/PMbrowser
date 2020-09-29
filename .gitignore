@@ -1,0 +1,10 @@
+﻿################################################################################
+# Diese .gitignore-Datei wurde von Microsoft(R) Visual Studio automatisch erstellt.
+################################################################################
+
+/.vs/QtPMbrowser/v16
+/debug
+/release
+/.qmake.stash
+/ui_pmbrowserwindow.h
+/ui_renderarea.h
