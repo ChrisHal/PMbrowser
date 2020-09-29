@@ -1,8 +1,10 @@
 #include <QtGui>
+#include <stdexcept>
+#include <algorithm>
 #include "renderarea.h"
 #include "ui_renderarea.h"
+#include "DatFile.h"
 
-int test = 0;
 
 RenderArea::RenderArea(QWidget *parent) :
     QWidget(parent)//,
@@ -21,29 +23,88 @@ RenderArea::~RenderArea()
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainterPath path;
-    path.moveTo(0,0);
-    path.lineTo(width(),height());
+    //path.moveTo(0,0);
+    //path.lineTo(width(),height());
     QPainter painter(this);
     QFont font = painter.font();
     font.setPixelSize(24);
     painter.setFont(font);
-    painter.drawPath(path);
+    //painter.drawPath(path);
     const QRect rectangle = QRect(0, 0, width(), height());
-    if(test==0) {
+    if(data.size()==0) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
     } else {
-        painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"ok");
+        setScaling(x0, x0+(ndatapoints-1)*deltax,y_min, y_max);
+        path.moveTo(scaleToQPF(x0,data[0]));
+        for(int i=0; i<data.size(); ++i) {
+            path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
+        }
+        painter.drawPath(path);
     }
 }
 
-void RenderArea::renderTrace(hkTreeNode* trace, std::istream& infile)
+void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
-    test = 1;//
+    char dataformat = TrRecord->getChar(TrDataFormat);
+    if (dataformat != DFT_int16) {
+        throw std::runtime_error("can't export data that is not int16");
+    }
+    int32_t interleavesize;
+    try {
+        interleavesize = TrRecord->extractInt32(TrInterleaveSize);
+    }
+    catch (std::out_of_range& e) { // fileformat too old to have interleave entry
+        interleavesize = 0;
+    }
+    assert(interleavesize == 0);
+    uint16_t tracekind = TrRecord->extractUInt16(TrDataKind);
+    bool need_swap = !(tracekind & LittleEndianBit);
+    yunit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
+    xunit = TrRecord->getString(TrXUnit).c_str();
+    x0 = TrRecord->extractLongReal(TrXStart), deltax = TrRecord->extractLongReal(TrXInterval);
+    double datascaler = TrRecord->extractLongReal(TrDataScaler);
+    int32_t trdata = TrRecord->extractInt32(TrData);
+    ndatapoints = TrRecord->extractInt32(TrDataPoints);
+    int16_t* source = new int16_t[ndatapoints];
+    data.clear();
+    infile.seekg(trdata);
+    infile.read((char*)source, sizeof(int16_t) * ndatapoints);
+    if (!need_swap) {
+        for (size_t i = 0; i < ndatapoints; ++i) {
+            data.push_back(datascaler * source[i]);
+        }
+    }
+    else {
+        for (size_t i = 0; i < ndatapoints; ++i) {
+            data.push_back(datascaler * swap_bytes(source[i]));
+        }
+    }
+
+    y_min = *std::min_element(data.constBegin(), data.constEnd());
+    y_max = *std::max_element(data.constBegin(), data.constEnd());
+
+    delete[] source; source = nullptr;
+
     update();
 }
 
 void RenderArea::clearTrace()
 {
-    test = 0;
+    ndatapoints = 0;
+    data.clear();
     update();
+}
+
+void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
+{
+    double h=height()-1, w=width()-1;
+    a_x = -w*x_0/(x_1-x_0);
+    b_x = w/(x_1-x_0);
+    a_y = h*y_1/(y_1-y_0);
+    b_y = -h/(y_1-y_0);
+}
+
+QPointF RenderArea::scaleToQPF(double x, double y)
+{
+    return QPointF(a_x+b_x*x, a_y+b_y*y);
 }

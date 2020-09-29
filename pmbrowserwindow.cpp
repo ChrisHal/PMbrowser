@@ -63,6 +63,8 @@ void PMbrowserWindow::populateTreeView()
                         tracelabel = "Imon";
                     } else if (datakind & IsVmon) {
                         tracelabel = "Vmon";
+                    }else if(datakind & IsLeak){
+                        tracelabel = "Leak";
                     } else {
                         tracelabel = QString("trace %1").arg(l);
                     }
