@@ -44,6 +44,6 @@ private:
     QString currentFile;
     std::ifstream infile;
     DatFile* datfile;
-    QString lastpath;
+    QString lastexportpath;
 };
 #endif // PMBROWSERWINDOW_H

@@ -130,7 +130,7 @@ void PMbrowserWindow::loadFile(QString filename)
 
 PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastpath{}
+    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{}
 {
     ui->setupUi(this);
     setWindowTitle(myAppName);
@@ -216,14 +216,14 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
 
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
-    DlgChoosePathAndPrefix dlg(this, lastpath);
+    DlgChoosePathAndPrefix dlg(this, lastexportpath);
     if (dlg.exec())
     {
         QString path = dlg.path, prefix = dlg.prefix;
         if (!path.endsWith('/')) {
             path.append('/');
         }
-        lastpath = path;
+        lastexportpath = path;
         exportSubTree(root, path, prefix);
     }
 }
