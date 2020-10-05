@@ -204,10 +204,25 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
             indexsweep = seriesitem->indexOfChild(sweepitem) + 1,
             indextrace = sweepitem->indexOfChild(item) + 1;
         int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
-        QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
-        QString filename = path + wavename + ".ibw";
         QVariant v = item->data(0, Qt::UserRole);
         hkTreeNode* traceentry = v.value<hkTreeNode*>();
+        int32_t datakind = traceentry->extractUInt16(TrDataKind);
+        QString tracelabel;
+        if (datakind & IsImon) {
+            tracelabel = "Imon";
+        }
+        else if (datakind & IsVmon) {
+            tracelabel = "Vmon";
+        }
+        else if (datakind & IsLeak) {
+            tracelabel = "Leak";
+        }
+        else {
+            tracelabel = QString("%1").arg(indextrace);
+        }
+        QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(tracelabel);
+        QString filename = path + wavename + ".ibw";
+
         ui->textEdit->append("exporting " + wavename);
         ui->textEdit->update();
         ExportTrace(infile, *traceentry, filename.toStdString(), wavename.toStdString());
