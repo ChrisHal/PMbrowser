@@ -96,12 +96,14 @@ void PMbrowserWindow::loadFile(QString filename)
         ui->textEdit->append("(closing current file)");
         closeFile();
     }
+    ui->textEdit->append("loading file " + filename);
     infile.open(filename.toStdString(), std::ios::in|std::ios::binary);
     if (!infile) {
         QMessageBox msgBox;
         msgBox.setText(QString("error opening file (") + QString(std::strerror(errno) + QString(")")));
         msgBox.exec();
     }
+    currentFile = filename;
     datfile = new DatFile;
     try {
         datfile->InitFromStream(infile);
@@ -119,7 +121,7 @@ void PMbrowserWindow::loadFile(QString filename)
     if(datfile) {
         populateTreeView();
     }
-    this->setWindowTitle(myAppName + " - "+currentFile.split("/").back());
+    this->setWindowTitle(myAppName + " - "+ filename.split("/").back());
 }
 
 
@@ -128,7 +130,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}
 {
     ui->setupUi(this);
-    this->setWindowTitle(myAppName);
+    setWindowTitle(myAppName);
+    setAcceptDrops(true);
 }
 
 PMbrowserWindow::~PMbrowserWindow()
@@ -146,7 +149,6 @@ void PMbrowserWindow::on_actionOpen_triggered()
     if(dialog.exec()) {
         currentFile = dialog.selectedFiles().at(0);
     }
-    ui->textEdit->append("loading file "+currentFile);
     loadFile(currentFile);
 }
 
@@ -187,5 +189,33 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     hkTreeNode* node = v.value<hkTreeNode*>();
     if(node) { // this is a trace item
         traceSelected(current, node);
+    }
+}
+
+void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+    auto mimedata = event->mimeData();
+    if (mimedata->hasUrls()) {
+        auto url = mimedata->urls()[0];
+        if (url.isLocalFile()) {
+            auto filename = url.toLocalFile();
+            if (filename.endsWith(".dat")) {
+                event->acceptProposedAction();
+            }
+        }
+    }
+}
+
+void PMbrowserWindow::dropEvent(QDropEvent* event)
+{
+    auto mimedata = event->mimeData();
+    if (mimedata->hasUrls()) {
+        auto url = mimedata->urls()[0];
+        if (url.isLocalFile()) {
+            auto filename = url.toLocalFile();
+            if (filename.endsWith(".dat")) {
+                loadFile(filename);
+            }
+        }
     }
 }

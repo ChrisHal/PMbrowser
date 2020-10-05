@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QTreeWidgetItem>
+#include <QMimeData>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <fstream>
 #include "DatFile.h"
 
@@ -22,6 +25,10 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionClose_triggered();
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
+protected:
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
 private:
     void loadFile(QString filename);
