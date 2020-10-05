@@ -128,6 +128,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionClose"/>
+    <addaction name="actionExport_IBW_File"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -158,6 +159,11 @@
   <action name="actionClear_Text">
    <property name="text">
     <string>Clear Text</string>
+   </property>
+  </action>
+  <action name="actionExport_IBW_File">
+   <property name="text">
+    <string>Export IBW File</string>
    </property>
   </action>
  </widget>

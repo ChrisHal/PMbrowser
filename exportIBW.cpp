@@ -39,11 +39,8 @@ void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 	notetxt = note.str();
 }
 
-void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& exportname)
+void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
 {
-#ifdef _DEBUG	
-	std::cerr << "exporting '" << exportname << "'" << std::endl;
-#endif
 	char dataformat = TrRecord.getChar(TrDataFormat);
 	if (dataformat != DFT_int16) {
 		throw std::runtime_error("can't export data that is not int16");
@@ -82,7 +79,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 
 	delete[] source; source = nullptr;
 
-	std::string filename = exportname + ".ibw";
+	//std::string filename = exportname + ".ibw";
 	std::ofstream outfile(filename, std::ios::out | std::ios::binary);
 	if (!outfile) {
 		std::stringstream msg;
@@ -107,7 +104,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	bh.wfmSize = int32_t(numbytes_wh + sizeof(double) * trdatapoints);
 	// we will calculate checksum later, all other entries in bh remain 0
 	wh.type = NT_FP64;
-	exportname.copy(wh.bname, MAX_WAVE_NAME5);
+	wavename.copy(wh.bname, MAX_WAVE_NAME5);
 	wh.npnts = trdatapoints;
 	wh.nDim[0] = trdatapoints;
 	std::memcpy((void*)wh.sfA, (void*)&deltax, sizeof(double));
@@ -129,6 +126,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	delete[] target;
 }
 
+/*
 void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& prefix)
 {
 	int groupcount = 0;
@@ -164,3 +162,4 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 		}
 	}
 }
+*/

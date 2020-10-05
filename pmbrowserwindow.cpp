@@ -7,7 +7,10 @@
 #include <ctime>
 #include <cstring>
 #include "pmbrowserwindow.h"
+#include "exportIBW.h"
 #include "ui_pmbrowserwindow.h"
+#include "DlgChoosePathAndPrefix.h"
+#include "ui_DlgChoosePathAndPrefix.h"
 
 QString myAppName("PM browser");
 
@@ -127,7 +130,7 @@ void PMbrowserWindow::loadFile(QString filename)
 
 PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}
+    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastpath{}
 {
     ui->setupUi(this);
     setWindowTitle(myAppName);
@@ -148,8 +151,8 @@ void PMbrowserWindow::on_actionOpen_triggered()
     dialog.setViewMode(QFileDialog::Detail);
     if(dialog.exec()) {
         currentFile = dialog.selectedFiles().at(0);
+        loadFile(currentFile);
     }
-    loadFile(currentFile);
 }
 
 void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
@@ -173,6 +176,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, infile);
 }
 
+
 void PMbrowserWindow::on_actionClose_triggered()
 {
     closeFile();
@@ -181,6 +185,65 @@ void PMbrowserWindow::on_actionClose_triggered()
 void PMbrowserWindow::on_actionClear_Text_triggered()
 {
     ui->textEdit->clear();
+}
+
+void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix)
+{
+    int N = item->childCount();
+    if (N > 0) {
+        for (int i = 0; i < N; ++i) {
+            exportSubTree(item->child(i), path, prefix);
+        }
+    } else {
+        // must be at trace level already
+        // figure out index
+        QTreeWidgetItem* sweepitem = item->parent();
+        QTreeWidgetItem* seriesitem = sweepitem->parent();
+        QTreeWidgetItem* groupitem = seriesitem->parent();
+        int indexseries = groupitem->indexOfChild(seriesitem) + 1,
+            indexsweep = seriesitem->indexOfChild(sweepitem) + 1,
+            indextrace = sweepitem->indexOfChild(item) + 1;
+        int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
+        QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
+        QString filename = path + wavename + ".ibw";
+        QVariant v = item->data(0, Qt::UserRole);
+        hkTreeNode* traceentry = v.value<hkTreeNode*>();
+        ui->textEdit->append("exporting " + wavename);
+        ui->textEdit->update();
+        ExportTrace(infile, *traceentry, filename.toStdString(), wavename.toStdString());
+    }
+}
+
+void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
+{
+    DlgChoosePathAndPrefix dlg(this, lastpath);
+    if (dlg.exec())
+    {
+        QString path = dlg.path, prefix = dlg.prefix;
+        if (!path.endsWith('/')) {
+            path.append('/');
+        }
+        lastpath = path;
+        exportSubTree(root, path, prefix);
+    }
+}
+
+void PMbrowserWindow::on_actionExport_IBW_File_triggered()
+{
+    auto item = ui->treePulse->currentItem();
+    if (!datfile) {
+        QMessageBox msg;
+        msg.setText("no file open");
+        msg.exec();
+    }
+    else if(!item){
+        QMessageBox msg;
+        msg.setText("no item selected");
+        msg.exec();
+    }
+    else {
+        exportSubTreeAsIBW(item);
+    }
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)

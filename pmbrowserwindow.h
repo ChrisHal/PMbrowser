@@ -25,6 +25,7 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionClose_triggered();
     void on_actionClear_Text_triggered();
+    void on_actionExport_IBW_File_triggered();
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 protected:
@@ -37,9 +38,12 @@ private:
     void closeFile();
     void populateTreeView();
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
+    void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
+    void exportSubTreeAsIBW(QTreeWidgetItem* root);
     Ui::PMbrowserWindow *ui;
     QString currentFile;
     std::ifstream infile;
     DatFile* datfile;
+    QString lastpath;
 };
 #endif // PMBROWSERWINDOW_H
