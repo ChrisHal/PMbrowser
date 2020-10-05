@@ -23,9 +23,8 @@ RenderArea::~RenderArea()
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainterPath path;
-    //path.moveTo(0,0);
-    //path.lineTo(width(),height());
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
     font.setPixelSize(24);
     painter.setFont(font);
