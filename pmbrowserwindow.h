@@ -24,6 +24,7 @@ public:
 private slots:
     void on_actionOpen_triggered();
     void on_actionClose_triggered();
+    void on_actionClear_Text_triggered();
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 protected:

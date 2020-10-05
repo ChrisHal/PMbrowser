@@ -178,6 +178,11 @@ void PMbrowserWindow::on_actionClose_triggered()
     closeFile();
 }
 
+void PMbrowserWindow::on_actionClear_Text_triggered()
+{
+    ui->textEdit->clear();
+}
+
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     (void)previous;
