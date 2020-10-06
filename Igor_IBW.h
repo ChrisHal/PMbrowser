@@ -1,10 +1,10 @@
-// modified from WaveMetrics(tm) IgorBin.h
+// file headers for WaveMetrics(tm) IgorPro ibw format
 #pragma once
 #include <cstdint>
 
-constexpr auto NT_I32 = 0x20;		// 32 bit integer numbers. Requires Igor Pro 2.0 or later.;
+constexpr auto NT_I32 = 0x20;		// 32 bit integer numbers.
 constexpr auto NT_FP64 = 4;
-constexpr auto NT_UNSIGNED = 0x40;	// Makes above signed integers unsigned. Requires Igor Pro 3.0 or later.;
+constexpr auto NT_UNSIGNED = 0x40;	// Makes above signed integers unsigned.
 
 constexpr auto MAXDIMS = 4;
 constexpr auto MAX_WAVE_NAME5 = 31;	// Maximum length of wave name in version 5 files. Does not include the trailing null.;
@@ -31,19 +31,19 @@ struct BinHeader5 {
 
 // compared to origianl, some pointer types have been converted to uint32_t for compilation for 64-bit
 struct WaveHeader5 {
-	uint32_t next;			// link to next wave in linked list.
+	uint32_t pad0;
 
 	uint32_t creationDate;				// DateTime of creation.
 	uint32_t modDate;					// DateTime of last modification.
 
 	int32_t npnts;						// Total number of points (multiply dimensions up to first zero).
 	short type;							// See types (e.g. NT_FP64) above. Zero for text waves.
-	short dLock;						// Reserved. Write zero. Ignore on read.
+	short pad1;
 
-	char whpad1[6];						// Reserved. Write zero. Ignore on read.
+	char pad2[6];
 	short whVersion;					// Write 1. Ignore on read.
 	char bname[MAX_WAVE_NAME5 + 1];		// Name of wave plus trailing null.
-	int32_t whpad2;						// Reserved. Write zero. Ignore on read.
+	char pad3[4];
 	uint32_t dFolder;		// Used in memory only. Write zero. Ignore on read.
 
 	// Dimensioning info. [0] == rows, [1] == cols etc
@@ -60,41 +60,14 @@ struct WaveHeader5 {
 	char dimUnits[MAXDIMS][MAX_UNIT_CHARS + 1];	// Natural dimension units go here - null if none.
 
 	short fsValid;						// TRUE if full scale values have meaning.
-	short whpad3;						// Reserved. Write zero. Ignore on read.
+	char pad4[2];
 	// The next 2 are out of aligment,too:
 	//double topFullScale, botFullScale;	// The max and max full scale value for wave.
 	// tweak aligment:
 	char topFullScale[8], botFullScale[8];
-	uint32_t dataEUnits;					// Used in memory only. Write zero. Ignore on read.
-	uint32_t dimEUnits[MAXDIMS];			// Used in memory only. Write zero. Ignore on read.
-	uint32_t dimLabels[MAXDIMS];			// Used in memory only. Write zero. Ignore on read.
-
-	uint32_t waveNoteH;					// Used in memory only. Write zero. Ignore on read.
-
+	char pad5[40];
 	unsigned char platform;				// 0=unspecified, 1=Macintosh, 2=Windows; Added for Igor Pro 5.5.
-	unsigned char spare[3];
-
-	int32_t whUnused[13];				// Reserved. Write zero. Ignore on read.
-
-	int32_t vRefNum, dirID;				// Used in memory only. Write zero. Ignore on read.
-
-	// The following stuff is considered private to Igor.
-
-	short aModified;					// Used in memory only. Write zero. Ignore on read.
-	short wModified;					// Used in memory only. Write zero. Ignore on read.
-	short swModified;					// Used in memory only. Write zero. Ignore on read.
-
-	char useBits;						// Used in memory only. Write zero. Ignore on read.
-	char kindBits;						// Reserved. Write zero. Ignore on read.
-	uint32_t formula;						// Used in memory only. Write zero. Ignore on read.
-	int32_t depID;						// Used in memory only. Write zero. Ignore on read.
-
-	short whpad4;						// Reserved. Write zero. Ignore on read.
-	short srcFldr;						// Used in memory only. Write zero. Ignore on read.
-	uint32_t fileName;					// Used in memory only. Write zero. Ignore on read.
-
-	uint32_t sIndices;					// Used in memory only. Write zero. Ignore on read.
-
+	unsigned char pad6[91];
 	float wData[1];						// The start of the array of data. Must be 64 bit aligned.
 };
 
