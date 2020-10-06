@@ -126,8 +126,8 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	delete[] target;
 }
 
-/*
-void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& prefix)
+
+void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)
 {
 	int groupcount = 0;
 	for (auto& group : datf.GetPulTree().GetRootNode().Children) {
@@ -142,24 +142,24 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 				for (auto& trace : sweep.Children) {
 					++tracecount;
 					uint16_t tracekind = trace.extractUInt16(TrDataKind);
-					std::stringstream name;
-					name << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount;
+					std::stringstream wavename;
+					wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount;
 					if (tracekind & IsImon) {
-						name << "_Imon";
+						wavename << "_Imon";
 					}
 					else if (tracekind & IsVmon) {
-						name << "_Vmon";
+						wavename << "_Vmon";
 					}
 					else if (tracekind & IsLeak) {
-						name << "_Leak";
+						wavename << "_Leak";
 					}
 					else {
-						name << "_" << tracecount;
+						wavename << "_" << tracecount;
 					}
-					ExportTrace(datafile, trace, name.str());
+					std::string filename = path + wavename.str() + ".ibw";
+					ExportTrace(datafile, trace, filename, wavename.str());
 				}
 			}
 		}
 	}
 }
-*/

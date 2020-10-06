@@ -261,6 +261,29 @@ void PMbrowserWindow::on_actionExport_IBW_File_triggered()
     }
 }
 
+void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
+{
+    if (!datfile) {
+        QMessageBox msg;
+        msg.setText("no file open");
+        msg.exec();
+    }
+    else {
+        DlgChoosePathAndPrefix dlg(this, lastexportpath);
+        if (dlg.exec())
+        {
+            QString path = dlg.path, prefix = dlg.prefix;
+            if (!path.endsWith('/')) {
+                path.append('/');
+            }
+            lastexportpath = path;
+            ui->textEdit->append("exporting...");
+            ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
+            ui->textEdit->append("done.");
+        }
+    }
+}
+
 void PMbrowserWindow::on_actionAbout_triggered()
 {
     QString txt = myAppName +   "\n© 2020 Christian R. Halaszovich"
