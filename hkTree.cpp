@@ -14,6 +14,7 @@ struct TreeRoot {
 void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
 {
 	auto size = LevelSizes.at(level);
+	node.level = level;
 	node.len = size;
 	node.isSwapped = isSwapped;
 	node.Data = new char[size];

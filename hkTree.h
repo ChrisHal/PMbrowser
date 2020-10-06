@@ -8,7 +8,7 @@
 constexpr int32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
 struct hkTreeNode {
 public:
-    hkTreeNode() : Parent{ nullptr }, isSwapped { false }, Data{ nullptr }, len{ 0 }, Children{} {};
+    hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
     int32_t extractInt32(size_t offset);
     uint16_t extractUInt16(size_t offset);
     double extractLongReal(size_t offset);
@@ -17,10 +17,12 @@ public:
     std::string getString(size_t offset);
     hkTreeNode* getParent() { return Parent; };
     bool getIsSwapped() { return isSwapped; };
+    int getLevel() { return level; };
 private:
     hkTreeNode* Parent;
     bool isSwapped;
     char* Data;
+    int level;
     int32_t len;
 public:
     std::vector<hkTreeNode> Children;

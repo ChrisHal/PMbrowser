@@ -283,7 +283,7 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     }
     QVariant v = current->data(0, Qt::UserRole);
     hkTreeNode* node = v.value<hkTreeNode*>();
-    if(node) { // this is a trace item
+    if(node != nullptr && node->getLevel() == 4) { // this is a trace item
         traceSelected(current, node);
     }
 }
