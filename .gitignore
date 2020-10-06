@@ -9,3 +9,6 @@
 /ui_pmbrowserwindow.h
 /ui_renderarea.h
 QtPMbrowser.pro.user.459d117
+GeneratedFiles/
+Makefile
+moc_*

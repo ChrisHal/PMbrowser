@@ -20,8 +20,12 @@ OBJECTS_DIR += release
 UI_DIR += .
 RCC_DIR += GeneratedFiles
 include(QtPMbrowser.pri)
+
+# the following are now managed by
+# VS on Windows builds
 #RC_FILE = QtPMbrowser.rc
-RC_ICONS = myappico.ico
+#RC_ICONS = myappico.ico
+RESOURCES+=QtPMbrowser.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
