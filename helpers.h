@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 double swap_bytes(double x);
 int32_t swap_bytes(int32_t x);
 int16_t swap_bytes(int16_t x);

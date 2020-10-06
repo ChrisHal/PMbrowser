@@ -7,8 +7,9 @@
 
 
 RenderArea::RenderArea(QWidget *parent) :
-    QWidget(parent), a_x{}, a_y{}, b_x{}, b_y{}, deltax{}, ndatapoints{},
-    ui{ nullptr }, x0{}, y_max{}, y_min{}
+    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, x0{}, deltax{},
+    y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{},
+    ui{ nullptr }
 //    ui(new Ui::RenderArea)
 {
     setBackgroundRole(QPalette::Base);
