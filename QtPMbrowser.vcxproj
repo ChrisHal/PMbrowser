@@ -235,6 +235,10 @@
     <QtUic Include="renderarea.ui">
     </QtUic>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="QtPMbrowser.pri" />
+    <None Include="QtPMbrowser.pro" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

@@ -35,6 +35,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="config files">
+      <UniqueIdentifier>{0cddbfb8-a623-4677-a534-5bcc7a6b650f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatFile.cpp">
@@ -114,5 +117,13 @@
     <QtMoc Include="DlgChoosePathAndPrefix.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="QtPMbrowser.pri">
+      <Filter>config files</Filter>
+    </None>
+    <None Include="QtPMbrowser.pro">
+      <Filter>config files</Filter>
+    </None>
   </ItemGroup>
 </Project>
