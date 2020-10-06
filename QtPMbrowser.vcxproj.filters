@@ -93,6 +93,9 @@
     <QtMoc Include="renderarea.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <ClInclude Include="resource.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
@@ -125,5 +128,16 @@
     <None Include="QtPMbrowser.pro">
       <Filter>config files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="QtPMbrowser.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="myappico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="QtPMbrowser.qrc">
+      <Filter>Source Files</Filter>
+    </QtRcc>
   </ItemGroup>
 </Project>

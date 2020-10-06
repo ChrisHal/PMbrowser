@@ -136,6 +136,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{}
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
 }

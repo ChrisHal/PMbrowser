@@ -199,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h" />
+    <ClInclude Include="resource.h" />
     <QtMoc Include="DlgChoosePathAndPrefix.h" />
     <ClInclude Include="Igor_IBW.h" />
     <ClInclude Include="exportIBW.h" />
@@ -238,6 +239,15 @@
   <ItemGroup>
     <None Include="QtPMbrowser.pri" />
     <None Include="QtPMbrowser.pro" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="QtPMbrowser.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="myappico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="QtPMbrowser.qrc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -20,6 +20,8 @@ OBJECTS_DIR += release
 UI_DIR += .
 RCC_DIR += GeneratedFiles
 include(QtPMbrowser.pri)
+#RC_FILE = QtPMbrowser.rc
+RC_ICONS = myappico.ico
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
