@@ -57,7 +57,8 @@ bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 
 bool hkTree::InitFromBuffer(char* buffer, size_t len)
 {
-	TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
+    (void)len;
+    TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
 	isSwapped = false;
 	if (root->Magic == SwappedMagicNumber) {
 		isSwapped = true;
@@ -92,6 +93,7 @@ hkTreeNode& hkTree::GetNode(const std::vector<int>& nodeid)
 	}
 	auto n = &RootNode;
 	for (int index : nodeid) {
+        (void)index;
 		n = &n->Children.at(0);
 	}
 	return *n;

@@ -1,13 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QString>
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <ctime>
 #include <cstring>
+#include <cmath>
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
+#include "hkTree.h"
 #include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
 #include "ui_DlgChoosePathAndPrefix.h"
