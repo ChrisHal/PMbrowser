@@ -261,6 +261,19 @@ void PMbrowserWindow::on_actionExport_IBW_File_triggered()
     }
 }
 
+void PMbrowserWindow::on_actionAbout_triggered()
+{
+    QString txt = myAppName +   "\n© 2020 Christian R. Halaszovich"
+                                "\nAn open source tool to handle PatchMaster Files\n"
+                                "PatchMaster is a trademark of Heka GmbH\n\n"
+                                "Build using Qt Library version " + QT_VERSION_STR +
+                                "\n\nLicense: GNU General Public License Version 2";
+    QMessageBox msg;
+    msg.setWindowTitle("About");
+    msg.setText(txt);
+    msg.exec();
+}
+
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     (void)previous;
