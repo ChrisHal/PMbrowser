@@ -7,7 +7,8 @@
 
 
 RenderArea::RenderArea(QWidget *parent) :
-    QWidget(parent)//,
+    QWidget(parent), a_x{}, a_y{}, b_x{}, b_y{}, deltax{}, ndatapoints{},
+    ui{ nullptr }, x0{}, y_max{}, y_min{}
 //    ui(new Ui::RenderArea)
 {
     setBackgroundRole(QPalette::Base);
@@ -109,7 +110,7 @@ void RenderArea::clearTrace()
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 {
-    double h=height()-1, w=width()-1;
+    double h = height() - 1, w = width() - 1;
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
     a_y = h*y_1/(y_1-y_0);
