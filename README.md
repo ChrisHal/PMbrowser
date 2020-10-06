@@ -10,7 +10,7 @@ This is a tool to browse the contents of PatchMaster(tm) .dat-files. PatchMaster
 "Big Endian" and "Little Endian" files are supported.
 You can display individual traces, review some of the metadata stored in the file and you can export traces as ibw-files that can be read by IgorPro(tm). IgorPro is a trademark of Wavemetrics Inc.
 
-## Building form Source
+## Building from Source
 Currently, PMbrowser can be build for Windows and Linux.
 You will need to install the usual build tools and Qt-Librrary version 5.xx.
 ### Building on Linux
@@ -33,5 +33,5 @@ If you want the export all traces that are children of the selected item (e.g. a
 In the dialog that will pop up, you can choose a directory to which the exported files will be saved. You can also change the prefix which will preceed the names of the exported files / waves. The wavenames will be of the form  `<prefix>_<group#>_<series#>_<sweep#>_<trace#>`. Where appropiate, `<trace#>` will be replaced by "Vmon", "Imon", or "Leak".
 
 ### The Text-Area
-In the text-area usefull information gets displayed, e.g. Vhold, Rseries. If the area gets to cluttered, use Edit->Clear Text to clear it.
+In the text-area useful information gets displayed, e.g. Vhold, Rseries. If the area gets to cluttered, use Edit->Clear Text to clear it.
 You can copy the text to the clipboard by selecting the area with a mouse click and using `Ctrl-A` followed by `Ctrl-C` (at least on Windows systems).
