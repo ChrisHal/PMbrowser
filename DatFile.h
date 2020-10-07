@@ -91,7 +91,7 @@ RoVersionName = 8, // root record
 RoStartTime = 520;
 
 // TrDataKind
-constexpr uint16_t LittleEndianBit=1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4;
+constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
 
 // TrDataFormatType
 constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;

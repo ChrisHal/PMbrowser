@@ -26,7 +26,7 @@
 
 
 RenderArea::RenderArea(QWidget *parent) :
-    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, x0{}, deltax{},
+    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, clipped{ false }, x0{}, deltax{},
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{},
     ui{ nullptr }
 //    ui(new Ui::RenderArea)
@@ -73,6 +73,14 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
         painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
         label = QString("%1 %2").arg(x1).arg(xunit);
         painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+        if (clipped) {
+            painter.setBrush(QColor(200, 0, 0));
+            painter.setPen(QColor(200, 0, 0));
+            auto br = painter.boundingRect(rectangle, Qt::AlignCenter, QString("clipping"));
+            painter.drawRect(br);
+            painter.setPen(QColor(255, 255, 255));
+            painter.drawText(rectangle, Qt::AlignCenter, QString("clipping"));
+        }
     }
 }
 
@@ -87,11 +95,13 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
         interleavesize = TrRecord->extractInt32(TrInterleaveSize);
     }
     catch (std::out_of_range& e) { // fileformat too old to have interleave entry
+        (void)e;
         interleavesize = 0;
     }
     assert(interleavesize == 0);
-    uint16_t tracekind = TrRecord->extractUInt16(TrDataKind);
-    bool need_swap = !(tracekind & LittleEndianBit);
+    uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
+    bool need_swap = !(tracedatakind & LittleEndianBit);
+    clipped = tracedatakind & ClipBit;
     yunit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
     xunit = TrRecord->getString(TrXUnit).c_str();
     x0 = TrRecord->extractLongReal(TrXStart), deltax = TrRecord->extractLongReal(TrXInterval);

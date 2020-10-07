@@ -49,6 +49,7 @@ private:
     size_t ndatapoints;
     QVector<double> data;
     QString xunit, yunit;
+    bool clipped; // Amp. was clipping
     double x0, deltax, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
     Ui::RenderArea *ui;
