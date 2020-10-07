@@ -35,7 +35,8 @@
 #include "DlgChoosePathAndPrefix.h"
 #include "ui_DlgChoosePathAndPrefix.h"
 
-QString myAppName("PM browser");
+const QString myAppName("PM browser");
+const QString appVersion("1.0");
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
@@ -330,8 +331,9 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
 
 void PMbrowserWindow::on_actionAbout_triggered()
 {
-    QString txt = myAppName +   "\n© Copyright 2020 Christian R. Halaszovich"
-                                "\nAn open source tool to handle PatchMaster Files\n"
+    QString txt = myAppName +  ", Version " + appVersion +
+                                "\n\n© Copyright 2020 Christian R. Halaszovich"
+                                "\n\nAn open source tool to handle PatchMaster Files.\n"
                                 "PatchMaster is a trademark of Heka GmbH\n\n"
                                 "Build using Qt Library version " + QT_VERSION_STR +
                                 "\n\nLicense: GNU General Public License Version 3 (GPLv3)";
