@@ -8,6 +8,7 @@
 /.qmake.stash
 /ui_pmbrowserwindow.h
 /ui_renderarea.h
+/ui_*.h
 QtPMbrowser.pro.user.459d117
 GeneratedFiles/
 Makefile
