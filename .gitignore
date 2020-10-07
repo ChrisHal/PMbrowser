@@ -14,3 +14,5 @@ GeneratedFiles/
 Makefile
 moc_*
 /VorlageCopyrigth.txt
+*.aps
+QtPMbrowser.aps
