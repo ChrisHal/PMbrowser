@@ -68,6 +68,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 		interleavesize = TrRecord.extractInt32(TrInterleaveSize);
 	}
 	catch (std::out_of_range& e) { // fileformat too old to have interleave entry
+		(void)e;
 		interleavesize = 0;
 	}
 	assert(interleavesize == 0);
@@ -97,7 +98,6 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 
 	delete[] source; source = nullptr;
 
-	//std::string filename = exportname + ".ibw";
 	std::ofstream outfile(filename, std::ios::out | std::ios::binary);
 	if (!outfile) {
 		std::stringstream msg;

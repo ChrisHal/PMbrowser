@@ -60,6 +60,7 @@ private:
     void populateTreeView();
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
+    bool choosePathAndPrefix(QString& path, QString& prefix);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
     Ui::PMbrowserWindow *ui;
     QString currentFile;

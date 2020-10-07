@@ -18,8 +18,9 @@
 */
 
 #include "pmbrowserwindow.h"
-
+//#include <stdexcept>
 #include <QApplication>
+//#include <QDebug>
 
 int main(int argc, char *argv[])
 {

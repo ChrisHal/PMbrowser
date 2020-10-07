@@ -21,6 +21,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QString>
+#include <QDir>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -252,17 +253,36 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
     }
 }
 
-void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
+bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
 {
     DlgChoosePathAndPrefix dlg(this, lastexportpath);
     if (dlg.exec())
     {
-        QString path = dlg.path, prefix = dlg.prefix;
+        path = dlg.path;
+        if (!QDir(path).exists()) {
+            QMessageBox::warning(this, QString("Error"), QString("Path does not exist!"));
+            return false;
+        }
+        prefix = dlg.prefix;
         if (!path.endsWith('/')) {
             path.append('/');
         }
         lastexportpath = path;
-        exportSubTree(root, path, prefix);
+    }
+    return true;
+}
+
+void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
+{
+    QString path, prefix;
+    if (choosePathAndPrefix(path, prefix)) {
+        try {
+            exportSubTree(root, path, prefix);
+        }
+        catch (std::exception& e) {
+            QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+            QMessageBox::warning(this, QString("Error"), msg);
+        }
     }
 }
 
@@ -292,16 +312,17 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
         msg.exec();
     }
     else {
-        DlgChoosePathAndPrefix dlg(this, lastexportpath);
-        if (dlg.exec())
-        {
-            QString path = dlg.path, prefix = dlg.prefix;
-            if (!path.endsWith('/')) {
-                path.append('/');
-            }
-            lastexportpath = path;
+        QString path, prefix;
+        if (choosePathAndPrefix(path, prefix)) {
             ui->textEdit->append("exporting...");
-            ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
+            try {
+                ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
+            }
+            catch (std::exception& e) {
+                QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+                QMessageBox::warning(this, QString("Error"), msg);
+                ui->textEdit->append("error -> aborting export");
+            }
             ui->textEdit->append("done.");
         }
     }
@@ -309,7 +330,7 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
 
 void PMbrowserWindow::on_actionAbout_triggered()
 {
-    QString txt = myAppName +   "\n© Copyrigth 2020 Christian R. Halaszovich"
+    QString txt = myAppName +   "\n© Copyright 2020 Christian R. Halaszovich"
                                 "\nAn open source tool to handle PatchMaster Files\n"
                                 "PatchMaster is a trademark of Heka GmbH\n\n"
                                 "Build using Qt Library version " + QT_VERSION_STR +
