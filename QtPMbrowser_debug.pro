@@ -9,16 +9,17 @@ CONFIG += c++11
 
 TEMPLATE = app
 TARGET = QtPMbrowser
-DESTDIR = ./release
-CONFIG += release
-#CONFIG += debug
+DESTDIR = ./debug
+#DESTDIR = ./release
+#CONFIG += release
+CONFIG += debug
 #LIBS += -L"../../../../../openssl/lib" \
 #    -L"../../../../../Utils/my_sql/mysql-5.7.25-winx64/lib" \
 #    -L"../../../../../Utils/postgresql/pgsql/lib"
 DEPENDPATH += .
 MOC_DIR += .
-#OBJECTS_DIR += debug
-OBJECTS_DIR += release
+OBJECTS_DIR += debug
+#OBJECTS_DIR += release
 UI_DIR += .
 RCC_DIR += GeneratedFiles
 include(QtPMbrowser.pri)
