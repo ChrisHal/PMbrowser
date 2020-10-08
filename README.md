@@ -17,7 +17,7 @@ You will need to install the usual build tools and Qt-Librrary version 5.xx.
 On most distribution, Qt is provided as a package, e.g. `qt5-default` for Ubuntu.
 Use the provided `.pro`-file. Usually, all you need to do is:
 ```
-qmake
+qmake QtPMbrowser.pro
 make
 ```
 ### Building on Windows
