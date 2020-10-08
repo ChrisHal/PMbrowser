@@ -173,7 +173,7 @@
   </action>
   <action name="actionExport_IBW_File">
    <property name="text">
-    <string>Export IBW File</string>
+    <string>Export Subtree as IBW Files...</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -186,12 +186,12 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>About...</string>
    </property>
   </action>
   <action name="actionExport_All_as_IBW">
    <property name="text">
-    <string>Export All as IBW</string>
+    <string>Export All Traces as IBW Files...</string>
    </property>
   </action>
  </widget>
