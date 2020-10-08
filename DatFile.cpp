@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cstring>
 #include <ctime>
+#include <cmath>
 #include <cassert>
 #include <cinttypes>
 #include "helpers.h"
