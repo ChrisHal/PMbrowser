@@ -21,6 +21,7 @@
 
 #pragma once
 #include <cstdint>
+#include <string>
 #include "hkTree.h"
 
 struct BundleItem {
@@ -46,17 +47,21 @@ constexpr char ExtDat[] = ".dat", ExtPul[] = ".pul", ExtPgf[] = ".pgf", ExtAmp[]
 class DatFile
 {
 	int32_t offsetDat, lenDat; // file offset and blocklength of rawdata
+	std::string Version;
 	double Time;
 	bool isSwapped;
 	hkTree PulTree, PgfTree, AmpTree;
 public:
-	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Time{ 0.0 }, isSwapped{ false }, PulTree{},
+	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
 	bool InitFromStream(std::istream& istream);
+	std::string getFileDate();
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
 	hkTree& GetAmpTree() { return AmpTree; };
+	std::string getVersion() { return Version; };
 	double GetTime() { return Time; };
+	bool getIsSwapped() { return isSwapped; };
 };
 
 // offsets into data record fields that we are interested in

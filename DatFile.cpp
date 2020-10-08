@@ -16,17 +16,33 @@
     You should have received a copy of the GNU General Public License
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
-
+#define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings om Windows
 #include <istream>
 #ifdef _DEBUG
 #include <iostream>
 #endif
 #include <algorithm>
 #include <cstring>
+#include <ctime>
 #include <cassert>
 #include <cinttypes>
 #include "helpers.h"
 #include "DatFile.h"
+static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
+
+constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
+constexpr double JanFirst1990MACTime = 1580947200.0; // better value?
+constexpr auto HIGH_DWORD = 4294967296.0;
+
+std::time_t PMtime2time_t(double t)
+{
+    t -= JanFirst1990MACTime;
+    if (t < 0.0) {
+        t += HIGH_DWORD; // why is this necessary?
+    }
+    return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
+}
+
 
 bool DatFile::InitFromStream(std::istream& infile)
 {
@@ -46,6 +62,7 @@ bool DatFile::InitFromStream(std::istream& infile)
     if (!bh->IsLittleEndian) {
         isSwapped = true;
     }
+    Version = bh->Version;
     Time = bh->Time;
     if (isSwapped) {
         swapInPlace(Time);
@@ -97,4 +114,12 @@ bool DatFile::InitFromStream(std::istream& infile)
         }
     }
     return true;
+}
+
+std::string DatFile::getFileDate()
+{
+    auto unixtime = PMtime2time_t(Time);
+    char buffer[128];
+    std::strftime(buffer, 128, "%F", localtime(&unixtime));
+    return std::string(buffer);
 }

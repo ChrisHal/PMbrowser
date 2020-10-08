@@ -40,20 +40,8 @@ const QString appVersion("1.0");
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
-static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
 
-constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
-constexpr double JanFirst1990MACTime = 1580947200.0; // better value?
-constexpr auto HIGH_DWORD = 4294967296.0;
 
-std::time_t PMtime2time_t(double t)
-{
-    t -= JanFirst1990MACTime;
-    if (t < 0.0) {
-        t += HIGH_DWORD; // why is this necessary?
-    }
-    return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
-}
 
 void PMbrowserWindow::populateTreeView()
 {
@@ -126,9 +114,8 @@ void PMbrowserWindow::loadFile(QString filename)
     ui->textEdit->append("loading file " + filename);
     infile.open(filename.toStdString(), std::ios::in|std::ios::binary);
     if (!infile) {
-        QMessageBox msgBox;
-        msgBox.setText(QString("error opening file (") + QString(std::strerror(errno) + QString(")")));
-        msgBox.exec();
+        QMessageBox::warning(this, QString("File Error"),
+            QString("error opening file:\n") + QString(std::strerror(errno)));
     }
     currentFile = filename;
     datfile = new DatFile;
@@ -136,19 +123,23 @@ void PMbrowserWindow::loadFile(QString filename)
         datfile->InitFromStream(infile);
     }
     catch (const std::exception& e) {
-        QString msg("error while processing dat file: ");
-        msg.append(e.what());
-        QMessageBox msgBox;
-        msgBox.setText(msg);
-        msgBox.exec();
+        QMessageBox::warning(this, QString("File Error"), 
+            QString("error while processing dat file:\n") + QString(e.what()));
         delete datfile;
         datfile=nullptr;
         infile.close();
     }
     if(datfile) {
         populateTreeView();
+        this->setWindowTitle(myAppName + " - " + filename.split("/").back());
+        QString txt = QString("PM Version ") + QString::fromStdString(datfile->getVersion());
+        if (datfile->getIsSwapped()) {
+            txt.append(QString::fromUtf8(" [byte order: big endian]"));
+        }
+        ui->textEdit->append(txt);
+        ui->textEdit->append(QString::fromUtf8("file date: ")
+            + QString::fromStdString(datfile->getFileDate()));
     }
-    this->setWindowTitle(myAppName + " - "+ filename.split("/").back());
 }
 
 
