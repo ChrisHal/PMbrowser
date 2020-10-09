@@ -57,34 +57,11 @@ void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 	notetxt = note.str();
 }
 
-void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
+template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
+	double* target)
 {
-	char dataformat = TrRecord.getChar(TrDataFormat);
-	if (dataformat != DFT_int16) {
-		throw std::runtime_error("can't export data that is not int16");
-	}
-	int32_t interleavesize;
-	try {
-		interleavesize = TrRecord.extractInt32(TrInterleaveSize);
-	}
-	catch (std::out_of_range& e) { // fileformat too old to have interleave entry
-		(void)e;
-		interleavesize = 0;
-	}
-	assert(interleavesize == 0);
-	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
-	bool need_swap = !(tracekind & LittleEndianBit);
-
-	std::string xunit, yunit;
-	yunit = TrRecord.getString(TrYUnit); // assuming the string is zero terminated...
-	xunit = TrRecord.getString(TrXUnit);
-	double x0 = TrRecord.extractLongReal(TrXStart), deltax = TrRecord.extractLongReal(TrXInterval);
-	double datascaler = TrRecord.extractLongReal(TrDataScaler);
-	int32_t trdata = TrRecord.extractInt32(TrData), trdatapoints = TrRecord.extractInt32(TrDataPoints);
-	int16_t* source = new int16_t[trdatapoints];
-	double* target = new double[trdatapoints];
-	datafile.seekg(trdata);
-	datafile.read((char*)source, sizeof(int16_t) * trdatapoints);
+	T* source = new T[trdatapoints];
+	datafile.read((char*)source, sizeof(T) * trdatapoints);
 	if (!need_swap) {
 		for (int i = 0; i < trdatapoints; ++i) {
 			target[i] = datascaler * source[i];
@@ -95,8 +72,54 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 			target[i] = datascaler * swap_bytes(source[i]);
 		}
 	}
-
 	delete[] source; source = nullptr;
+}
+
+void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
+{
+	char dataformat = TrRecord.getChar(TrDataFormat);
+	int32_t interleavesize;
+	try {
+		interleavesize = TrRecord.extractInt32(TrInterleaveSize);
+	}
+	catch (std::out_of_range& e) { // fileformat too old to have interleave entry
+		(void)e;
+		interleavesize = 0;
+	}
+	if (interleavesize != 0) {
+		throw std::runtime_error("interleaved data not supported for export");
+	}
+	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
+	bool need_swap = !(tracekind & LittleEndianBit);
+
+	std::string xunit, yunit;
+	yunit = TrRecord.getString(TrYUnit); // assuming the string is zero terminated...
+	xunit = TrRecord.getString(TrXUnit);
+	double x0 = TrRecord.extractLongReal(TrXStart), deltax = TrRecord.extractLongReal(TrXInterval);
+	double datascaler = TrRecord.extractLongReal(TrDataScaler);
+	int32_t trdata = TrRecord.extractInt32(TrData), trdatapoints = TrRecord.extractInt32(TrDataPoints);
+
+	double* target = new double[trdatapoints];
+	datafile.seekg(trdata);
+
+	switch (dataformat)
+	{
+	case DFT_int16:
+		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target);
+		break;
+	case DFT_int32:
+		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target);
+		break;
+	case DFT_float:
+		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target);
+		break;
+	case DFT_double:
+		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target);
+		break;
+	default:
+		throw std::runtime_error("unknown data format type");
+		break;
+	}
 
 	std::ofstream outfile(filename, std::ios::out | std::ios::binary);
 	if (!outfile) {
