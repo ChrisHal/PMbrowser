@@ -38,6 +38,18 @@ double swap_bytes(double x)
     return *reinterpret_cast<double*>(p);
 }
 
+float swap_bytes(float x)
+{
+    char* a = reinterpret_cast<char*>(&x);
+    float b;
+    char* p = reinterpret_cast<char*>(&b);
+    p[0] = a[3];
+    p[1] = a[2];
+    p[2] = a[1];
+    p[3] = a[0];
+    return b;
+}
+
 int32_t swap_bytes(int32_t x)
 {
     char* a = reinterpret_cast<char*>(&x);

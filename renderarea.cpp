@@ -85,36 +85,12 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     }
 }
 
-void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
+
+template<typename T> void ReadScaleAndConvert(std::istream& infile, bool need_swap,
+    double datascaler, size_t ndatapoints, QVector<double>& data)
 {
-    char dataformat = TrRecord->getChar(TrDataFormat);
-    if (dataformat != DFT_int16) {
-        //throw std::runtime_error("can't export data that is not int16");
-        QMessageBox::warning(this, QString("Data Format Error"), QString("unsuported trace data format (%1)").arg(int(dataformat)));
-        return;
-    }
-    int32_t interleavesize;
-    try {
-        interleavesize = TrRecord->extractInt32(TrInterleaveSize);
-    }
-    catch (std::out_of_range& e) { // fileformat too old to have interleave entry
-        (void)e;
-        interleavesize = 0;
-    }
-    assert(interleavesize == 0);
-    uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
-    bool need_swap = !(tracedatakind & LittleEndianBit);
-    clipped = tracedatakind & ClipBit;
-    yunit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
-    xunit = TrRecord->getString(TrXUnit).c_str();
-    x0 = TrRecord->extractLongReal(TrXStart), deltax = TrRecord->extractLongReal(TrXInterval);
-    double datascaler = TrRecord->extractLongReal(TrDataScaler);
-    int32_t trdata = TrRecord->extractInt32(TrData);
-    ndatapoints = TrRecord->extractInt32(TrDataPoints);
-    int16_t* source = new int16_t[ndatapoints];
-    data.clear();
-    infile.seekg(trdata);
-    infile.read((char*)source, sizeof(int16_t) * ndatapoints);
+    T* source = new T[ndatapoints];
+    infile.read((char*)source, sizeof(T) * ndatapoints);
     if (!need_swap) {
         for (size_t i = 0; i < ndatapoints; ++i) {
             data.push_back(datascaler * source[i]);
@@ -125,11 +101,60 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
             data.push_back(datascaler * swap_bytes(source[i]));
         }
     }
+    delete[] source; source = nullptr;
+}
 
+
+void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
+{
+    char dataformat = TrRecord->getChar(TrDataFormat);
+    //if (dataformat != DFT_int16 && dataformat!=DFT_float) {
+    //    QMessageBox::warning(this, QString("Data Format Error"), QString("unsuported trace data format (%1)").arg(int(dataformat)));
+    //    return;
+    //}
+    int32_t interleavesize;
+    try {
+        interleavesize = TrRecord->extractInt32(TrInterleaveSize);
+    }
+    catch (std::out_of_range& e) { // fileformat too old to have interleave entry
+        (void)e;
+        interleavesize = 0;
+    }
+    if (interleavesize != 0) {
+        QMessageBox::warning(this, QString("Data Format Error"), QString("Interleaved Data not supported."));
+        return;
+    }
+    uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
+    bool need_swap = !(tracedatakind & LittleEndianBit);
+    clipped = tracedatakind & ClipBit;
+    yunit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
+    xunit = TrRecord->getString(TrXUnit).c_str();
+    x0 = TrRecord->extractLongReal(TrXStart), deltax = TrRecord->extractLongReal(TrXInterval);
+    double datascaler = TrRecord->extractLongReal(TrDataScaler);
+    int32_t trdata = TrRecord->extractInt32(TrData);
+    ndatapoints = TrRecord->extractInt32(TrDataPoints);
+    data.clear();
+    infile.seekg(trdata);
+    if (dataformat == DFT_int16) {
+        ReadScaleAndConvert<int16_t>(infile, need_swap,  datascaler,  ndatapoints, data);
+    }
+    else if (dataformat == DFT_int32) {
+        ReadScaleAndConvert<int32_t>(infile, need_swap, datascaler, ndatapoints, data);
+    }
+    else if (dataformat == DFT_float) {
+        ReadScaleAndConvert<float>(infile, need_swap, datascaler, ndatapoints, data);
+    }
+    else if (dataformat == DFT_double) {
+        ReadScaleAndConvert<double>(infile, need_swap, datascaler, ndatapoints, data);
+    }
+    else {
+        QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
+        return;
+    }
     y_min = *std::min_element(data.constBegin(), data.constEnd());
     y_max = *std::max_element(data.constBegin(), data.constEnd());
 
-    delete[] source; source = nullptr;
+
 
     update();
 }
