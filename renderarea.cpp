@@ -23,6 +23,7 @@
 #include "renderarea.h"
 #include "ui_renderarea.h"
 #include "DatFile.h"
+#include <QMessageBox>
 
 
 RenderArea::RenderArea(QWidget *parent) :
@@ -88,7 +89,9 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
     char dataformat = TrRecord->getChar(TrDataFormat);
     if (dataformat != DFT_int16) {
-        throw std::runtime_error("can't export data that is not int16");
+        //throw std::runtime_error("can't export data that is not int16");
+        QMessageBox::warning(this, QString("Data Format Error"), QString("unsuported trace data format (%1)").arg(int(dataformat)));
+        return;
     }
     int32_t interleavesize;
     try {
