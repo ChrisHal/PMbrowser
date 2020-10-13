@@ -375,3 +375,10 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
         }
     }
 }
+
+void PMbrowserWindow::resizeEvent(QResizeEvent* event)
+{
+   auto s = event->size();
+   ui->widget->resize(s);
+   ui->splitterH->setGeometry(5, 5, s.width() - 10, s.height() - 30);
+}

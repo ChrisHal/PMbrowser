@@ -22,9 +22,15 @@
   <widget class="QWidget" name="widget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
+     <horstretch>1</horstretch>
+     <verstretch>1</verstretch>
     </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
    </property>
    <property name="sizeIncrement">
     <size>
@@ -32,7 +38,7 @@
      <height>1</height>
     </size>
    </property>
-   <widget class="QSplitter" name="splitter_2">
+   <widget class="QSplitter" name="splitterH">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -50,7 +56,7 @@
     <property name="orientation">
      <enum>Qt::Vertical</enum>
     </property>
-    <widget class="QSplitter" name="splitter">
+    <widget class="QSplitter" name="splitterV">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -149,7 +155,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="text">
     <string>Open...</string>
