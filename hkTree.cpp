@@ -124,56 +124,12 @@ hkTree::~hkTree()
 		FreeNodeMemory(RootNode);
 }
 
-int32_t hkTreeNode::extractInt32(size_t offset)
-{
-	if (len < offset + sizeof(int32_t)) {
-		throw std::out_of_range("offset to large while accessing tree node");
-	}
-	if (!isSwapped) {
-		return ::extractInt32(Data, offset);
-	}
-	else {
-		return swap_bytes(::extractInt32(Data, offset));
-	}
-}
-
-uint16_t hkTreeNode::extractUInt16(size_t offset)
-{
-	if (len < offset + sizeof(uint16_t)) {
-		throw std::out_of_range("offset to large while accessing tree node");
-	}
-	if (!isSwapped) {
-	return ::extractUInt16(Data, offset);
-	}
-	else {
-		return swap_bytes(::extractUInt16(Data, offset));
-	}
-}
-
-double hkTreeNode::extractLongReal(size_t offset)
-{
-	if (len < offset + sizeof(double)) {
-		throw std::out_of_range("offset to large while accessing tree node");
-	}
-	if (!isSwapped) {
-		return ::extractLongReal(Data, offset);
-	}
-	else {
-		return swap_bytes(::extractLongReal(Data, offset));
-	}
-}
-
 double hkTreeNode::extractLongRealNoThrow(size_t offset)
 {
 	if (len < offset + sizeof(double)) {
 		return std::numeric_limits<double>::quiet_NaN();
 	}
-	if (!isSwapped) {
-		return ::extractLongReal(Data, offset);
-	}
-	else {
-		return swap_bytes(::extractLongReal(Data, offset));
-	}
+	return extractValue<double>(offset);
 }
 
 char hkTreeNode::getChar(size_t offset)
