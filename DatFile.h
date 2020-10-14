@@ -55,13 +55,13 @@ public:
 	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
 	bool InitFromStream(std::istream& istream);
-	std::string getFileDate();
+	std::string getFileDate() const;
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
 	hkTree& GetAmpTree() { return AmpTree; };
-	std::string getVersion() { return Version; };
-	double GetTime() { return Time; };
-	bool getIsSwapped() { return isSwapped; };
+	std::string getVersion() const { return Version; };
+	double GetTime() const { return Time; };
+	bool getIsSwapped() const { return isSwapped; };
 };
 
 // offsets into data record fields that we are interested in

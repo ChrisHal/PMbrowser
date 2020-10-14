@@ -124,7 +124,7 @@ hkTree::~hkTree()
 		FreeNodeMemory(RootNode);
 }
 
-double hkTreeNode::extractLongRealNoThrow(size_t offset)
+double hkTreeNode::extractLongRealNoThrow(size_t offset) const
 {
 	if (len < offset + sizeof(double)) {
 		return std::numeric_limits<double>::quiet_NaN();
@@ -132,7 +132,7 @@ double hkTreeNode::extractLongRealNoThrow(size_t offset)
 	return extractValue<double>(offset);
 }
 
-char hkTreeNode::getChar(size_t offset)
+char hkTreeNode::getChar(size_t offset) const
 {
 	if (len < offset + sizeof(char)) {
 		throw std::out_of_range("offset to large while accessing tree node");
@@ -140,7 +140,7 @@ char hkTreeNode::getChar(size_t offset)
 	return Data[offset];
 }
 
-std::string hkTreeNode::getString(size_t offset)
+std::string hkTreeNode::getString(size_t offset) const
 {
 	if (len <= offset) {
 		throw std::out_of_range("offset to large while accessing tree node");

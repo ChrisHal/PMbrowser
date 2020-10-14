@@ -117,7 +117,7 @@ bool DatFile::InitFromStream(std::istream& infile)
     return true;
 }
 
-std::string DatFile::getFileDate()
+std::string DatFile::getFileDate() const
 {
     auto unixtime = PMtime2time_t(Time);
     char buffer[128];

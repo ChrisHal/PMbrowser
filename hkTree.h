@@ -29,7 +29,7 @@ constexpr int32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
 struct hkTreeNode {
 public:
     hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
-    template<typename T> T extractValue(size_t offset)
+    template<typename T> T extractValue(size_t offset) const
     {
         if (len < offset + sizeof(T)) {
             throw std::out_of_range("offset to large while accessing tree node");
@@ -43,15 +43,15 @@ public:
             return t;
         }
     }
-    int32_t extractInt32(size_t offset) { return extractValue<int32_t>(offset); };
-    uint16_t extractUInt16(size_t offset) { return extractValue<uint16_t>(offset); };
-    double extractLongReal(size_t offset) { return extractValue<double>(offset); };
-    double extractLongRealNoThrow(size_t offset); // instead of throwing an exception, returns NaN if out of range
-    char getChar(size_t offset);
-    std::string getString(size_t offset);
-    hkTreeNode* getParent() { return Parent; };
-    bool getIsSwapped() { return isSwapped; };
-    int getLevel() { return level; };
+    int32_t extractInt32(size_t offset) const { return extractValue<int32_t>(offset); };
+    uint16_t extractUInt16(size_t offset) const { return extractValue<uint16_t>(offset); };
+    double extractLongReal(size_t offset) const { return extractValue<double>(offset); };
+    double extractLongRealNoThrow(size_t offset) const; // instead of throwing an exception, returns NaN if out of range
+    char getChar(size_t offset) const;
+    std::string getString(size_t offset) const;
+    hkTreeNode* getParent() const { return Parent; };
+    bool getIsSwapped() const { return isSwapped; };
+    int getLevel() const { return level; };
 private:
     hkTreeNode* Parent;
     bool isSwapped;
