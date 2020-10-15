@@ -59,6 +59,9 @@ private:
     void loadFile() {loadFile(currentFile);};
     void closeFile();
     void populateTreeView();
+    void groupSelected(QTreeWidgetItem* item, hkTreeNode* node);
+    void seriesSelected(QTreeWidgetItem* item, hkTreeNode* node);
+    void sweepSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
     bool choosePathAndPrefix(QString& path, QString& prefix);

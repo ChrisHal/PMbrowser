@@ -52,23 +52,22 @@ void PMbrowserWindow::populateTreeView()
     int i=0;
     for(auto& groupe : pultree.GetRootNode().Children) {
         QString count=QString("%1").arg(++i), label;
-  //        std::cout << grplabel << std::endl;
         label = groupe.getString(GrLabel).c_str();//labelL1;
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
-        grpitem->setExpanded(true);
+        grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&groupe));
         grpitems.append(grpitem);
         int j=0;
         for(auto& series : groupe.Children) {
             QString label2 = QString("%1").arg(++j)+" "+QString(series.getString(SeLabel).c_str());
             auto seriesitem =new QTreeWidgetItem(grpitem,QStringList(label2));
-            seriesitem->setExpanded(true);
+            seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             int k = 0;
             for(auto& sweep : series.Children) {
                 QString label3 = QString("sweep %1").arg(++k)+" "+QString(sweep.getString(SwLabel).c_str());
                 auto sweepitem = new QTreeWidgetItem(seriesitem,QStringList(label3));
-                sweepitem->setExpanded(true);
+                sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 int l = 0;
                 for(auto& trace : sweep.Children) {
                     ++l;
@@ -91,6 +90,55 @@ void PMbrowserWindow::populateTreeView()
     }
     tree->addTopLevelItems(grpitems);
     tree->expandAll();
+}
+
+void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
+{
+    // figure out index
+    QTreeWidgetItem* sweepitem = item->parent();
+    QTreeWidgetItem* seriesitem = sweepitem->parent();
+    QTreeWidgetItem* groupitem = seriesitem->parent();
+    int indexseries = groupitem->indexOfChild(seriesitem) + 1,
+        indexsweep = seriesitem->indexOfChild(sweepitem) + 1,
+        indextrace = sweepitem->indexOfChild(item) + 1;
+    int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
+    QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
+    ui->textEdit->append(tracename);
+    double sealresistance = trace->extractLongReal(TrSealResistance),
+        cslow = trace->extractLongReal(TrCSlow),
+        Rseries = 1.0 / trace->extractLongReal(TrGSeries),
+        Vhold = trace->extractLongRealNoThrow(TrTrHolding);
+    QString info = QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\nVhold=%4 V").arg(sealresistance).arg(cslow).arg(Rseries).arg(Vhold);
+    ui->textEdit->append(info);
+    ui->renderArea->renderTrace(trace, infile);
+}
+
+void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
+    QString label = QString::fromStdString(sweep->getString(SeLabel));
+    double t = sweep->extractLongRealNoThrow(SwTime);
+    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
+    double timer = sweep->extractLongRealNoThrow(SwTimer);
+    int32_t count = sweep->extractInt32(SwSweepCount);
+    QString txt = QString("Sweep %1 %2\nrel. time %3 s\ntimer %4 s").arg(label).arg(count).arg(t - start_time).arg(timer);
+    ui->textEdit->append(txt);
+}
+
+void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
+{
+    QString label = QString::fromStdString(series->getString(SeLabel));
+    double t = series->extractLongRealNoThrow(SeTime);
+    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
+    int32_t count = series->extractInt32(SeSeriesCount);
+    QString txt = QString("Series %1 %2\nrel. time %3 s").arg(label).arg(count).arg(t - start_time);
+    ui->textEdit->append(txt);
+}
+
+void PMbrowserWindow::groupSelected(QTreeWidgetItem* item, hkTreeNode* group)
+{
+    QString label = QString::fromStdString(group->getString(GrLabel));
+    int32_t count = group->extractInt32(GrGroupCount);
+    QString txt = QString("Group %1 %2").arg(label).arg(count);
+    ui->textEdit->append(txt);
 }
 
 void PMbrowserWindow::closeFile()
@@ -170,28 +218,6 @@ void PMbrowserWindow::on_actionOpen_triggered()
         loadFile(currentFile);
     }
 }
-
-void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
-{
-    // figure out index
-    QTreeWidgetItem* sweepitem = item->parent();
-    QTreeWidgetItem* seriesitem = sweepitem->parent();
-    QTreeWidgetItem* groupitem = seriesitem->parent();
-    int indexseries = groupitem->indexOfChild(seriesitem)+1,
-            indexsweep = seriesitem->indexOfChild(sweepitem)+1,
-            indextrace = sweepitem->indexOfChild(item)+1;
-    int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem)+1;
-    QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
-    ui->textEdit->append(tracename);
-    double sealresistance = trace->extractLongReal(TrSealResistance),
-            cslow = trace->extractLongReal(TrCSlow),
-            Rseries = 1.0/trace->extractLongReal(TrGSeries),
-            Vhold = trace->extractLongRealNoThrow(TrTrHolding);
-    QString info = QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\nVhold=%4 V").arg(sealresistance).arg(cslow).arg(Rseries).arg(Vhold);
-    ui->textEdit->append(info);
-    ui->renderArea->renderTrace(trace, infile);
-}
-
 
 void PMbrowserWindow::on_actionClose_triggered()
 {
@@ -346,8 +372,24 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     }
     QVariant v = current->data(0, Qt::UserRole);
     hkTreeNode* node = v.value<hkTreeNode*>();
-    if(node != nullptr && node->getLevel() == 4) { // this is a trace item
-        traceSelected(current, node);
+    if (node != nullptr) {
+        switch (node->getLevel())
+        {
+        case 1:
+            groupSelected(current, node);
+            break;
+        case 2:
+            seriesSelected(current, node);
+            break;
+        case 3:
+            sweepSelected(current, node);
+            break;
+        case 4:
+            traceSelected(current, node);
+            break;
+        default:
+            break;
+        }
     }
 }
 

@@ -48,7 +48,7 @@ class DatFile
 {
 	int32_t offsetDat, lenDat; // file offset and blocklength of rawdata
 	std::string Version;
-	double Time;
+	double Time; // file time given in header
 	bool isSwapped;
 	hkTree PulTree, PgfTree, AmpTree;
 public:
@@ -85,15 +85,21 @@ TrInterleaveSize = 292,
 TrTrHolding = 408,
 SwLabel = 4,
 SwStimCount = 40,
+SwSweepCount = 44,
 SwTime = 48,
+SwTimer = 56,
 SeLabel = 4, //(*String32Type*)
-SeVoltage = 8,
 SeSeriesCount = 116,
 SeAmplStateRef = 128,
+SeTime = 136,
 GrLabel=   4,
 GrGroupCount = 120,
 RoVersionName = 8, // root record
 RoStartTime = 520;
+
+// offset for Stim-Tree
+constexpr size_t seVoltage = 8;
+
 
 // TrDataKind
 constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
