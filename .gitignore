@@ -16,3 +16,4 @@ moc_*
 /VorlageCopyrigth.txt
 *.aps
 QtPMbrowser.aps
+*.ibw

@@ -34,11 +34,10 @@ class DlgChoosePathAndPrefix : public QDialog
 public:
 	DlgChoosePathAndPrefix(QWidget* parent, const QString& Path);
 	~DlgChoosePathAndPrefix();
-
+    void accept() override;
 	QString path, prefix;
 
 private slots:
-	void accept();
 	void choosePath();
 
 private:

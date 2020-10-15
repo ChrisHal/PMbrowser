@@ -36,7 +36,7 @@
 #include "ui_DlgChoosePathAndPrefix.h"
 
 const QString myAppName("PM browser");
-const QString appVersion("1.1");
+const QString appVersion("1.2");
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
@@ -260,8 +260,11 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
             path.append('/');
         }
         lastexportpath = path;
+        return true;
     }
-    return true;
+    else {
+        return false;
+    }
 }
 
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
