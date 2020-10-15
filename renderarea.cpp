@@ -20,7 +20,9 @@
 #include <QtGui>
 #include <QToolTip>
 #include <stdexcept>
+#include <limits>
 #include <algorithm>
+#include <cmath>
 #include "renderarea.h"
 #include "ui_renderarea.h"
 #include "DatFile.h"
@@ -88,9 +90,18 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
 
 void RenderArea::mouseMoveEvent(QMouseEvent* event)
 {
-    double x, y;
-    scaleFromPixToXY(event->x(), event->y(), x, y);
-    QToolTip::showText(event->globalPos(), QString("(%1/%2)").arg(x).arg(y), this, rect());
+    if (data.size() > 0 && event->buttons() == Qt::NoButton) {
+        double x, y;
+        scaleFromPixToXY(event->x(), event->y(), x, y);
+        long dataindex = std::lrint((x - x0) / deltax);
+        double datay = std::numeric_limits<double>::quiet_NaN();
+        if (dataindex >= 0 && dataindex < data.size()) {
+            datay = data.at(dataindex);
+        }
+        QToolTip::showText(event->globalPos(), 
+            QString("(%1/%2)\ndata: %3 %4").arg(x).arg(y).arg(datay).arg(yunit),
+            this, rect());
+    }
 }
 
 
