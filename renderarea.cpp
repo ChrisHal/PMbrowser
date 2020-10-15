@@ -99,7 +99,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
             datay = data.at(dataindex);
         }
         QToolTip::showText(event->globalPos(), 
-            QString("(%1/%2)\ndata: %3 %4").arg(x).arg(y).arg(datay).arg(yunit),
+            QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(xunit).arg(y).arg(yunit).arg(datay).arg(yunit),
             this, rect());
     }
 }
