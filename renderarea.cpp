@@ -18,6 +18,7 @@
 */
 
 #include <QtGui>
+#include <QToolTip>
 #include <stdexcept>
 #include <algorithm>
 #include "renderarea.h"
@@ -26,8 +27,9 @@
 #include <QMessageBox>
 
 
-RenderArea::RenderArea(QWidget *parent) :
-    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, clipped{ false }, x0{}, deltax{},
+RenderArea::RenderArea(QWidget* parent) :
+    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, clipped{ false },
+    x0{}, deltax{}, x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{},
     ui{ nullptr }
 //    ui(new Ui::RenderArea)
@@ -55,8 +57,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     if(data.size()==0) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
     } else {
-        double x1 = x0 + (ndatapoints - 1) * deltax;
-        setScaling(x0, x1, y_min, y_max);
+        setScaling(x_min, x_max, y_min, y_max);
         path.moveTo(scaleToQPF(x0,data[0]));
         for(int i=0; i<data.size(); ++i) {
             path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
@@ -70,9 +71,9 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
         painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
         label = QString("%1 %2").arg(y_min).arg(yunit);
         painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
-        label = QString("%1 %2").arg(x0).arg(xunit);
+        label = QString("%1 %2").arg(x_min).arg(xunit);
         painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-        label = QString("%1 %2").arg(x1).arg(xunit);
+        label = QString("%1 %2").arg(x_max).arg(xunit);
         painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
         if (clipped) {
             painter.setBrush(QColor(200, 0, 0));
@@ -83,6 +84,13 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
             painter.drawText(rectangle, Qt::AlignCenter, QString("clipping"));
         }
     }
+}
+
+void RenderArea::mouseMoveEvent(QMouseEvent* event)
+{
+    double x, y;
+    scaleFromPixToXY(event->x(), event->y(), x, y);
+    QToolTip::showText(event->globalPos(), QString("(%1/%2)").arg(x).arg(y), this, rect());
 }
 
 
@@ -108,10 +116,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile, bool need_sw
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
     char dataformat = TrRecord->getChar(TrDataFormat);
-    //if (dataformat != DFT_int16 && dataformat!=DFT_float) {
-    //    QMessageBox::warning(this, QString("Data Format Error"), QString("unsuported trace data format (%1)").arg(int(dataformat)));
-    //    return;
-    //}
     int32_t interleavesize;
     try {
         interleavesize = TrRecord->extractInt32(TrInterleaveSize);
@@ -151,11 +155,13 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
         QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
         return;
     }
+    x_min = x0;
+    x_max = x0 + (ndatapoints - 1) * deltax;
     y_min = *std::min_element(data.constBegin(), data.constEnd());
     y_max = *std::max_element(data.constBegin(), data.constEnd());
 
 
-
+    setMouseTracking(true);
     update();
 }
 
@@ -163,6 +169,7 @@ void RenderArea::clearTrace()
 {
     ndatapoints = 0;
     data.clear();
+    setMouseTracking(false);
     update();
 }
 
@@ -178,4 +185,10 @@ void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 QPointF RenderArea::scaleToQPF(double x, double y)
 {
     return QPointF(a_x+b_x*x, a_y+b_y*y);
+}
+
+void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
+{
+    x = x_min + double(px) / double(width()) * (x_max - x_min);
+    y = y_max - double(py) / double(height()) * (y_max - y_min);
 }

@@ -36,7 +36,7 @@
 #include "ui_DlgChoosePathAndPrefix.h"
 
 const QString myAppName("PM browser");
-const QString appVersion("1.2");
+const QString appVersion("1.2 experimental");
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 

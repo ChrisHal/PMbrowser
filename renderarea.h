@@ -42,15 +42,17 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
     QPointF scaleToQPF(double x, double y);
+    void scaleFromPixToXY(int px, int py, double& x, double& y);
     size_t ndatapoints;
     QVector<double> data;
     QString xunit, yunit;
     bool clipped; // Amp. was clipping
-    double x0, deltax, y_min, y_max;
+    double x0, deltax, x_min, x_max, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
     Ui::RenderArea *ui;
 };
