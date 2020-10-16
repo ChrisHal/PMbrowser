@@ -40,14 +40,20 @@ public:
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void clearTrace();
 
+public slots:
+    void autoScale();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event);
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
     QPointF scaleToQPF(double x, double y);
     void scaleFromPixToXY(int px, int py, double& x, double& y);
+    void zoomIn(double x_center, double y_center, double factor);
     size_t ndatapoints;
     QVector<double> data;
     QString xunit, yunit;

@@ -114,6 +114,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
 }
 
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
+    (void)item;
     QString label = QString::fromStdString(sweep->getString(SeLabel));
     double t = sweep->extractLongRealNoThrow(SwTime);
     double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
@@ -125,6 +126,7 @@ void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
 
 void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 {
+    (void)item;
     QString label = QString::fromStdString(series->getString(SeLabel));
     double t = series->extractLongRealNoThrow(SeTime);
     double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
@@ -199,6 +201,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
+    QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
 }
 
 PMbrowserWindow::~PMbrowserWindow()

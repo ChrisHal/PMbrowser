@@ -19,6 +19,7 @@
 
 #include <QtGui>
 #include <QToolTip>
+#include <qdebug.h>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -99,9 +100,49 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
             datay = data.at(dataindex);
         }
         QToolTip::showText(event->globalPos(), 
-            QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(xunit).arg(y).arg(yunit).arg(datay).arg(yunit),
+            QString("(%1%2/%3%4)\ndata: %5%6\nclick L/R: zoom in/out").arg(x).arg(xunit).arg(y).arg(yunit).arg(datay).arg(yunit),
             this, rect());
+        event->accept();
     }
+    else {
+        event->ignore();
+    }
+}
+
+void RenderArea::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (data.size() == 0) {
+        event->ignore();
+        return;
+    }
+    double x, y;
+    scaleFromPixToXY(event->x(), event->y(), x, y);
+    if (event->button() == Qt::MouseButton::LeftButton) {
+        zoomIn(x, y, 2.0);
+    }
+    else if (event->button() == Qt::MouseButton::RightButton) {
+        // zoom out
+        zoomIn(x, y, 0.5);
+    }
+    event->accept();
+}
+
+void RenderArea::wheelEvent(QWheelEvent* event)
+{
+    auto pos = event->pos();
+    auto delta = event->angleDelta().y();
+    if (delta == 0) {
+        event->ignore();
+        return;
+    }
+    double factor = 1.0 + std::abs(delta)/360.0;
+    if (delta < 0) {
+        factor = 1.0 / factor;
+    }
+    double x, y;
+    scaleFromPixToXY(pos.x(), pos.y(), x, y);
+    zoomIn(x, y, factor);
+    event->accept();
 }
 
 
@@ -123,6 +164,25 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile, bool need_sw
     delete[] source; source = nullptr;
 }
 
+void RenderArea::autoScale()
+{
+    x_min = x0;
+    x_max = x0 + (ndatapoints - 1) * deltax;
+    y_min = *std::min_element(data.constBegin(), data.constEnd());
+    y_max = *std::max_element(data.constBegin(), data.constEnd());
+    update();
+}
+
+void RenderArea::zoomIn(double x_center, double y_center, double factor)
+{
+    double  x_offset = (x_max - x_min) / factor / 2.0,
+        y_offset = (y_max - y_min) / factor / 2.0;
+    x_min = x_center - x_offset;
+    x_max = x_center + x_offset;
+    y_min = y_center - y_offset;
+    y_max = y_center + y_offset;
+    update();
+}
 
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
@@ -166,15 +226,9 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
         QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
         return;
     }
-    x_min = x0;
-    x_max = x0 + (ndatapoints - 1) * deltax;
-    y_min = *std::min_element(data.constBegin(), data.constEnd());
-    y_max = *std::max_element(data.constBegin(), data.constEnd());
-
-
+    autoScale();
     setMouseTracking(true);
-    update();
-}
+    }
 
 void RenderArea::clearTrace()
 {

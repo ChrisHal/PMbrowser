@@ -151,8 +151,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuGraph">
+    <property name="title">
+     <string>Graph</string>
+    </property>
+    <addaction name="actionAuto_Scale"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuGraph"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionOpen">
@@ -197,6 +204,14 @@
   <action name="actionExport_All_as_IBW">
    <property name="text">
     <string>Export All Traces as IBW Files...</string>
+   </property>
+  </action>
+  <action name="actionAuto_Scale">
+   <property name="text">
+    <string>Auto Scale</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>
