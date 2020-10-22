@@ -146,11 +146,30 @@ void RenderArea::wheelEvent(QWheelEvent* event)
 }
 
 
-template<typename T> void ReadScaleAndConvert(std::istream& infile, bool need_swap,
-    double datascaler, size_t ndatapoints, QVector<double>& data)
+template<typename T> void ReadScaleAndConvert(std::istream& infile,
+ bool need_swap,
+    double datascaler, size_t ndatapoints, int interleavesize, int interleaveskip, QVector<double>& data)
 {
     T* source = new T[ndatapoints];
-    infile.read((char*)source, sizeof(T) * ndatapoints);
+    if (interleavesize == 0) {
+        infile.read((char*)source, sizeof(T) * ndatapoints);
+    }
+    else {
+        assert(interleaveskip >= interleavesize);
+        size_t bytesremaining = sizeof(T) * ndatapoints;
+        int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
+        char* p = (char*)source;
+        while (bytesremaining > 0) {
+            int bytestoread = std::min(bytesremaining, size_t(interleavesize));
+            infile.read(p, bytestoread);
+            if (!infile) { break; }
+            p += bytestoread;
+            bytesremaining -= bytestoread;
+            if (bytesremaining > 0) {
+                infile.seekg(bytestoskip, std::ios::cur); // skip to next block
+            }
+        }
+    }
     if (!need_swap) {
         for (size_t i = 0; i < ndatapoints; ++i) {
             data.push_back(datascaler * source[i]);
@@ -187,18 +206,8 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
     char dataformat = TrRecord->getChar(TrDataFormat);
-    int32_t interleavesize;
-    try {
-        interleavesize = TrRecord->extractInt32(TrInterleaveSize);
-    }
-    catch (std::out_of_range& e) { // fileformat too old to have interleave entry
-        (void)e;
-        interleavesize = 0;
-    }
-    if (interleavesize != 0) {
-        QMessageBox::warning(this, QString("Data Format Error"), QString("Interleaved Data not supported."));
-        return;
-    }
+    int32_t     interleavesize = TrRecord->extractValue<int32_t>(TrInterleaveSize ,0),
+                inerleaveskip = TrRecord->extractValue<int32_t>(TrInterleaveSkip, 0);
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     bool need_swap = !(tracedatakind & LittleEndianBit);
     clipped = tracedatakind & ClipBit;
@@ -211,16 +220,16 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     data.clear();
     infile.seekg(trdata);
     if (dataformat == DFT_int16) {
-        ReadScaleAndConvert<int16_t>(infile, need_swap,  datascaler,  ndatapoints, data);
+        ReadScaleAndConvert<int16_t>(infile, need_swap,  datascaler,  ndatapoints, interleavesize, inerleaveskip, data);
     }
     else if (dataformat == DFT_int32) {
-        ReadScaleAndConvert<int32_t>(infile, need_swap, datascaler, ndatapoints, data);
+        ReadScaleAndConvert<int32_t>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
     }
     else if (dataformat == DFT_float) {
-        ReadScaleAndConvert<float>(infile, need_swap, datascaler, ndatapoints, data);
+        ReadScaleAndConvert<float>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
     }
     else if (dataformat == DFT_double) {
-        ReadScaleAndConvert<double>(infile, need_swap, datascaler, ndatapoints, data);
+        ReadScaleAndConvert<double>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
     }
     else {
         QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));

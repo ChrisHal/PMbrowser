@@ -43,6 +43,20 @@ public:
             return t;
         }
     }
+    template<typename T> T extractValue(size_t offset, T defaultValue) const
+    {
+        if (len < offset + sizeof(T)) {
+            return defaultValue;
+        }
+        T t;
+        std::memcpy(&t, Data + offset, sizeof(T));
+        if (isSwapped) {
+            return swap_bytes(t);
+        }
+        else {
+            return t;
+        }
+    }
     int32_t extractInt32(size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(size_t offset) const { return extractValue<double>(offset); };
