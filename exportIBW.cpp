@@ -58,10 +58,31 @@ void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 }
 
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
-	double* target)
+	double* target, int interleavesize, int interleaveskip)
 {
 	T* source = new T[trdatapoints];
-	datafile.read((char*)source, sizeof(T) * trdatapoints);
+	if (interleavesize == 0) {
+		datafile.read((char*)source, sizeof(T) * trdatapoints);
+	}
+	else { // it's interleaved data
+		assert(interleaveskip >= interleavesize);
+		size_t bytesremaining = sizeof(T) * trdatapoints;
+		int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
+		char* p = (char*)source;
+		while (bytesremaining > 0) {
+			size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
+			datafile.read(p, bytestoread);
+			if (!datafile) { break; }
+			p += bytestoread;
+			bytesremaining -= bytestoread;
+			if (bytesremaining > 0) {
+				datafile.seekg(bytestoskip, std::ios::cur); // skip to next block
+			}
+		}
+	}
+	if (!datafile) {
+		throw std::runtime_error("error while reading datafile");
+	}
 	if (!need_swap) {
 		for (int i = 0; i < trdatapoints; ++i) {
 			target[i] = datascaler * source[i];
@@ -78,17 +99,8 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_
 void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
 {
 	char dataformat = TrRecord.getChar(TrDataFormat);
-	int32_t interleavesize;
-	try {
-		interleavesize = TrRecord.extractInt32(TrInterleaveSize);
-	}
-	catch (std::out_of_range& e) { // fileformat too old to have interleave entry
-		(void)e;
-		interleavesize = 0;
-	}
-	if (interleavesize != 0) {
-		throw std::runtime_error("interleaved data not supported for export");
-	}
+	int32_t     interleavesize = TrRecord.extractValue<int32_t>(TrInterleaveSize, 0),
+		interleaveskip = TrRecord.extractValue<int32_t>(TrInterleaveSkip, 0);
 	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
 	bool need_swap = !(tracekind & LittleEndianBit);
 
@@ -105,16 +117,16 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	switch (dataformat)
 	{
 	case DFT_int16:
-		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target);
+		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
 		break;
 	case DFT_int32:
-		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target);
+		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
 		break;
 	case DFT_float:
-		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target);
+		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
 		break;
 	case DFT_double:
-		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target);
+		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
 		break;
 	default:
 		throw std::runtime_error("unknown data format type");

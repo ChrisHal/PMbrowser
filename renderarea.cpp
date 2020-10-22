@@ -160,7 +160,7 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
         int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
         char* p = (char*)source;
         while (bytesremaining > 0) {
-            int bytestoread = std::min(bytesremaining, size_t(interleavesize));
+            size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
             infile.read(p, bytestoread);
             if (!infile) { break; }
             p += bytestoread;
@@ -169,6 +169,12 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
                 infile.seekg(bytestoskip, std::ios::cur); // skip to next block
             }
         }
+    }
+    if (!infile) {
+        delete[]source;
+        data.clear();
+        QMessageBox::warning(nullptr, "File Error", "error while reading datafile");
+        return;
     }
     if (!need_swap) {
         for (size_t i = 0; i < ndatapoints; ++i) {
