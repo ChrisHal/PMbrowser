@@ -22,7 +22,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QDir>
-#include <Qdebug>
+#include <QDebug>
 #include <string>
 #include <fstream>
 #include <iostream>

@@ -74,7 +74,7 @@ enum RecordingModeType {
 	NoMode=6
 };
 
-const char* RecordingModeNames[];
+extern const char* RecordingModeNames[7];
 
 // offsets into data record fields that we are interested in
 constexpr size_t stExtTrigger = 164, // in Stimulation record
