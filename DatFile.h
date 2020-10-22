@@ -64,12 +64,23 @@ public:
 	bool getIsSwapped() const { return isSwapped; };
 };
 
+enum RecordingModeType {
+	InOut=0,
+	OnCell=1,
+	OutOut=2,
+	WholeCell=3,
+	CClamp=4,
+	VClamp=5,
+	NoMode=6
+};
+
 // offsets into data record fields that we are interested in
 constexpr size_t stExtTrigger = 164, // in Stimulation record
 TrTraceCount = 36,  // in Trace Record
 TrData = 40,
 TrDataPoints = 44,
 TrDataKind = 64,
+TrRecordingMode = 68,
 TrDataFormat = 70,
 TrDataScaler = 72,
 TrYUnit = 96,
@@ -82,6 +93,7 @@ TrGSeries = 184,
 TrRsValue = 192,
 TrSelfChannel = 288,
 TrInterleaveSize = 292,
+TrInterleaveSkip = 296,
 TrTrHolding = 408,
 SwLabel = 4,
 SwStimCount = 40,
