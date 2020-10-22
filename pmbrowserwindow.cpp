@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QDir>
+#include <Qdebug>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -107,8 +108,15 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     double sealresistance = trace->extractLongReal(TrSealResistance),
         cslow = trace->extractLongReal(TrCSlow),
         Rseries = 1.0 / trace->extractLongReal(TrGSeries),
-        Vhold = trace->extractLongRealNoThrow(TrTrHolding);
-    QString info = QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\nVhold=%4 V").arg(sealresistance).arg(cslow).arg(Rseries).arg(Vhold);
+        holding = trace->extractLongRealNoThrow(TrTrHolding);
+    char mode = trace->getChar(TrRecordingMode);
+    QString prefix = "Vhold", yunit = "V";
+    if (mode == CClamp) {
+        yunit = "A";
+        prefix = "Ihold";
+    }
+    QString info = QString("Recording Mode: ") + RecordingModeNames[mode] + "\n";
+    info.append(QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\n%4=%5 %6").arg(sealresistance).arg(cslow).arg(Rseries).arg(prefix).arg(holding).arg(yunit));
     ui->textEdit->append(info);
     ui->renderArea->renderTrace(trace, infile);
 }
@@ -137,6 +145,7 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 
 void PMbrowserWindow::groupSelected(QTreeWidgetItem* item, hkTreeNode* group)
 {
+    (void)item;
     QString label = QString::fromStdString(group->getString(GrLabel));
     int32_t count = group->extractInt32(GrGroupCount);
     QString txt = QString("Group %1 %2").arg(label).arg(count);

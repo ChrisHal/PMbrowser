@@ -31,6 +31,16 @@
 #include "DatFile.h"
 static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
 
+const char* RecordingModeNames[] = {
+    "Inside-Out",
+    "On-Cell",
+    "Outside-Out",
+    "Whole-Cell",
+    "Current-Clamp",
+    "Voltage-Clamp",
+    "<none>"
+};
+
 constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
 constexpr double JanFirst1990MACTime = 1580947200.0; // better value?
 constexpr auto HIGH_DWORD = 4294967296.0;
