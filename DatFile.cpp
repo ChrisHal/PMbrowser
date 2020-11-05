@@ -66,9 +66,15 @@ bool DatFile::InitFromStream(std::istream& infile)
         throw std::runtime_error("cannot read file");
     }
     bool isValid = std::strncmp(buffer, BundleSignature, 8) == 0;
+    bool isInvalidBundle = std::strncmp(buffer, BundleSignatureInvalid, 8) == 0;
     BundleHeader* bh = reinterpret_cast<BundleHeader*>(buffer);
     if (!isValid) {
-        throw std::runtime_error("invalid file");
+        if (isInvalidBundle) {
+            throw std::runtime_error("invalid bundle signature");
+        }
+        else {
+            throw std::runtime_error("invalid file");
+        }
     }
     if (!bh->IsLittleEndian) {
         isSwapped = true;

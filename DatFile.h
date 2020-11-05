@@ -41,7 +41,7 @@ struct BundleHeader {
 };
 
 constexpr int32_t BundleHeaderSize = 256;
-constexpr char BundleSignature[8] = "DAT2\0\0\0";
+constexpr char BundleSignature[8] = "DAT2\0\0\0", BundleSignatureInvalid[8]= "DAT1\0\0\0";
 constexpr char ExtDat[] = ".dat", ExtPul[] = ".pul", ExtPgf[] = ".pgf", ExtAmp[] = ".amp";
 
 class DatFile
