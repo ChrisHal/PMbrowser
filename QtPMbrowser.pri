@@ -10,7 +10,8 @@ HEADERS += ./DatFile.h \
     ./machineinfo.h \
     ./DlgChoosePathAndPrefix.h \
     ./pmbrowserwindow.h \
-    ./renderarea.h
+    ./renderarea.h \
+    ./DlgTreeFilter.h
 SOURCES += ./DatFile.cpp \
     ./DlgChoosePathAndPrefix.cpp \
     ./exportIBW.cpp \
@@ -19,7 +20,9 @@ SOURCES += ./DatFile.cpp \
     ./machineinfo.cpp \
     ./main.cpp \
     ./pmbrowserwindow.cpp \
-    ./renderarea.cpp
+    ./renderarea.cpp \
+    ./DlgTreeFilter.cpp
 FORMS += ./DlgChoosePathAndPrefix.ui \
     ./pmbrowserwindow.ui \
-    ./renderarea.ui
+    ./renderarea.ui \
+    ./DlgTreeFilter.ui
