@@ -23,6 +23,7 @@
 #include <QString>
 #include <QDir>
 #include <QDebug>
+#include <QRegularExpression>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -35,6 +36,7 @@
 #include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
 #include "ui_DlgChoosePathAndPrefix.h"
+#include "DlgTreeFilter.h"
 
 const QString myAppName("PM browser");
 const QString appVersion("1.2 experimental");
@@ -204,7 +206,8 @@ void PMbrowserWindow::loadFile(QString filename)
 
 PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{}
+    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{},
+    filterStrGrp{ ".*" }, filterStrSer{ ".*" }, filterStrSwp{ ".*" }, filterStrTr{ ".*" }
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(QString(":/myappico.ico")));
@@ -319,6 +322,71 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
     }
 }
 
+void PMbrowserWindow::filterTree()
+{ 
+    QRegularExpression reGrp(filterStrGrp), reSer(filterStrSer),
+        reSwp(filterStrSwp), reTr(filterStrTr);
+    if (!reGrp.isValid()) {
+        QMessageBox::critical(this, "Invalid RegEx for Group", reGrp.errorString());
+        return;
+    }
+    if (!reSer.isValid()) {
+        QMessageBox::critical(this, "Invalid RegEx for Series", reSer.errorString());
+        return;
+    }
+    if (!reSwp.isValid()) {
+        QMessageBox::critical(this, "Invalid RegEx for Sweep", reSwp.errorString());
+        return;
+    }
+    if (!reTr.isValid()) {
+        QMessageBox::critical(this, "Invalid RegEx for Trace", reTr.errorString());
+        return;
+    }
+    auto Ngrp = ui->treePulse->topLevelItemCount();
+    for (int count_grp = 0; count_grp < Ngrp; ++count_grp) {
+        auto grp = ui->treePulse->topLevelItem(count_grp);
+        qDebug() << grp->text(0);
+        if (reGrp.match(grp->text(0)).hasMatch()) {
+            grp->setHidden(false);
+        }
+        else {
+            grp->setHidden(true);
+        }
+        auto Nser = grp->childCount();
+        for (int count_ser = 0; count_ser < Nser; ++count_ser) {
+            auto ser = grp->child(count_ser);
+            if (reSer.match(ser->text(0)).hasMatch()) {
+                ser->setHidden(false);
+            }
+            else {
+                ser->setHidden(true);
+            }
+            auto Nswp = ser->childCount();
+            for (int count_swp = 0; count_swp < Nswp; ++count_swp) {
+                auto swp = ser->child(count_swp);
+                if (reSwp.match(swp->text(0)).hasMatch()) {
+                    swp->setHidden(false);
+                }
+                else {
+                    swp->setHidden(true);
+                }
+                auto Ntr = swp->childCount();
+                for (int count_tr = 0; count_tr < Ntr; ++count_tr) {
+                    auto tr = swp->child(count_tr);
+                    if (reTr.match(tr->text(0)).hasMatch()) {
+                        tr->setHidden(false);
+                    }
+                    else {
+                        tr->setHidden(true);
+                    }
+                }
+            }
+        }
+
+    }
+    //TODO
+}
+
 void PMbrowserWindow::on_actionExport_IBW_File_triggered()
 {
     auto item = ui->treePulse->currentItem();
@@ -373,6 +441,35 @@ void PMbrowserWindow::on_actionAbout_triggered()
     msg.setWindowTitle("About");
     msg.setText(txt);
     msg.exec();
+}
+
+void PMbrowserWindow::on_actionFilter_triggered()
+{
+    DlgTreeFilter dlg(this, filterStrGrp, filterStrSer, filterStrSwp, filterStrTr);
+    if (dlg.exec()) {
+        filterStrGrp = dlg.grp;
+        filterStrSer = dlg.ser;
+        filterStrSwp = dlg.swp;
+        filterStrTr = dlg.trace;
+        filterTree();
+    }
+}
+
+void PMbrowserWindow::unhideTreeItems(QTreeWidgetItem* item)
+{
+    item->setHidden(false);
+    int N = item->childCount();
+    for (int i = 0; i < N; ++i) {
+        unhideTreeItems(item->child(i));
+    }
+}
+
+void PMbrowserWindow::on_actionRemove_Filter_triggered()
+{
+    int N = ui->treePulse->topLevelItemCount();
+    for (int i = 0; i < N; ++i) {
+        unhideTreeItems(ui->treePulse->topLevelItem(i));
+    }
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)

@@ -67,6 +67,9 @@
     <ClCompile Include="DlgChoosePathAndPrefix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DlgTreeFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h">
@@ -112,9 +115,15 @@
     <QtUic Include="DlgChoosePathAndPrefix.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="DlgTreeFilter.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DlgChoosePathAndPrefix.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DlgTreeFilter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

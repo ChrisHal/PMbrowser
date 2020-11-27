@@ -189,6 +189,7 @@
   <ItemGroup>
     <ClCompile Include="DatFile.cpp" />
     <ClCompile Include="DlgChoosePathAndPrefix.cpp" />
+    <ClCompile Include="DlgTreeFilter.cpp" />
     <ClCompile Include="exportIBW.cpp" />
     <ClCompile Include="helpers.cpp" />
     <ClCompile Include="hkTree.cpp" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h" />
+    <QtMoc Include="DlgTreeFilter.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="DlgChoosePathAndPrefix.h" />
     <ClInclude Include="Igor_IBW.h" />
@@ -223,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="DlgChoosePathAndPrefix.ui" />
+    <QtUic Include="DlgTreeFilter.ui" />
     <QtUic Include="pmbrowserwindow.ui">
     </QtUic>
     <QtUic Include="renderarea.ui">

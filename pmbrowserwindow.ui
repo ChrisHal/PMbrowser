@@ -157,8 +157,16 @@
     </property>
     <addaction name="actionAuto_Scale"/>
    </widget>
+   <widget class="QMenu" name="menuTree">
+    <property name="title">
+     <string>Tree</string>
+    </property>
+    <addaction name="actionFilter"/>
+    <addaction name="actionRemove_Filter"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuTree"/>
    <addaction name="menuGraph"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -212,6 +220,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionFilter">
+   <property name="text">
+    <string>Filter...</string>
+   </property>
+  </action>
+  <action name="actionRemove_Filter">
+   <property name="text">
+    <string>Show All</string>
    </property>
   </action>
  </widget>

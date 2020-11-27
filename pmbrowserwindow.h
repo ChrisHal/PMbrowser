@@ -47,6 +47,8 @@ private slots:
     void on_actionExport_IBW_File_triggered();
     void on_actionExport_All_as_IBW_triggered();
     void on_actionAbout_triggered();
+    void on_actionFilter_triggered();
+    void on_actionRemove_Filter_triggered();
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 protected:
@@ -66,10 +68,13 @@ private:
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
     bool choosePathAndPrefix(QString& path, QString& prefix);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
+    void unhideTreeItems(QTreeWidgetItem* item);
+    void filterTree();
     Ui::PMbrowserWindow *ui;
     QString currentFile;
     std::ifstream infile;
     DatFile* datfile;
     QString lastexportpath;
+    QString filterStrGrp, filterStrSer, filterStrSwp, filterStrTr;
 };
 #endif // PMBROWSERWINDOW_H
