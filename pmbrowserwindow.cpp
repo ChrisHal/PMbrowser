@@ -214,6 +214,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     setWindowTitle(myAppName);
     setAcceptDrops(true);
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
+    ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(ui->treePulse, &QTreeWidget::customContextMenuRequested, this, &PMbrowserWindow::prepareTreeContextMenu);
 }
 
 PMbrowserWindow::~PMbrowserWindow()
@@ -473,13 +475,18 @@ void PMbrowserWindow::on_actionFilter_triggered()
     }
 }
 
-void PMbrowserWindow::unhideTreeItems(QTreeWidgetItem* item)
+void PMbrowserWindow::treeSetHidden(QTreeWidgetItem* item, bool hidden)
 {
-    item->setHidden(false);
+    item->setHidden(hidden);
     int N = item->childCount();
     for (int i = 0; i < N; ++i) {
-        unhideTreeItems(item->child(i));
+        treeSetHidden(item->child(i), hidden);
     }
+}
+
+void PMbrowserWindow::unhideTreeItems(QTreeWidgetItem* item)
+{
+    treeSetHidden(item, false);
 }
 
 void PMbrowserWindow::on_actionRemove_Filter_triggered()
@@ -493,6 +500,27 @@ void PMbrowserWindow::on_actionRemove_Filter_triggered()
 void PMbrowserWindow::on_actionExport_All_Visible_Traces_as_IBW_Files_triggered()
 {
     exportAllVisibleTraces();
+}
+
+void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
+{
+    auto item = ui->treePulse->itemAt(pos);
+    if (item) {
+        QMenu menu(this);
+        auto actExport = menu.addAction("export subtree");
+        auto actHide = menu.addAction("hide subtree");
+        auto actShow = menu.addAction("show all children");
+        auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
+        if (response == actExport) {
+            exportSubTreeAsIBW(item);
+        }
+        else if (response == actHide) {
+            treeSetHidden(item, true);
+        }
+        else if (response == actShow) {
+            treeSetHidden(item, false);
+        }
+    }
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)

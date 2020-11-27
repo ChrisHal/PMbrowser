@@ -50,6 +50,7 @@ private slots:
     void on_actionFilter_triggered();
     void on_actionRemove_Filter_triggered();
     void on_actionExport_All_Visible_Traces_as_IBW_Files_triggered();
+    void prepareTreeContextMenu(const QPoint& pos);
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 protected:
@@ -70,6 +71,7 @@ private:
     bool choosePathAndPrefix(QString& path, QString& prefix);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
     void exportAllVisibleTraces();
+    void treeSetHidden(QTreeWidgetItem* item, bool hidden);
     void unhideTreeItems(QTreeWidgetItem* item);
     void filterTree();
     Ui::PMbrowserWindow *ui;
