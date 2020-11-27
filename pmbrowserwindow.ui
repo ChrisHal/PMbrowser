@@ -135,6 +135,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionClose"/>
     <addaction name="actionExport_IBW_File"/>
+    <addaction name="actionExport_All_Visible_Traces_as_IBW_Files"/>
     <addaction name="actionExport_All_as_IBW"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -230,6 +231,11 @@
   <action name="actionRemove_Filter">
    <property name="text">
     <string>Show All</string>
+   </property>
+  </action>
+  <action name="actionExport_All_Visible_Traces_as_IBW_Files">
+   <property name="text">
+    <string>Export All Visible Traces as IBW Files...</string>
    </property>
   </action>
  </widget>

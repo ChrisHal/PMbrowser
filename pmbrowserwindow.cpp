@@ -228,7 +228,7 @@ void PMbrowserWindow::on_actionOpen_triggered()
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter("DAT-file (*.dat)");
     dialog.setViewMode(QFileDialog::Detail);
-    if(dialog.exec()) {
+    if (dialog.exec()) {
         currentFile = dialog.selectedFiles().at(0);
         loadFile(currentFile);
     }
@@ -246,12 +246,14 @@ void PMbrowserWindow::on_actionClear_Text_triggered()
 
 void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix)
 {
+    if (item->isHidden()) { return; } // export only visible items
     int N = item->childCount();
     if (N > 0) {
         for (int i = 0; i < N; ++i) {
             exportSubTree(item->child(i), path, prefix);
         }
-    } else {
+    }
+    else {
         // must be at trace level already
         // figure out index
         QTreeWidgetItem* sweepitem = item->parent();
@@ -305,6 +307,23 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
     }
     else {
         return false;
+    }
+}
+
+void PMbrowserWindow::exportAllVisibleTraces()
+{
+    QString path, prefix;
+    if (choosePathAndPrefix(path, prefix)) {
+        try {
+            int N = ui->treePulse->topLevelItemCount();
+            for (int i = 0; i < N; ++i) {
+                exportSubTree(ui->treePulse->topLevelItem(i), path, prefix);
+            }
+        }
+        catch (std::exception& e) {
+            QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+            QMessageBox::warning(this, QString("Error"), msg);
+        }
     }
 }
 
@@ -470,6 +489,11 @@ void PMbrowserWindow::on_actionRemove_Filter_triggered()
     for (int i = 0; i < N; ++i) {
         unhideTreeItems(ui->treePulse->topLevelItem(i));
     }
+}
+
+void PMbrowserWindow::on_actionExport_All_Visible_Traces_as_IBW_Files_triggered()
+{
+    exportAllVisibleTraces();
 }
 
 void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
