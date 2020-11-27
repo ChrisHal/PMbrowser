@@ -364,7 +364,6 @@ void PMbrowserWindow::filterTree()
     auto Ngrp = ui->treePulse->topLevelItemCount();
     for (int count_grp = 0; count_grp < Ngrp; ++count_grp) {
         auto grp = ui->treePulse->topLevelItem(count_grp);
-        qDebug() << grp->text(0);
         if (reGrp.match(grp->text(0)).hasMatch()) {
             grp->setHidden(false);
         }
