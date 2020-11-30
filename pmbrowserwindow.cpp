@@ -216,6 +216,9 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->treePulse, &QTreeWidget::customContextMenuRequested, this, &PMbrowserWindow::prepareTreeContextMenu);
+    QObject::connect(ui->actionSettings, &QAction::triggered, ui->renderArea, &RenderArea::showSettingsDialog);
+    QObject::connect(ui->actionWipe, &QAction::triggered, ui->renderArea, &RenderArea::wipeAll);
+    QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
 }
 
 PMbrowserWindow::~PMbrowserWindow()

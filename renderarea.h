@@ -22,9 +22,12 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QQueue>
 #include <QPointF>
 #include <istream>
 #include "hkTree.h"
+//#include "DisplayTrace.h"
+class DisplayTrace;
 
 namespace Ui {
 class RenderArea;
@@ -41,7 +44,10 @@ public:
     void clearTrace();
 
 public slots:
+    void showSettingsDialog();
     void autoScale();
+    void wipeAll() { clearTrace(); };
+    void wipeBuffer();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -57,10 +63,15 @@ private:
     size_t ndatapoints;
     QVector<double> data;
     QString xunit, yunit;
+    QQueue<DisplayTrace*> tracebuffer;
     bool clipped; // Amp. was clipping
     double x0, deltax, x_min, x_max, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
+    int numtraces; // number of traces in persistance buffer
+    bool do_autoscale_on_load;
     Ui::RenderArea *ui;
+
+    friend class DisplayTrace;
 };
 
 #endif // RENDERAREA_H

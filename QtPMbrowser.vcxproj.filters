@@ -70,6 +70,12 @@
     <ClCompile Include="DlgTreeFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DlgGraphSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayTrace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h">
@@ -99,6 +105,9 @@
     <ClInclude Include="resource.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="DisplayTrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
@@ -118,12 +127,18 @@
     <QtUic Include="DlgTreeFilter.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="DlgGraphSettings.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DlgChoosePathAndPrefix.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DlgTreeFilter.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DlgGraphSettings.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

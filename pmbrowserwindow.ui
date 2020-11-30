@@ -157,6 +157,10 @@
      <string>Graph</string>
     </property>
     <addaction name="actionAuto_Scale"/>
+    <addaction name="actionWipe"/>
+    <addaction name="actionClear_Persitant_Traces"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuTree">
     <property name="title">
@@ -236,6 +240,21 @@
   <action name="actionExport_All_Visible_Traces_as_IBW_Files">
    <property name="text">
     <string>Export All Visible Traces as IBW Files...</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings and Ranges</string>
+   </property>
+  </action>
+  <action name="actionWipe">
+   <property name="text">
+    <string>Wipe All</string>
+   </property>
+  </action>
+  <action name="actionClear_Persitant_Traces">
+   <property name="text">
+    <string>Wipe Background Traces</string>
    </property>
   </action>
  </widget>

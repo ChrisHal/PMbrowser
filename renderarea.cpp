@@ -24,16 +24,19 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include "DlgGraphSettings.h"
 #include "renderarea.h"
 #include "ui_renderarea.h"
 #include "DatFile.h"
 #include <QMessageBox>
-
+#include "DisplayTrace.h"
 
 RenderArea::RenderArea(QWidget* parent) :
-    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, clipped{ false },
+    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, 
+    tracebuffer{}, clipped{ false },
     x0{}, deltax{}, x_min{ 0.0 }, x_max{ 0.0 },
-    y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{},
+    y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
+    do_autoscale_on_load{ true },
     ui{ nullptr }
 //    ui(new Ui::RenderArea)
 {
@@ -45,6 +48,9 @@ RenderArea::RenderArea(QWidget* parent) :
 RenderArea::~RenderArea()
 {
     //delete ui;
+    while (tracebuffer.size() > 0) {
+        delete tracebuffer.dequeue();
+    }
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
@@ -61,11 +67,19 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
     } else {
         setScaling(x_min, x_max, y_min, y_max);
+        // paint traces in persitance buffer
+        painter.setPen(QColor(128, 128, 128)); // grey
+        for (auto trace : tracebuffer) {
+            trace->render(painter, this);
+        }
+        painter.setPen(QColor(0, 0, 0)); // black
         path.moveTo(scaleToQPF(x0,data[0]));
-        for(int i=0; i<data.size(); ++i) {
+        for(int i=1; i<data.size(); ++i) {
             path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
         }
         painter.drawPath(path);
+
+
         font = painter.font();
         font.setPixelSize(16);
         painter.setFont(font);
@@ -198,6 +212,24 @@ void RenderArea::autoScale()
     update();
 }
 
+void RenderArea::wipeBuffer()
+{
+    while (tracebuffer.size() > 0) {
+        delete tracebuffer.dequeue();
+    }
+    update();
+}
+
+void RenderArea::showSettingsDialog()
+{
+    DlgGraphSettings dlg(this);
+    dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
+    if (dlg.exec()) {
+        dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
+        update();
+    }
+}
+
 void RenderArea::zoomIn(double x_center, double y_center, double factor)
 {
     double  x_offset = (x_max - x_min) / factor / 2.0,
@@ -211,6 +243,12 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
+    if (data.size() > 0) {
+        tracebuffer.enqueue(new DisplayTrace(x0, deltax, data));
+        while (tracebuffer.size() > numtraces) {
+            delete tracebuffer.dequeue();
+        }
+    }
     char dataformat = TrRecord->getChar(TrDataFormat);
     int32_t     interleavesize = TrRecord->extractValue<int32_t>(TrInterleaveSize ,0),
                 inerleaveskip = TrRecord->extractValue<int32_t>(TrInterleaveSkip, 0);
@@ -241,7 +279,8 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
         QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
         return;
     }
-    autoScale();
+    if (do_autoscale_on_load) { autoScale(); }
+    else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
     }
 
@@ -249,6 +288,9 @@ void RenderArea::clearTrace()
 {
     ndatapoints = 0;
     data.clear();
+    while (tracebuffer.size() > 0) {
+        delete tracebuffer.dequeue();
+    }
     setMouseTracking(false);
     update();
 }
