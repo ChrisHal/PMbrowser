@@ -11,7 +11,7 @@ public:
 	DlgTreeFilter(QWidget *parent, const QString& Grp, const QString& Ser,
 		const QString& Swp, const QString& Trace);
 	~DlgTreeFilter();
-	QString grp, swp, ser, trace;
+	QString grp, ser, swp, trace;
 private slots:
 	void accept() override;
 private:

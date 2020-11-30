@@ -117,7 +117,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         yunit = "A";
         prefix = "Ihold";
     }
-    QString info = QString("Recording Mode: ") + RecordingModeNames[mode] + "\n";
+    QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
     info.append(QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\n%4=%5 %6").arg(sealresistance).arg(cslow).arg(Rseries).arg(prefix).arg(holding).arg(yunit));
     ui->textEdit->append(info);
     ui->renderArea->renderTrace(trace, infile);
