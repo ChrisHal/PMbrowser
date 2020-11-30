@@ -11,7 +11,9 @@ HEADERS += ./DatFile.h \
     ./DlgChoosePathAndPrefix.h \
     ./pmbrowserwindow.h \
     ./renderarea.h \
-    ./DlgTreeFilter.h
+    ./DlgTreeFilter.h \
+    ./DlgGraphSettings.h \
+    ./DisplayTrace.h
 SOURCES += ./DatFile.cpp \
     ./DlgChoosePathAndPrefix.cpp \
     ./exportIBW.cpp \
@@ -21,8 +23,11 @@ SOURCES += ./DatFile.cpp \
     ./main.cpp \
     ./pmbrowserwindow.cpp \
     ./renderarea.cpp \
-    ./DlgTreeFilter.cpp
+    ./DlgTreeFilter.cpp\
+    ./DlgGraphSettings.cpp \
+    ./DisplayTrace.cpp
 FORMS += ./DlgChoosePathAndPrefix.ui \
     ./pmbrowserwindow.ui \
     ./renderarea.ui \
-    ./DlgTreeFilter.ui
+    ./DlgTreeFilter.ui \
+    ./DlgGraphSettings.ui
