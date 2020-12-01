@@ -157,6 +157,8 @@
      <string>Graph</string>
     </property>
     <addaction name="actionAuto_Scale"/>
+    <addaction name="actionYX_mode"/>
+    <addaction name="actionYT_mode"/>
     <addaction name="actionWipe"/>
     <addaction name="actionClear_Persitant_Traces"/>
     <addaction name="separator"/>
@@ -255,6 +257,16 @@
   <action name="actionClear_Persitant_Traces">
    <property name="text">
     <string>Wipe Background Traces</string>
+   </property>
+  </action>
+  <action name="actionYX_mode">
+   <property name="text">
+    <string>YX mode (cur. trace as X)</string>
+   </property>
+  </action>
+  <action name="actionYT_mode">
+   <property name="text">
+    <string>YT mode</string>
    </property>
   </action>
  </widget>

@@ -26,7 +26,7 @@
 #include <QPointF>
 #include <istream>
 #include "hkTree.h"
-//#include "DisplayTrace.h"
+#include "DisplayTrace.h"
 class DisplayTrace;
 
 namespace Ui {
@@ -42,12 +42,15 @@ public:
     ~RenderArea();
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void clearTrace();
+    bool isXYmode() { return xTrace.isValid(); };
 
 public slots:
     void showSettingsDialog();
     void autoScale();
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
+    void setXYmode();
+    void setYTmode();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -61,11 +64,10 @@ private:
     void scaleFromPixToXY(int px, int py, double& x, double& y);
     void zoomIn(double x_center, double y_center, double factor);
     size_t ndatapoints;
-    QVector<double> data;
-    QString xunit, yunit;
+    DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
     bool clipped; // Amp. was clipping
-    double x0, deltax, x_min, x_max, y_min, y_max;
+    double x_min, x_max, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;

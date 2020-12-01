@@ -32,9 +32,10 @@
 #include "DisplayTrace.h"
 
 RenderArea::RenderArea(QWidget* parent) :
-    QWidget(parent), ndatapoints{}, data{}, xunit{}, yunit{}, 
-    tracebuffer{}, clipped{ false },
-    x0{}, deltax{}, x_min{ 0.0 }, x_max{ 0.0 },
+    QWidget(parent), ndatapoints{}, 
+    xTrace{}, yTrace{}, tracebuffer{},
+    clipped{ false },
+    /*x0{}, deltax{},*/ x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true },
     ui{ nullptr }
@@ -63,35 +64,46 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     painter.setFont(font);
     //painter.drawPath(path);
     const QRect rectangle = QRect(0, 0, width(), height());
-    if(data.size()==0) {
-    painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no trace selected");
+    if(!yTrace.isValid()) {
+    painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
-        setScaling(x_min, x_max, y_min, y_max);
-        // paint traces in persitance buffer
-        painter.setPen(QColor(128, 128, 128)); // grey
-        for (auto trace : tracebuffer) {
-            trace->render(painter, this);
+        if (isXYmode() && xTrace.data.size()!=yTrace.data.size()) {
+            font.setPixelSize(16);
+            painter.setFont(font);
+            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter,
+                "x- and y-trace: numbers of datapoints\nnot equal\n(required for YX-mode)");
         }
-        painter.setPen(QColor(0, 0, 0)); // black
-        path.moveTo(scaleToQPF(x0,data[0]));
-        for(int i=1; i<data.size(); ++i) {
-            path.lineTo(scaleToQPF(x0+i*deltax, data[i]));
+        else {
+            setScaling(x_min, x_max, y_min, y_max);
+            // paint traces in persistance buffer
+            painter.setPen(QColor(128, 128, 128)); // grey
+            for (auto trace : tracebuffer) {
+                trace->render(painter, this);
+            }
+            painter.setPen(QColor(0, 0, 0)); // black
+            yTrace.render(painter, this);
+
+            font = painter.font();
+            font.setPixelSize(16);
+            painter.setFont(font);
+            painter.setPen(QColor(200, 0, 0)); // some red
+            QString label = QString("%1 %2").arg(y_max).arg(yTrace.getYUnit());
+            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
+            label = QString("%1 %2").arg(y_min).arg(yTrace.getYUnit());
+            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
+            if (isXYmode()) {
+                label = QString("%1 %2").arg(x_min).arg(xTrace.getYUnit());
+                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
+                label = QString("%1 %2").arg(x_max).arg(xTrace.getYUnit());
+                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+            }
+            else {
+                label = QString("%1 %2").arg(x_min).arg(yTrace.getXUnit());
+                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
+                label = QString("%1 %2").arg(x_max).arg(yTrace.getXUnit());
+                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+            }
         }
-        painter.drawPath(path);
-
-
-        font = painter.font();
-        font.setPixelSize(16);
-        painter.setFont(font);
-        painter.setPen(QColor(200, 0, 0)); // some red
-        QString label = QString("%1 %2").arg(y_max).arg(yunit);
-        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
-        label = QString("%1 %2").arg(y_min).arg(yunit);
-        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
-        label = QString("%1 %2").arg(x_min).arg(xunit);
-        painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-        label = QString("%1 %2").arg(x_max).arg(xunit);
-        painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
         if (clipped) {
             painter.setBrush(QColor(200, 0, 0));
             painter.setPen(QColor(200, 0, 0));
@@ -105,16 +117,16 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
 
 void RenderArea::mouseMoveEvent(QMouseEvent* event)
 {
-    if (data.size() > 0 && event->buttons() == Qt::NoButton) {
+    if (yTrace.isValid() && event->buttons() == Qt::NoButton) {
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
-        long dataindex = std::lrint((x - x0) / deltax);
+        long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
         double datay = std::numeric_limits<double>::quiet_NaN();
-        if (dataindex >= 0 && dataindex < data.size()) {
-            datay = data.at(dataindex);
+        if (dataindex >= 0 && dataindex < yTrace.data.size()) {
+            datay = yTrace.data.at(dataindex);
         }
         QToolTip::showText(event->globalPos(), 
-            QString("(%1%2/%3%4)\ndata: %5%6\nclick L/R: zoom in/out").arg(x).arg(xunit).arg(y).arg(yunit).arg(datay).arg(yunit),
+            QString("(%1%2/%3%4)\ndata: %5%6\nclick L/R: zoom in/out").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit()),
             this, rect());
         event->accept();
     }
@@ -125,7 +137,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (data.size() == 0) {
+    if (!yTrace.isValid()) {
         event->ignore();
         return;
     }
@@ -205,10 +217,16 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
 
 void RenderArea::autoScale()
 {
-    x_min = x0;
-    x_max = x0 + (ndatapoints - 1) * deltax;
-    y_min = *std::min_element(data.constBegin(), data.constEnd());
-    y_max = *std::max_element(data.constBegin(), data.constEnd());
+    if (isXYmode()) {
+        x_min = *std::min_element(xTrace.data.constBegin(), xTrace.data.constEnd());
+        x_max = *std::max_element(xTrace.data.constBegin(), xTrace.data.constEnd());
+    }
+    else {
+        x_min = yTrace.x0;
+        x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
+    }
+    y_min = *std::min_element(yTrace.data.constBegin(), yTrace.data.constEnd());
+    y_max = *std::max_element(yTrace.data.constBegin(), yTrace.data.constEnd());
     update();
 }
 
@@ -218,6 +236,26 @@ void RenderArea::wipeBuffer()
         delete tracebuffer.dequeue();
     }
     update();
+}
+
+// enter x-y mode, curent yTrace becomes x-trace
+// will always autoscale
+void RenderArea::setXYmode()
+{
+//    if (!xTrace.isValid()) {
+//        // make sure not already in x-y-mode
+        xTrace = yTrace;
+        autoScale();
+//    }
+}
+
+// leave XYmode
+void RenderArea::setYTmode()
+{
+    if (xTrace.isValid()) {
+        xTrace.reset();
+        autoScale();
+    }
 }
 
 void RenderArea::showSettingsDialog()
@@ -243,8 +281,8 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
-    if (data.size() > 0) {
-        tracebuffer.enqueue(new DisplayTrace(x0, deltax, data));
+    if (yTrace.isValid()) {
+        tracebuffer.enqueue(new DisplayTrace(yTrace));
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
         }
@@ -255,25 +293,25 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     bool need_swap = !(tracedatakind & LittleEndianBit);
     clipped = tracedatakind & ClipBit;
-    yunit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
-    xunit = TrRecord->getString(TrXUnit).c_str();
-    x0 = TrRecord->extractLongReal(TrXStart), deltax = TrRecord->extractLongReal(TrXInterval);
+    yTrace.y_unit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
+    yTrace.x_unit = TrRecord->getString(TrXUnit).c_str();
+    yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
     double datascaler = TrRecord->extractLongReal(TrDataScaler);
     int32_t trdata = TrRecord->extractInt32(TrData);
     ndatapoints = TrRecord->extractInt32(TrDataPoints);
-    data.clear();
+    yTrace.data.clear();
     infile.seekg(trdata);
     if (dataformat == DFT_int16) {
-        ReadScaleAndConvert<int16_t>(infile, need_swap,  datascaler,  ndatapoints, interleavesize, inerleaveskip, data);
+        ReadScaleAndConvert<int16_t>(infile, need_swap,  datascaler,  ndatapoints, interleavesize, inerleaveskip, yTrace.data);
     }
     else if (dataformat == DFT_int32) {
-        ReadScaleAndConvert<int32_t>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
+        ReadScaleAndConvert<int32_t>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, yTrace.data);
     }
     else if (dataformat == DFT_float) {
-        ReadScaleAndConvert<float>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
+        ReadScaleAndConvert<float>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, yTrace.data);
     }
     else if (dataformat == DFT_double) {
-        ReadScaleAndConvert<double>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, data);
+        ReadScaleAndConvert<double>(infile, need_swap, datascaler, ndatapoints, interleavesize, inerleaveskip, yTrace.data);
     }
     else {
         QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
@@ -287,7 +325,8 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 void RenderArea::clearTrace()
 {
     ndatapoints = 0;
-    data.clear();
+    yTrace.reset();
+    xTrace.reset();
     while (tracebuffer.size() > 0) {
         delete tracebuffer.dequeue();
     }
