@@ -264,6 +264,10 @@ void RenderArea::showSettingsDialog()
     dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
     if (dlg.exec()) {
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
+        // if numtraces has been reduced we ant to get rid of excess traces
+        while (tracebuffer.size() > numtraces) {
+            delete tracebuffer.dequeue();
+        }
         update();
     }
 }

@@ -70,7 +70,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>bottom</string>
+        <string>bottom/x</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -97,7 +97,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>left</string>
+        <string>left/y</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -157,6 +157,14 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>checkBoxEnableAutoscale</tabstop>
+  <tabstop>lineEditYMin</tabstop>
+  <tabstop>lineEditYMax</tabstop>
+  <tabstop>lineEditXMin</tabstop>
+  <tabstop>lineEditXMax</tabstop>
+  <tabstop>lineEditNumTraces</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
