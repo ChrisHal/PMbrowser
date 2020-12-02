@@ -38,6 +38,7 @@
 #include "ui_DlgChoosePathAndPrefix.h"
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
+#include "DlgSelectParameters.h"
 
 const QString myAppName("PM browser");
 const QString appVersion("1.2 experimental");
@@ -578,6 +579,14 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
         default:
             break;
         }
+    }
+}
+
+void PMbrowserWindow::on_actionSelect_Parameters_triggered()
+{
+    DlgSelectParameters dlg;
+    if (dlg.exec()) {
+        dlg.storeParams();
     }
 }
 

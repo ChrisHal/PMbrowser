@@ -137,6 +137,7 @@
     <addaction name="actionExport_IBW_File"/>
     <addaction name="actionExport_All_Visible_Traces_as_IBW_Files"/>
     <addaction name="actionExport_All_as_IBW"/>
+    <addaction name="actionSelect_Parameters"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -273,6 +274,11 @@
   <action name="actionPrint_All_Params">
    <property name="text">
     <string>Print All Parameters</string>
+   </property>
+  </action>
+  <action name="actionSelect_Parameters">
+   <property name="text">
+    <string>Select Parameters...</string>
    </property>
   </action>
  </widget>
