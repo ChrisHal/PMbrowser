@@ -84,7 +84,9 @@ void PMbrowserWindow::populateTreeView()
                     }else if(datakind & IsLeak){
                         tracelabel = "Leak";
                     } else {
-                        tracelabel = QString("trace %1").arg(l);
+                        tracelabel = trace.getString(TrLabel).c_str();
+                        if (tracelabel.isEmpty()) {
+                            tracelabel = QString("trace %1").arg(l); }
                     }
                     auto traceitem = new QTreeWidgetItem(sweepitem,QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
