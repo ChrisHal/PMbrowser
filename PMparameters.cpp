@@ -2,10 +2,11 @@
 #include"PMparameters.h"
 
 // NOTE: This is preliminary, some paramaters are not yet included
-std::array<PMparameter, 28>parametersTrace = {
+std::array<PMparameter, 29>parametersTrace = {
 	false,false,"Tr. Mark","",PMparameter::Int32,0,
 	false,false,"Tr. Label","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
+	false,false,"TrHolding","V|A",PMparameter::LongReal,408,
 	false,false,"Internal Solution","",PMparameter::Int32,48,
 	false,false,"Leak traces","",PMparameter::Int32,60,
 	false,false,"UseXStart","",PMparameter::Boolean,66,
@@ -35,14 +36,14 @@ std::array<PMparameter, 28>parametersTrace = {
 
 std::array<PMparameter, 16>parametersSweep = {
 	false,false,"SwMark","",PMparameter::Int32,0,
-	false,true,"SwLabel","",PMparameter::StringType,4,
+	false,false,"SwLabel","",PMparameter::StringType,4,
 	false,false,"Stim Count","",PMparameter::Int32,40,
 	true,true,"Sweep Time","s",PMparameter::LongReal,48,
 	true,true,"Timer Time","s",PMparameter::LongReal,56,
 	false,false,"User param. 1","",PMparameter::LongReal,64,
 	false,false,"User param. 2","",PMparameter::LongReal,72,
 	false,false,"Pip. pressure","a.u.",PMparameter::LongReal,80,
-	false,false,"RMS niose","A",PMparameter::LongReal,88, // not sure about units
+	false,false,"RMS noise","A",PMparameter::LongReal,88, // not sure about units
 	false,false,"Temperature","°C",PMparameter::LongReal,96,
 	false,false,"DigitalIn","",PMparameter::UInt16,112,
 	false,false,"DigitalOut","",PMparameter::UInt16,116,
@@ -84,7 +85,7 @@ std::array<PMparameter, 7>parametersRoot = {
 
 void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 {
-	ss << name << ": ";
+	ss << name << "=";
 	try {
 		switch (data_type) {
 		case Byte:

@@ -31,7 +31,7 @@ struct PMparameter {
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
 };
 
-extern std::array<PMparameter, 28>parametersTrace;
+extern std::array<PMparameter, 29>parametersTrace;
 extern std::array<PMparameter, 16>parametersSweep;
 extern std::array<PMparameter, 9>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
@@ -58,6 +58,7 @@ template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
 			ss << "\n";
 		}
 	}
+	str = ss.str();
 }
 
 template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
@@ -70,4 +71,5 @@ template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
 			ss << "\n";
 		}
 	}
+	str = ss.str();
 }

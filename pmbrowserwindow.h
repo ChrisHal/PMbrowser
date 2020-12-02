@@ -68,6 +68,8 @@ private:
     void seriesSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void sweepSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
+    void printAllParameters(QTreeWidgetItem* item);
+    void printAllParameters(hkTreeNode* node);
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
     bool choosePathAndPrefix(QString& path, QString& prefix);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);

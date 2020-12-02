@@ -122,6 +122,10 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     }
     QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
     info.append(QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\n%4=%5 %6").arg(sealresistance).arg(cslow).arg(Rseries).arg(prefix).arg(holding).arg(yunit));
+    std::string str;
+    formatParamListPrint(*trace, parametersTrace, str);
+    info.append("\n");
+    info.append(str.c_str());
     ui->textEdit->append(info);
     ui->renderArea->renderTrace(trace, infile);
 }
@@ -134,6 +138,10 @@ void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     double timer = sweep->extractLongRealNoThrow(SwTimer);
     int32_t count = sweep->extractInt32(SwSweepCount);
     QString txt = QString("Sweep %1 %2\nrel. time %3 s\ntimer %4 s").arg(label).arg(count).arg(t - start_time).arg(timer);
+    std::string str;
+    formatParamListPrint(*sweep, parametersSweep, str);
+    txt.append("\n");
+    txt.append(str.c_str());
     ui->textEdit->append(txt);
 }
 
@@ -145,6 +153,10 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
     double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
     int32_t count = series->extractInt32(SeSeriesCount);
     QString txt = QString("Series %1 %2\nrel. time %3 s").arg(label).arg(count).arg(t - start_time);
+    std::string str;
+    formatParamListPrint(*series, parametersSeries, str);
+    txt.append("\n");
+    txt.append(str.c_str());
     ui->textEdit->append(txt);
 }
 
@@ -154,6 +166,10 @@ void PMbrowserWindow::groupSelected(QTreeWidgetItem* item, hkTreeNode* group)
     QString label = QString::fromStdString(group->getString(GrLabel));
     int32_t count = group->extractInt32(GrGroupCount);
     QString txt = QString("Group %1 %2").arg(label).arg(count);
+    std::string str;
+    formatParamListPrint(*group, parametersGroup, str);
+    txt.append("\n");
+    txt.append(str.c_str());
     ui->textEdit->append(txt);
 }
 
@@ -518,6 +534,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actExport = menu.addAction("export subtree");
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
+        auto actPrintAllP = menu.addAction("print all parameters");
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
             exportSubTreeAsIBW(item);
@@ -527,6 +544,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (response == actShow) {
             treeSetHidden(item, false);
+        }
+        else if (response == actPrintAllP) {
+            printAllParameters(item);
         }
     }
 }
@@ -561,30 +581,49 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     }
 }
 
+void ::PMbrowserWindow::printAllParameters(QTreeWidgetItem* item)
+{
+    printAllParameters(item->data(0, Qt::UserRole).value<hkTreeNode*>());
+}
+
+void ::PMbrowserWindow::printAllParameters(hkTreeNode* n)
+{
+    std::string s;
+    QString lb;
+    // experimentnal: include parents
+    if (n->getParent()) {
+        printAllParameters(n->getParent());
+    }
+    switch (n->getLevel()) {
+    case 0: // root level
+        lb = "Root:\n";
+        formatParamList(*n, parametersRoot, s);
+        break;
+    case 1: // Group
+        lb = "Group:\n";
+        formatParamList(*n, parametersGroup, s);
+        break;
+    case 2:
+        lb = "Series:\n";
+        formatParamList(*n, parametersSeries, s);
+        break;
+    case 3:
+        lb = "Sweep:\n";
+        formatParamList(*n, parametersSweep, s);
+        break;
+    case 4:
+        lb = "Trace:\n";
+        formatParamList(*n, parametersTrace, s);
+        break;
+    }
+    ui->textEdit->append(lb + s.c_str());
+}
+
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()
 {
     auto item = ui->treePulse->currentItem();
     if (item) {
-        std::string s;
-        hkTreeNode* n = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-        switch (n->getLevel()) {
-        case 0: // root level
-            formatParamList(*n, parametersRoot, s);
-            break;
-        case 1: // Group
-            formatParamList(*n, parametersGroup, s);
-            break;
-        case 2:
-            formatParamList(*n, parametersSeries, s);
-            break;
-        case 3:
-            formatParamList(*n, parametersSweep, s);
-            break;
-        case 4:
-            formatParamList(*n, parametersTrace, s);
-            break;
-        }
-        ui->textEdit->append(s.c_str());
+        printAllParameters(item);
     }
 }
 
