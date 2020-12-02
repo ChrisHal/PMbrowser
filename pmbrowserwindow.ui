@@ -170,6 +170,7 @@
     </property>
     <addaction name="actionFilter"/>
     <addaction name="actionRemove_Filter"/>
+    <addaction name="actionPrint_All_Params"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -267,6 +268,11 @@
   <action name="actionYT_mode">
    <property name="text">
     <string>YT mode</string>
+   </property>
+  </action>
+  <action name="actionPrint_All_Params">
+   <property name="text">
+    <string>Print All Parameters</string>
    </property>
   </action>
  </widget>

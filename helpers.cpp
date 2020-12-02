@@ -62,6 +62,18 @@ int32_t swap_bytes(int32_t x)
     return b;
 }
 
+uint32_t swap_bytes(uint32_t x)
+{
+    char* a = reinterpret_cast<char*>(&x);
+    int32_t b;
+    char* p = reinterpret_cast<char*>(&b);
+    p[0] = a[3];
+    p[1] = a[2];
+    p[2] = a[1];
+    p[3] = a[0];
+    return b;
+}
+
 int16_t swap_bytes(int16_t x)
 {
     return ((x & 0xff00) >> 8)|((x & 0xff) << 8);

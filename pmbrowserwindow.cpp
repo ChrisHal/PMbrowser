@@ -37,6 +37,7 @@
 #include "DlgChoosePathAndPrefix.h"
 #include "ui_DlgChoosePathAndPrefix.h"
 #include "DlgTreeFilter.h"
+#include "PMparameters.h"
 
 const QString myAppName("PM browser");
 const QString appVersion("1.2 experimental");
@@ -555,6 +556,33 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
         default:
             break;
         }
+    }
+}
+
+void PMbrowserWindow::on_actionPrint_All_Params_triggered()
+{
+    auto item = ui->treePulse->currentItem();
+    if (item) {
+        std::string s;
+        hkTreeNode* n = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+        switch (n->getLevel()) {
+        case 0: // root level
+            formatParamList(*n, parametersRoot, s);
+            break;
+        case 1: // Group
+            formatParamList(*n, parametersGroup, s);
+            break;
+        case 2:
+            formatParamList(*n, parametersSeries, s);
+            break;
+        case 3:
+            formatParamList(*n, parametersSweep, s);
+            break;
+        case 4:
+            formatParamList(*n, parametersTrace, s);
+            break;
+        }
+        ui->textEdit->append(s.c_str());
     }
 }
 

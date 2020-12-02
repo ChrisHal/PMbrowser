@@ -197,6 +197,7 @@
     <ClCompile Include="machineinfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pmbrowserwindow.cpp" />
+    <ClCompile Include="PMparameters.cpp" />
     <ClCompile Include="renderarea.cpp" />
     <ClCompile Include="DisplayTrace.cpp" />
   </ItemGroup>
@@ -205,6 +206,7 @@
     <ClInclude Include="DisplayTrace.h" />
     <QtMoc Include="DlgTreeFilter.h" />
     <QtMoc Include="DlgGraphSettings.h" />
+    <ClInclude Include="PMparameters.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="DlgChoosePathAndPrefix.h" />
     <ClInclude Include="Igor_IBW.h" />

@@ -78,6 +78,7 @@ extern const char* RecordingModeNames[7];
 
 // offsets into data record fields that we are interested in
 constexpr size_t stExtTrigger = 164, // in Stimulation record
+TrLabel = 4,
 TrTraceCount = 36,  // in Trace Record
 TrData = 40,
 TrDataPoints = 44,

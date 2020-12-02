@@ -24,6 +24,7 @@ template<typename T> T swap_bytes(T) = delete;
 double swap_bytes(double x);
 float swap_bytes(float x);
 int32_t swap_bytes(int32_t x);
+uint32_t swap_bytes(uint32_t x);
 int16_t swap_bytes(int16_t x);
 uint16_t swap_bytes(uint16_t x);
 

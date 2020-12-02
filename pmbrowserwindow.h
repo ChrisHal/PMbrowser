@@ -52,6 +52,7 @@ private slots:
     void on_actionExport_All_Visible_Traces_as_IBW_Files_triggered();
     void prepareTreeContextMenu(const QPoint& pos);
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_actionPrint_All_Params_triggered();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
