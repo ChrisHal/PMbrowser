@@ -122,5 +122,9 @@ bool DatFile::InitFromStream(std::istream& infile)
 
 std::string DatFile::getFileDate() const
 {
+#ifdef _DEBUG
+    return formatPMtimeUTC(Time);
+#else
     return formatPMtimeDate(Time);
+#endif //_DEBUG
 }
