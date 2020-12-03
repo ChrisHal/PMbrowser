@@ -3,31 +3,39 @@
 # ------------------------------------------------------
 
 HEADERS += ./DatFile.h \
+    ./DisplayTrace.h \
+    ./time_handling.h \
+    ./PMparameters.h \
     ./Igor_IBW.h \
     ./exportIBW.h \
     ./helpers.h \
     ./hkTree.h \
     ./machineinfo.h \
-    ./DlgChoosePathAndPrefix.h \
-    ./pmbrowserwindow.h \
-    ./renderarea.h \
     ./DlgTreeFilter.h \
     ./DlgGraphSettings.h \
-    ./DisplayTrace.h
+    ./DlgSelectParameters.h \
+    ./DlgChoosePathAndPrefix.h \
+    ./pmbrowserwindow.h \
+    ./renderarea.h
 SOURCES += ./DatFile.cpp \
     ./DlgChoosePathAndPrefix.cpp \
+    ./DlgGraphSettings.cpp \
+    ./DlgSelectParameters.cpp \
+    ./DlgTreeFilter.cpp \
     ./exportIBW.cpp \
     ./helpers.cpp \
     ./hkTree.cpp \
     ./machineinfo.cpp \
     ./main.cpp \
     ./pmbrowserwindow.cpp \
+    ./PMparameters.cpp \
+    ./time_handling.cpp \
     ./renderarea.cpp \
-    ./DlgTreeFilter.cpp\
-    ./DlgGraphSettings.cpp \
     ./DisplayTrace.cpp
 FORMS += ./DlgChoosePathAndPrefix.ui \
-    ./pmbrowserwindow.ui \
-    ./renderarea.ui \
+    ./DlgGraphSettings.ui \
+    ./DlgSelectParameters.ui \
     ./DlgTreeFilter.ui \
-    ./DlgGraphSettings.ui
+    ./pmbrowserwindow.ui \
+    ./renderarea.ui
+RESOURCES += QtPMbrowser.qrc
