@@ -199,12 +199,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pmbrowserwindow.cpp" />
     <ClCompile Include="PMparameters.cpp" />
+    <ClCompile Include="time_handling.cpp" />
     <ClCompile Include="renderarea.cpp" />
     <ClCompile Include="DisplayTrace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h" />
     <ClInclude Include="DisplayTrace.h" />
+    <ClInclude Include="time_handling.h" />
     <QtMoc Include="DlgTreeFilter.h" />
     <QtMoc Include="DlgGraphSettings.h" />
     <QtMoc Include="DlgSelectParameters.h" />

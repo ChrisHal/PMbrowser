@@ -1,8 +1,9 @@
 #include<sstream>
 #include"PMparameters.h"
+#include "time_handling.h"
 
 // NOTE: This is preliminary, some paramaters are not yet included
-std::array<PMparameter, 29>parametersTrace = {
+std::array<PMparameter, 30>parametersTrace = {
 	false,false,"Tr. Mark","",PMparameter::Int32,0,
 	false,false,"Tr. Label","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
@@ -18,7 +19,8 @@ std::array<PMparameter, 29>parametersTrace = {
 	false,false,"CellPotential","V",PMparameter::LongReal,160,
 	true,true,"SealResistance","Ohm",PMparameter::LongReal,168,
 	true,true,"Cslow","F",PMparameter::LongReal,176,
-	true,true,"Gseries","S",PMparameter::LongReal,184,
+	false,false,"Gseries","S",PMparameter::LongReal,184,
+	true,true,"Rs","Ohm",PMparameter::InvLongReal,184,
 	false,false,"RsValue","",PMparameter::LongReal,192,
 	false,false,"Gleak","S",PMparameter::LongReal,200,
 	false,false,"Mem. conductance","S",PMparameter::LongReal,208,
@@ -34,11 +36,12 @@ std::array<PMparameter, 29>parametersTrace = {
 	false,false,"DataPedestal","",PMparameter::LongReal,504
 };
 
-std::array<PMparameter, 16>parametersSweep = {
+std::array<PMparameter, 17>parametersSweep = {
 	false,false,"SwMark","",PMparameter::Int32,0,
 	false,false,"SwLabel","",PMparameter::StringType,4,
 	false,false,"Stim Count","",PMparameter::Int32,40,
-	true,true,"Sweep Time","s",PMparameter::LongReal,48,
+	true,true,"Sweep Time raw","s",PMparameter::LongReal,48,
+	true,true,"Sweep Time","",PMparameter::DateTime,48,
 	true,true,"Timer Time","s",PMparameter::LongReal,56,
 	false,false,"User param. 1","",PMparameter::LongReal,64,
 	false,false,"User param. 2","",PMparameter::LongReal,72,
@@ -53,14 +56,15 @@ std::array<PMparameter, 16>parametersSweep = {
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 
-std::array<PMparameter, 9>parametersSeries = {
+std::array<PMparameter, 10>parametersSeries = {
 	false,false,"SeMark","",PMparameter::Int32,0,
 	false,false,"SeLabel","",PMparameter::StringType,4,
 	false,false,"SeComment","",PMparameter::StringType,36,
 	false,false,"SeSeriesCount","",PMparameter::Int32,116,
 	false,false,"SeNumberSweeps","",PMparameter::Int32,120,
 	false,false,"SeMethodTag","",PMparameter::Int32,132,
-	true,false,"SeTime","s",PMparameter::LongReal,136,
+	true,false,"SeTime_raw","s",PMparameter::LongReal,136,
+	true,false,"SeTime","",PMparameter::DateTime,136,
 	false,false,"SeMethodName","",PMparameter::StringType,312,
 	false,false,"SeUsername","",PMparameter::StringType,872
 };
@@ -73,12 +77,13 @@ std::array<PMparameter, 5>parametersGroup = {
 	false,false,"GroupCount","",PMparameter::Int32,120
 };
 
-std::array<PMparameter, 7>parametersRoot = {
+std::array<PMparameter, 8>parametersRoot = {
 	false, false, "RoVersion","",PMparameter::Int32,0,
 	false, false, "RoMark","",PMparameter::Int32,4,
 	false, false, "RoVersionName","",PMparameter::StringType,8,
 	false, false, "RoAuxFileName", "", PMparameter::StringType,40,
 	false, false, "RootText", "", PMparameter::StringType,120,
+	true, true, "RootStartTime_raw", "s", PMparameter::LongReal,520,
 	true, true, "RootStartTime", "", PMparameter::DateTime,520,
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
@@ -104,8 +109,13 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << node.extractValue<std::uint32_t>(offset);
 			break;
 		case LongReal:
-		case DateTime:
 			ss << node.extractLongReal(offset);
+			break;
+		case DateTime:
+			ss << formatPMtimeUTC(node.extractLongReal(offset));
+			break;
+		case InvLongReal:
+			ss << 1.0/node.extractLongReal(offset);
 			break;
 		case StringType:
 			ss << node.getString(offset);
@@ -138,6 +148,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 				ss << node.extractLongReal(offset + 8 * i) << ",";
 			}
 			ss << ")";
+			break;
+		default:
+			throw std::runtime_error("unknown data-type");
 			break;
 		}
 	}

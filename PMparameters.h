@@ -17,6 +17,7 @@ struct PMparameter {
 		DateTime, // weird PowerMod date
 		StringType,
 		Boolean,
+		InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
 		LongReal16  // 8 double
@@ -31,11 +32,11 @@ struct PMparameter {
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
 };
 
-extern std::array<PMparameter, 29>parametersTrace;
-extern std::array<PMparameter, 16>parametersSweep;
-extern std::array<PMparameter, 9>parametersSeries;
+extern std::array<PMparameter, 30>parametersTrace;
+extern std::array<PMparameter, 17>parametersSweep;
+extern std::array<PMparameter, 10>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
-extern std::array<PMparameter, 7>parametersRoot;
+extern std::array<PMparameter, 8>parametersRoot;
 
 template<std::size_t Nrows> void formatParamList(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::string& str)
