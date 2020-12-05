@@ -74,8 +74,6 @@ enum RecordingModeType {
 	NoMode=6
 };
 
-extern const char* RecordingModeNames[7];
-
 // offsets into data record fields that we are interested in
 constexpr size_t stExtTrigger = 164, // in Stimulation record
 TrLabel = 4,
@@ -107,10 +105,12 @@ SeLabel = 4, //(*String32Type*)
 SeSeriesCount = 116,
 SeAmplStateRef = 128,
 SeTime = 136,
-GrLabel=   4,
+GrLabel = 4,
 GrGroupCount = 120,
 RoVersionName = 8, // root record
-RoStartTime = 520;
+RoStartTime = 520,
+// now from Amp records:
+RoAmplifierName = 40;
 
 // offset for Stim-Tree
 constexpr size_t seVoltage = 8;

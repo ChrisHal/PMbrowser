@@ -115,18 +115,22 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
     QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
     ui->textEdit->append(tracename);
-    double sealresistance = trace->extractLongReal(TrSealResistance),
-        cslow = trace->extractLongReal(TrCSlow),
-        Rseries = 1.0 / trace->extractLongReal(TrGSeries),
-        holding = trace->extractLongRealNoThrow(TrTrHolding);
+
+    // most of the following stuff should now be handled by PMparameters
+    //double sealresistance = trace->extractLongReal(TrSealResistance),
+    //    cslow = trace->extractLongReal(TrCSlow),
+    //    Rseries = 1.0 / trace->extractLongReal(TrGSeries);
+    double holding = trace->extractLongRealNoThrow(TrTrHolding);
     char mode = trace->getChar(TrRecordingMode);
     QString prefix = "Vhold", yunit = "V";
     if (mode == CClamp) {
         yunit = "A";
         prefix = "Ihold";
     }
-    QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
-    info.append(QString("Rmem=%1 Ohm\nCslow=%2 F\nRs=%3 Ohm\n%4=%5 %6").arg(sealresistance).arg(cslow).arg(Rseries).arg(prefix).arg(holding).arg(yunit));
+//    QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
+    // keep the following, since here we fromat it more nicely, with correct name an units
+    // this is beyond what PMparmaters can do right now.
+    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
     std::string str;
     formatParamListPrint(*trace, parametersTrace, str);
     info.append("\n");
@@ -221,9 +225,20 @@ void PMbrowserWindow::loadFile(QString filename)
         if (datfile->getIsSwapped()) {
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
         }
+        std::string ampname;
+        try {
+            ampname = datfile->GetAmpTree().GetRootNode().getString(RoAmplifierName);
+            txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
+        }
+        catch (std::out_of_range& e) {
+            (void)e;
+            //Note: we usually get here if there is no Amp-Tree
+            //txt.append("\n(unknown amplifier)");
+        }
         ui->textEdit->append(txt);
         ui->textEdit->append(QString::fromUtf8("file date: ")
             + QString::fromStdString(datfile->getFileDate()));
+
     }
 }
 

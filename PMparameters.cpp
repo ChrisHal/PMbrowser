@@ -1,9 +1,21 @@
 #include<sstream>
+#include<array>
 #include"PMparameters.h"
 #include "time_handling.h"
 
+const std::array<const char*, 7> RecordingModeNames = {
+	"Inside-Out",
+	"On-Cell",
+	"Outside-Out",
+	"Whole-Cell",
+	"Current-Clamp",
+	"Voltage-Clamp",
+	"<none>"
+};
+
+
 // NOTE: This is preliminary, some paramaters are not yet included
-std::array<PMparameter, 30>parametersTrace = {
+std::array<PMparameter, 31>parametersTrace = {
 	false,false,"Tr. Mark","",PMparameter::Int32,0,
 	false,false,"Tr. Label","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
@@ -11,6 +23,7 @@ std::array<PMparameter, 30>parametersTrace = {
 	false,false,"Internal Solution","",PMparameter::Int32,48,
 	false,false,"Leak traces","",PMparameter::Int32,60,
 	false,false,"UseXStart","",PMparameter::Boolean,66,
+	false,true,"Recording Mode","",PMparameter::RecordingMode,68,
 	false,false,"XStart","s",PMparameter::LongReal,112,
 	false,false,"Time offset","s",PMparameter::LongReal,80,
 	false,false,"Zero data","A|V",PMparameter::LongReal,88,
@@ -148,6 +161,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 				ss << node.extractLongReal(offset + 8 * i) << ",";
 			}
 			ss << ")";
+			break;
+		case RecordingMode:
+			ss << RecordingModeNames.at((std::size_t)node.getChar(offset));
 			break;
 		default:
 			throw std::runtime_error("unknown data-type");

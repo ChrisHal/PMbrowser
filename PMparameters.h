@@ -20,7 +20,8 @@ struct PMparameter {
 		InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
-		LongReal16  // 8 double
+		LongReal16,  // 8 double
+		RecordingMode
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -32,11 +33,13 @@ struct PMparameter {
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
 };
 
-extern std::array<PMparameter, 30>parametersTrace;
+extern std::array<PMparameter, 31>parametersTrace;
 extern std::array<PMparameter, 17>parametersSweep;
 extern std::array<PMparameter, 10>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
+
+extern const std::array<const char*, 7>RecordingModeNames;
 
 template<std::size_t Nrows> void formatParamList(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::string& str)
