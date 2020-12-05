@@ -225,9 +225,8 @@ void PMbrowserWindow::loadFile(QString filename)
         if (datfile->getIsSwapped()) {
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
         }
-        std::string ampname;
         try {
-            ampname = datfile->GetAmpTree().GetRootNode().getString(RoAmplifierName);
+            std::string ampname = datfile->GetAmpTree().GetRootNode().getString(RoAmplifierName);
             txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
         }
         catch (std::out_of_range& e) {
