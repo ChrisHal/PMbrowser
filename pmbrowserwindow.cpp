@@ -33,6 +33,7 @@
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
 #include "hkTree.h"
+#include "helpers.h"
 #include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
 #include "ui_DlgChoosePathAndPrefix.h"
@@ -76,9 +77,9 @@ void PMbrowserWindow::populateTreeView()
                 int l = 0;
                 for(auto& trace : sweep.Children) {
                     ++l;
-                    int32_t datakind = trace.extractUInt16(TrDataKind);
-                    QString tracelabel;
-                    if(datakind & IsImon) {
+                    // int32_t datakind = trace.extractUInt16(TrDataKind);
+                    QString tracelabel = formTraceName(trace, l).c_str();
+                    /*if(datakind & IsImon) {
                         tracelabel = "Imon";
                     } else if (datakind & IsVmon) {
                         tracelabel = "Vmon";
@@ -92,7 +93,7 @@ void PMbrowserWindow::populateTreeView()
                                 tracelabel = QString("trace %1").arg(l);
                             }
                         }
-                    }
+                    }*/
                     auto traceitem = new QTreeWidgetItem(sweepitem,QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }

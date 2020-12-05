@@ -75,5 +75,5 @@ template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
 			ss << "\n";
 		}
 	}
-	str = ss.str();
+	str.append(ss.str());
 }

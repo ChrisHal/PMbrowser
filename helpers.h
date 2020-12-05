@@ -18,6 +18,7 @@
 */
 
 #pragma once
+//#include "hkTree.h"
 #include <cstdint>
 
 template<typename T> T swap_bytes(T) = delete;
@@ -32,3 +33,7 @@ template<typename T> void swapInPlace(T& x)
 {
     x = swap_bytes(x);
 }
+
+struct hkTreeNode;
+
+std::string formTraceName(const hkTreeNode& tr, int count);

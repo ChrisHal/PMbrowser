@@ -18,6 +18,9 @@
 */
 
 #include<cinttypes>
+#include <sstream>
+#include "hkTree.h"
+#include "DatFile.h"
 #include"helpers.h"
 
 // some tools
@@ -82,4 +85,28 @@ int16_t swap_bytes(int16_t x)
 uint16_t swap_bytes(uint16_t x)
 {
     return ((x & 0xff00) >> 8) | ((x & 0xff) << 8);
+}
+
+std::string formTraceName(const hkTreeNode& tr, int count)
+{
+    int32_t datakind = tr.extractUInt16(TrDataKind);
+    std::stringstream trace_ext;
+    if (datakind & IsImon) {
+        trace_ext << "Imon";
+    }
+    else if (datakind & IsVmon) {
+        trace_ext << "Vmon";
+    }
+    else {
+        trace_ext << tr.getString(TrLabel);
+        if (trace_ext.str().length() == 0) {
+            if (datakind & IsLeak) {
+                trace_ext << "Leak";
+            }
+            else {
+                trace_ext << "trace_" << count;
+            }
+        }
+    }
+    return trace_ext.str();
 }
