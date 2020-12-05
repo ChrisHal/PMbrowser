@@ -31,6 +31,7 @@
 #include "helpers.h"
 #include "hkTree.h"
 #include "DatFile.h"
+#include "PMparameters.h"
 #include "exportIBW.h"
 #include "Igor_IBW.h"
 
@@ -45,16 +46,21 @@ int Checksum(short* data, int oldcksum, int numbytes)
 
 void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 {
-	double cslow = TrRecord.extractLongReal(TrCSlow),
-		gseries = TrRecord.extractLongReal(TrGSeries),
-		rsvalue = TrRecord.extractLongReal(TrRsValue),
-		sealres = TrRecord.extractLongReal(TrSealResistance);
-	std::stringstream note;
-	note << "Cslow=" << cslow
-		<< " F\nRseries=" << (1.0 / gseries)
-		<< " Ohm\nRsValue=" << rsvalue 
-		<< "\nSealResistance=" << sealres << " Ohm\n";
-	notetxt = note.str();
+	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent()->getParent(), parametersRoot, notetxt);
+	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent(), parametersGroup, notetxt);
+	formatParamListExportIBW(*TrRecord.getParent()->getParent(), parametersSeries, notetxt);
+	formatParamListExportIBW(*TrRecord.getParent(), parametersSweep, notetxt);
+	formatParamListExportIBW(TrRecord, parametersTrace, notetxt);
+	//double cslow = TrRecord.extractLongReal(TrCSlow),
+	//	gseries = TrRecord.extractLongReal(TrGSeries),
+	//	rsvalue = TrRecord.extractLongReal(TrRsValue),
+	//	sealres = TrRecord.extractLongReal(TrSealResistance);
+	//std::stringstream note;
+	//note << "Cslow=" << cslow
+	//	<< " F\nRseries=" << (1.0 / gseries)
+	//	<< " Ohm\nRsValue=" << rsvalue 
+	//	<< "\nSealResistance=" << sealres << " Ohm\n";
+	//notetxt = note.str();
 }
 
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
@@ -197,6 +203,7 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 					uint16_t tracekind = trace.extractUInt16(TrDataKind);
 					std::stringstream wavename;
 					wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount;
+					//TODO: Format same way as for TreeView
 					if (tracekind & IsImon) {
 						wavename << "_Imon";
 					}
