@@ -177,9 +177,9 @@ void RenderArea::mousePressEvent(QMouseEvent* event)
         event->ignore();
         return;
     }
+    setCursor(Qt::CrossCursor);
     tempPixMap = grab();
     isSelecting = true;
-    setCursor(Qt::CrossCursor);
     selEnd = selStart = event->pos();
     event->accept();
  }
