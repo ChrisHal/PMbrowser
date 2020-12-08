@@ -65,9 +65,7 @@ bool DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("invalid file");
         }
     }
-    if (bool(bh->IsLittleEndian) != MachineIsLittleEndian()) {
-        isSwapped = true;
-    }
+    isSwapped = bool(bh->IsLittleEndian) != MachineIsLittleEndian();
     Version = bh->Version;
     Time = bh->Time;
     if (isSwapped) {
@@ -75,7 +73,6 @@ bool DatFile::InitFromStream(std::istream& infile)
     }
 
 
-    //int filesize = infile.seekg(0, std::ios::end).tellg();
     auto nitems = bh->Items;
     if (isSwapped) {
         swapInPlace(nitems);
