@@ -30,6 +30,8 @@
 #include "time_handling.h"
 #include "helpers.h"
 #include "DatFile.h"
+#include "machineinfo.h"
+
 static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
 
 const char* RecordingModeNames[] = {
@@ -63,7 +65,7 @@ bool DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("invalid file");
         }
     }
-    if (!bh->IsLittleEndian) {
+    if (bool(bh->IsLittleEndian) != MachineIsLittleEndian()) {
         isSwapped = true;
     }
     Version = bh->Version;
