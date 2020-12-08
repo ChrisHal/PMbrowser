@@ -24,6 +24,7 @@
 #include <QVector>
 #include <QQueue>
 #include <QPointF>
+#include <QPixmap>
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
@@ -55,6 +56,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event);
 
@@ -63,6 +65,7 @@ private:
     QPointF scaleToQPF(double x, double y);
     void scaleFromPixToXY(int px, int py, double& x, double& y);
     void zoomIn(double x_center, double y_center, double factor);
+    void drawMarquee(QPainter& painter);
     size_t ndatapoints;
     DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
@@ -71,7 +74,10 @@ private:
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;
-    Ui::RenderArea *ui;
+    // for marquee zoom function:
+    bool isSelecting;
+    QPoint selStart, selEnd;
+    QPixmap tempPixMap;
 
     friend class DisplayTrace;
 };

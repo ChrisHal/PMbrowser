@@ -35,11 +35,10 @@ RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent), ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{},
     clipped{ false },
-    /*x0{}, deltax{},*/ x_min{ 0.0 }, x_max{ 0.0 },
+    x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true },
-    ui{ nullptr }
-//    ui(new Ui::RenderArea)
+    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{}
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -54,7 +53,21 @@ RenderArea::~RenderArea()
     }
 }
 
-void RenderArea::paintEvent(QPaintEvent * /* event */)
+void RenderArea::drawMarquee(QPainter& painter)
+{
+    //painter.save();
+    painter.setPen(QColor(0, 0, 200));
+    QPainterPath path;
+    path.moveTo(selStart);
+    path.lineTo(selEnd.x(), selStart.y());
+    path.lineTo(selEnd);
+    path.lineTo(selStart.x(), selEnd.y());
+    path.lineTo(selStart);
+    painter.drawPath(path);
+    //painter.restore();
+}
+
+void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainterPath path;
     QPainter painter(this);
@@ -67,50 +80,59 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     if(!yTrace.isValid()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
-        if (isXYmode() && xTrace.data.size()!=yTrace.data.size()) {
-            font.setPixelSize(16);
-            painter.setFont(font);
-            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter,
-                "x- and y-trace: numbers of datapoints\nnot equal\n(required for YX-mode)");
+        if (isSelecting) {
+            painter.drawPixmap(rect(), tempPixMap);
+            drawMarquee(painter);
         }
         else {
-            setScaling(x_min, x_max, y_min, y_max);
-            // paint traces in persistance buffer
-            painter.setPen(QColor(128, 128, 128)); // grey
-            for (auto trace : tracebuffer) {
-                trace->render(painter, this);
-            }
-            painter.setPen(QColor(0, 0, 0)); // black
-            yTrace.render(painter, this);
 
-            font = painter.font();
-            font.setPixelSize(16);
-            painter.setFont(font);
-            painter.setPen(QColor(200, 0, 0)); // some red
-            QString label = QString("%1 %2").arg(y_max).arg(yTrace.getYUnit());
-            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
-            label = QString("%1 %2").arg(y_min).arg(yTrace.getYUnit());
-            painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
-            if (isXYmode()) {
-                label = QString("%1 %2").arg(x_min).arg(xTrace.getYUnit());
-                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-                label = QString("%1 %2").arg(x_max).arg(xTrace.getYUnit());
-                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+            if (isXYmode() && xTrace.data.size() != yTrace.data.size()) {
+                font.setPixelSize(16);
+                painter.setFont(font);
+                painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter,
+                    "x- and y-trace: numbers of datapoints\nnot equal\n(required for YX-mode)");
             }
             else {
-                label = QString("%1 %2").arg(x_min).arg(yTrace.getXUnit());
-                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-                label = QString("%1 %2").arg(x_max).arg(yTrace.getXUnit());
-                painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+                setScaling(x_min, x_max, y_min, y_max);
+                // paint traces in persistance buffer
+                painter.setPen(QColor(128, 128, 128)); // grey
+                for (auto trace : tracebuffer) {
+                    trace->render(painter, this);
+                }
+                painter.setPen(QColor(0, 0, 0)); // black
+                yTrace.render(painter, this);
+
+                font = painter.font();
+                font.setPixelSize(16);
+                painter.setFont(font);
+                painter.setPen(QColor(200, 0, 0)); // some red
+                QString label = QString("%1 %2").arg(y_max).arg(yTrace.getYUnit());
+                painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
+                label = QString("%1 %2").arg(y_min).arg(yTrace.getYUnit());
+                painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
+                if (isXYmode()) {
+                    label = QString("%1 %2").arg(x_min).arg(xTrace.getYUnit());
+                    painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
+                    label = QString("%1 %2").arg(x_max).arg(xTrace.getYUnit());
+                    painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+                }
+                else {
+                    label = QString("%1 %2").arg(x_min).arg(yTrace.getXUnit());
+                    painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
+                    label = QString("%1 %2").arg(x_max).arg(yTrace.getXUnit());
+                    painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
+                }
             }
-        }
-        if (clipped) {
-            painter.setBrush(QColor(200, 0, 0));
-            painter.setPen(QColor(200, 0, 0));
-            auto br = painter.boundingRect(rectangle, Qt::AlignCenter, QString("clipping"));
-            painter.drawRect(br);
-            painter.setPen(QColor(255, 255, 255));
-            painter.drawText(rectangle, Qt::AlignCenter, QString("clipping"));
+            if (clipped) {
+                painter.save();
+                painter.setBrush(QColor(200, 0, 0));
+                painter.setPen(QColor(200, 0, 0));
+                auto br = painter.boundingRect(rectangle, Qt::AlignCenter, QString("clipping"));
+                painter.drawRect(br);
+                painter.setPen(QColor(255, 255, 255));
+                painter.drawText(rectangle, Qt::AlignCenter, QString("clipping"));
+                painter.restore();
+            }
         }
     }
 }
@@ -135,10 +157,32 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         QToolTip::showText(event->globalPos(), txt, this, rect());
         event->accept();
     }
+    else if (isSelecting && event->buttons() == Qt::MouseButton::LeftButton) {
+        selEnd = event->pos();
+        //QPainter painter(this);
+        //painter.drawPixmap(rect(), tempPixMap);
+        //drawMarquee(painter);
+        //painter.end();
+        update();
+        event->accept();
+    }
     else {
         event->ignore();
     }
 }
+
+void RenderArea::mousePressEvent(QMouseEvent* event)
+{
+    if (!yTrace.isValid() || (event->button() != Qt::MouseButton::LeftButton)) {
+        event->ignore();
+        return;
+    }
+    tempPixMap = grab();
+    isSelecting = true;
+    setCursor(Qt::CrossCursor);
+    selEnd = selStart = event->pos();
+    event->accept();
+ }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -148,8 +192,16 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
     }
     double x, y;
     scaleFromPixToXY(event->x(), event->y(), x, y);
-    if (event->button() == Qt::MouseButton::LeftButton) {
-        zoomIn(x, y, 2.0);
+    if (isSelecting && event->button() == Qt::MouseButton::LeftButton) {
+        isSelecting = false;
+        unsetCursor();
+        double xs, ys;
+        scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
+        x_min = std::min(x, xs);
+        x_max = std::max(x, xs);
+        y_min = std::min(y, ys);
+        y_max = std::max(y, ys);
+        update();
     }
     else if (event->button() == Qt::MouseButton::RightButton) {
         // zoom out
