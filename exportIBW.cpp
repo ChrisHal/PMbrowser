@@ -46,21 +46,13 @@ int Checksum(short* data, int oldcksum, int numbytes)
 
 void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 {
-	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent()->getParent(), parametersRoot, notetxt);
-	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent(), parametersGroup, notetxt);
-	formatParamListExportIBW(*TrRecord.getParent()->getParent(), parametersSeries, notetxt);
-	formatParamListExportIBW(*TrRecord.getParent(), parametersSweep, notetxt);
-	formatParamListExportIBW(TrRecord, parametersTrace, notetxt);
-	//double cslow = TrRecord.extractLongReal(TrCSlow),
-	//	gseries = TrRecord.extractLongReal(TrGSeries),
-	//	rsvalue = TrRecord.extractLongReal(TrRsValue),
-	//	sealres = TrRecord.extractLongReal(TrSealResistance);
-	//std::stringstream note;
-	//note << "Cslow=" << cslow
-	//	<< " F\nRseries=" << (1.0 / gseries)
-	//	<< " Ohm\nRsValue=" << rsvalue 
-	//	<< "\nSealResistance=" << sealres << " Ohm\n";
-	//notetxt = note.str();
+	std::stringstream note;
+	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent()->getParent(), parametersRoot, note);
+	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent(), parametersGroup, note);
+	formatParamListExportIBW(*TrRecord.getParent()->getParent(), parametersSeries, note);
+	formatParamListExportIBW(*TrRecord.getParent(), parametersSweep, note);
+	formatParamListExportIBW(TrRecord, parametersTrace, note);
+	notetxt = note.str();
 }
 
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,

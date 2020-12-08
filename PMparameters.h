@@ -66,14 +66,20 @@ template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
 }
 
 template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
-	const std::array<PMparameter, Nrows>& ar, std::string& str)
+	const std::array<PMparameter, Nrows>& ar, std::stringstream& ss)
 {
-	std::stringstream ss;
 	for (const PMparameter& p : ar) {
 		if (p.exportIBW) {
 			p.format(n, ss);
 			ss << "\n";
 		}
 	}
+}
+
+template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
+	const std::array<PMparameter, Nrows>& ar, std::string& str)
+{
+	std::stringstream ss;
+	formatParamListExportIBW(n, ar, ss);
 	str.append(ss.str());
 }
