@@ -77,7 +77,7 @@ private:
     // for marquee zoom function:
     bool isSelecting;
     QPoint selStart, selEnd;
-    QPixmap tempPixMap;
+    QPixmap* tempPixMap;
 
     friend class DisplayTrace;
 };

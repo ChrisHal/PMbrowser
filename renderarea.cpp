@@ -38,7 +38,7 @@ RenderArea::RenderArea(QWidget* parent) :
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true },
-    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{}
+    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr }
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -69,6 +69,7 @@ void RenderArea::drawMarquee(QPainter& painter)
 
 void RenderArea::paintEvent(QPaintEvent* event)
 {
+    (void)event;
     QPainterPath path;
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -81,7 +82,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
         if (isSelecting) {
-            painter.drawPixmap(rect(), tempPixMap);
+            painter.drawPixmap(rect(), *tempPixMap);
             drawMarquee(painter);
         }
         else {
@@ -178,7 +179,7 @@ void RenderArea::mousePressEvent(QMouseEvent* event)
         return;
     }
     setCursor(Qt::CrossCursor);
-    tempPixMap = grab();
+    tempPixMap = new QPixmap(grab());
     isSelecting = true;
     selEnd = selStart = event->pos();
     event->accept();
@@ -194,6 +195,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
     scaleFromPixToXY(event->x(), event->y(), x, y);
     if (isSelecting && event->button() == Qt::MouseButton::LeftButton) {
         isSelecting = false;
+        delete tempPixMap; tempPixMap = nullptr;
         unsetCursor();
         double xs, ys;
         scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
