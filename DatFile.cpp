@@ -34,16 +34,6 @@
 
 static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
 
-const char* RecordingModeNames[] = {
-    "Inside-Out",
-    "On-Cell",
-    "Outside-Out",
-    "Whole-Cell",
-    "Current-Clamp",
-    "Voltage-Clamp",
-    "<none>"
-};
-
 bool DatFile::InitFromStream(std::istream& infile)
 {
     char buffer[BundleHeaderSize];
