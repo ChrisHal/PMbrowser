@@ -1,3 +1,8 @@
+#include <cmath>
+#include <algorithm>
+//#ifndef NDEBUG
+//#include <QDebug>
+//#endif
 #include "DisplayTrace.h"
 #include "renderarea.h"
 
@@ -29,9 +34,19 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 		}
 	}
 	else {
-		path.moveTo(display->scaleToQPF(x0, data[0]));
-		for (int i = 1; i < data.size(); ++i) {
-			path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+		//in YT-mode we speed things up by drawing only the
+		//datapoints actually visible
+		int N = data.size();
+		int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
+		int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
+//#ifndef NDEBUG
+//		qDebug() << "first: " << pFirst << ", end: " << pEnd;
+//#endif
+		if (pFirst < pEnd) { // pFirst might even be larger than data.size(), we catch this case also here
+			path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data[pFirst]));
+			for (int i = 1 + pFirst; i < pEnd; ++i) {
+				path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+			}
 		}
 	}
 	painter.drawPath(path);
