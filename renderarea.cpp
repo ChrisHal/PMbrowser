@@ -82,6 +82,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
         if (isSelecting) {
+            assert(tempPixMap != nullptr);
             painter.drawPixmap(rect(), *tempPixMap);
             drawMarquee(painter);
         }
@@ -160,10 +161,6 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     }
     else if (isSelecting && event->buttons() == Qt::MouseButton::LeftButton) {
         selEnd = event->pos();
-        //QPainter painter(this);
-        //painter.drawPixmap(rect(), tempPixMap);
-        //drawMarquee(painter);
-        //painter.end();
         update();
         event->accept();
     }
