@@ -197,12 +197,15 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
         isSelecting = false;
         delete tempPixMap; tempPixMap = nullptr;
         unsetCursor();
-        double xs, ys;
-        scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
-        x_min = std::min(x, xs);
-        x_max = std::max(x, xs);
-        y_min = std::min(y, ys);
-        y_max = std::max(y, ys);
+        // only zoom if there is a meanigful selection:
+        if (event->x() != selStart.x() && event->y() != selStart.y()) {
+            double xs, ys;
+            scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
+            x_min = std::min(x, xs);
+            x_max = std::max(x, xs);
+            y_min = std::min(y, ys);
+            y_max = std::max(y, ys);
+        }
         update();
     }
     else if (event->button() == Qt::MouseButton::RightButton) {
