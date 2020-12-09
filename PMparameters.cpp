@@ -15,7 +15,7 @@ const std::array<const char*, 7> RecordingModeNames = {
 
 
 // NOTE: This is preliminary, some paramaters are not yet included
-std::array<PMparameter, 31>parametersTrace = {
+std::array<PMparameter, 30>parametersTrace = {
 	false,false,"Tr. Mark","",PMparameter::Int32,0,
 	false,false,"Tr. Label","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
@@ -45,8 +45,8 @@ std::array<PMparameter, 31>parametersTrace = {
 	false,false,"IntSolVal","",PMparameter::LongReal,424,
 	false,false,"ExtSolVal","",PMparameter::LongReal,432,
 	false,false,"IntSolName","",PMparameter::StringType,440,
-	false,false,"ExtSolName","",PMparameter::StringType,472,
-	false,false,"DataPedestal","",PMparameter::LongReal,504
+	false,false,"ExtSolName","",PMparameter::StringType,472//,
+	//false,false,"TrXTrace","",PMparameter::Int32,420
 };
 
 std::array<PMparameter, 17>parametersSweep = {

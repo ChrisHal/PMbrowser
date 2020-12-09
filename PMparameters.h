@@ -33,7 +33,7 @@ struct PMparameter {
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
 };
 
-extern std::array<PMparameter, 31>parametersTrace;
+extern std::array<PMparameter, 30>parametersTrace;
 extern std::array<PMparameter, 17>parametersSweep;
 extern std::array<PMparameter, 10>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
