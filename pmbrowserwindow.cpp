@@ -18,6 +18,7 @@
 */
 
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
+#include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QString>
@@ -260,6 +261,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionYX_mode, &QAction::triggered, ui->renderArea, &RenderArea::setXYmode);
     QObject::connect(ui->actionYT_mode, &QAction::triggered, ui->renderArea, &RenderArea::setYTmode);
     QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
+    QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
+    aboutQtAct->setStatusTip("Show the Qt library's About box");
 }
 
 PMbrowserWindow::~PMbrowserWindow()
