@@ -35,10 +35,10 @@ const std::array<const char*, 7> RecordingModeNames = {
 
 // NOTE: This is preliminary, some paramaters are not yet included
 std::array<PMparameter, 30>parametersTrace = {
-	false,false,"Tr. Mark","",PMparameter::Int32,0,
-	false,false,"Tr. Label","",PMparameter::StringType,4,
+	false,false,"TrMark","",PMparameter::Int32,0,
+	false,false,"TrLabel","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
-	false,false,"TrHolding","V|A",PMparameter::LongReal,408,
+	false,false,"Holding","V|A",PMparameter::LongReal,408,
 	false,false,"Internal Solution","",PMparameter::Int32,48,
 	false,false,"Leak traces","",PMparameter::Int32,60,
 	false,false,"UseXStart","",PMparameter::Boolean,66,
@@ -55,7 +55,7 @@ std::array<PMparameter, 30>parametersTrace = {
 	true,true,"Rs","Ohm",PMparameter::InvLongReal,184,
 	false,false,"RsValue","",PMparameter::LongReal,192,
 	false,false,"Gleak","S",PMparameter::LongReal,200,
-	false,false,"Mem. conductance","S",PMparameter::LongReal,208,
+	false,false,"MemConductance","S",PMparameter::LongReal,208,
 	false,false,"CM","F",PMparameter::LongReal,248,
 	false,false,"GM","S",PMparameter::LongReal,256,
 	false,false,"GS","S",PMparameter::LongReal,280,
@@ -84,7 +84,7 @@ std::array<PMparameter, 17>parametersSweep = {
 	false,false,"DigitalOut","",PMparameter::UInt16,116,
 	false,false,"SweepKind","",PMparameter::UInt16,114,
 	false,false,"SwSwMarkers","",PMparameter::LongReal4,120,
-	false,false,"Sweep hodling 16x","",PMparameter::LongReal16,160,
+	false,false,"Sweep holding 16x","",PMparameter::LongReal16,160,
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 

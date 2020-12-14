@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter filter as Pearl-style regular expression.
+    <string>Enter filter as Perl-style regular expression.
 &quot;.*&quot; selects all.</string>
    </property>
   </widget>

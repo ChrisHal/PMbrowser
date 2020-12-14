@@ -57,45 +57,29 @@ void PMbrowserWindow::populateTreeView()
     auto& pultree=datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
     int i=0;
-    for(auto& groupe : pultree.GetRootNode().Children) {
+    for(auto& group : pultree.GetRootNode().Children) {
         QString count=QString("%1").arg(++i), label;
-        label = groupe.getString(GrLabel).c_str();//labelL1;
+        label = group.getString(GrLabel).c_str();
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
-        grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&groupe));
+        grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&group));
         grpitems.append(grpitem);
         int j=0;
-        for(auto& series : groupe.Children) {
+        for(auto& series : group.Children) {
             QString label2 = QString("%1").arg(++j)+" "+QString(series.getString(SeLabel).c_str());
-            auto seriesitem =new QTreeWidgetItem(grpitem,QStringList(label2));
+            auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             int k = 0;
             for(auto& sweep : series.Children) {
                 QString label3 = QString("sweep %1").arg(++k)+" "+QString(sweep.getString(SwLabel).c_str());
-                auto sweepitem = new QTreeWidgetItem(seriesitem,QStringList(label3));
+                auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 int l = 0;
                 for(auto& trace : sweep.Children) {
                     ++l;
-                    // int32_t datakind = trace.extractUInt16(TrDataKind);
                     QString tracelabel = formTraceName(trace, l).c_str();
-                    /*if(datakind & IsImon) {
-                        tracelabel = "Imon";
-                    } else if (datakind & IsVmon) {
-                        tracelabel = "Vmon";
-                    } else {
-                        tracelabel = trace.getString(TrLabel).c_str();
-                        if (tracelabel.isEmpty()) {
-                            if (datakind & IsLeak) {
-                                tracelabel = "Leak";
-                            }
-                            else {
-                                tracelabel = QString("trace %1").arg(l);
-                            }
-                        }
-                    }*/
-                    auto traceitem = new QTreeWidgetItem(sweepitem,QStringList(tracelabel));
+                    auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
             }
@@ -118,10 +102,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
     ui->textEdit->append(tracename);
 
-    // most of the following stuff should now be handled by PMparameters
-    //double sealresistance = trace->extractLongReal(TrSealResistance),
-    //    cslow = trace->extractLongReal(TrCSlow),
-    //    Rseries = 1.0 / trace->extractLongReal(TrGSeries);
+    // Give holding V / I special treatment, since we want to distingushe CC / VC mode
     double holding = trace->extractLongRealNoThrow(TrTrHolding);
     char mode = trace->getChar(TrRecordingMode);
     QString prefix = "Vhold", yunit = "V";
@@ -129,8 +110,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         yunit = "A";
         prefix = "Ihold";
     }
-//    QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
-    // keep the following, since here we fromat it more nicely, with correct name an units
+    // keep the following, since here we format it more nicely, with correct name an units
     // this is beyond what PMparmaters can do right now.
     QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
     std::string str;
