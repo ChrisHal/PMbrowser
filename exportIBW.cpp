@@ -96,6 +96,7 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_
 
 void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
 {
+	assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
 	char dataformat = TrRecord.getChar(TrDataFormat);
 	int32_t     interleavesize = TrRecord.extractValue<int32_t>(TrInterleaveSize, 0),
 		interleaveskip = TrRecord.extractValue<int32_t>(TrInterleaveSkip, 0);
@@ -192,21 +193,8 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 				int tracecount = 0;
 				for (auto& trace : sweep.Children) {
 					++tracecount;
-					//uint16_t tracekind = trace.extractUInt16(TrDataKind);
 					std::stringstream wavename;
 					wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount << "_";
-					//if (tracekind & IsImon) {
-					//	wavename << "_Imon";
-					//}
-					//else if (tracekind & IsVmon) {
-					//	wavename << "_Vmon";
-					//}
-					//else if (tracekind & IsLeak) {
-					//	wavename << "_Leak";
-					//}
-					//else {
-					//	wavename << "_" << tracecount;
-					//}
 					wavename << formTraceName(trace, tracecount);
 					std::string filename = path + wavename.str() + ".ibw";
 					ExportTrace(datafile, trace, filename, wavename.str());

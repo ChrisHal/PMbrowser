@@ -57,6 +57,13 @@ public:
             return t;
         }
     }
+    enum TreeLevel {
+        LevelRoot = 0,
+        LevelGroup = 1,
+        LevelSeries = 2,
+        LevelSweep = 3,
+        LevelTrace = 4
+    };
     int32_t extractInt32(size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(size_t offset) const { return extractValue<double>(offset); };

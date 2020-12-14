@@ -566,16 +566,16 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     if (node != nullptr) {
         switch (node->getLevel())
         {
-        case 1:
+        case hkTreeNode::LevelGroup:
             groupSelected(current, node);
             break;
-        case 2:
+        case hkTreeNode::LevelSeries:
             seriesSelected(current, node);
             break;
-        case 3:
+        case hkTreeNode::LevelSweep:
             sweepSelected(current, node);
             break;
-        case 4:
+        case hkTreeNode::LevelTrace:
             traceSelected(current, node);
             break;
         default:
@@ -606,23 +606,23 @@ void ::PMbrowserWindow::printAllParameters(hkTreeNode* n)
         printAllParameters(n->getParent());
     }
     switch (n->getLevel()) {
-    case 0: // root level
+    case hkTreeNode::LevelRoot:
         lb = "Root:\n";
         formatParamList(*n, parametersRoot, s);
         break;
-    case 1: // Group
+    case hkTreeNode::LevelGroup:
         lb = "Group:\n";
         formatParamList(*n, parametersGroup, s);
         break;
-    case 2:
+    case hkTreeNode::LevelSeries:
         lb = "Series:\n";
         formatParamList(*n, parametersSeries, s);
         break;
-    case 3:
+    case hkTreeNode::LevelSweep:
         lb = "Sweep:\n";
         formatParamList(*n, parametersSweep, s);
         break;
-    case 4:
+    case hkTreeNode::LevelTrace:
         lb = "Trace:\n";
         formatParamList(*n, parametersTrace, s);
         break;
