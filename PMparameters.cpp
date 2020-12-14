@@ -18,9 +18,12 @@
 */
 
 #include<sstream>
+#include<iomanip>
 #include<array>
 #include"PMparameters.h"
 #include "time_handling.h"
+#include <cassert>
+#include <DatFile.h>
 
 const std::array<const char*, 7> RecordingModeNames = {
 	"Inside-Out",
@@ -33,7 +36,6 @@ const std::array<const char*, 7> RecordingModeNames = {
 };
 
 
-// NOTE: This is preliminary, some paramaters are not yet included
 std::array<PMparameter, 30>parametersTrace = {
 	false,false,"TrMark","",PMparameter::Int32,0,
 	false,false,"TrLabel","",PMparameter::StringType,4,
@@ -68,11 +70,12 @@ std::array<PMparameter, 30>parametersTrace = {
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 };
 
-std::array<PMparameter, 17>parametersSweep = {
+std::array<PMparameter, 18>parametersSweep = {
 	false,false,"SwMark","",PMparameter::Int32,0,
 	false,false,"SwLabel","",PMparameter::StringType,4,
 	false,false,"Stim Count","",PMparameter::Int32,40,
 	true,true,"Sweep Time raw","s",PMparameter::LongReal,48,
+	true,true,"Rel. Sweep Time","s",PMparameter::RootRelativeTime,48,
 	true,true,"Sweep Time","",PMparameter::DateTime,48,
 	true,true,"Timer Time","s",PMparameter::LongReal,56,
 	false,false,"User param. 1","",PMparameter::LongReal,64,
@@ -88,7 +91,7 @@ std::array<PMparameter, 17>parametersSweep = {
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 
-std::array<PMparameter, 10>parametersSeries = {
+std::array<PMparameter, 11>parametersSeries = {
 	false,false,"SeMark","",PMparameter::Int32,0,
 	false,false,"SeLabel","",PMparameter::StringType,4,
 	false,false,"SeComment","",PMparameter::StringType,36,
@@ -96,6 +99,7 @@ std::array<PMparameter, 10>parametersSeries = {
 	false,false,"SeNumberSweeps","",PMparameter::Int32,120,
 	false,false,"SeMethodTag","",PMparameter::Int32,132,
 	true,false,"SeTime_raw","s",PMparameter::LongReal,136,
+	true,true,"Rel. SeTime","s",PMparameter::RootRelativeTime,136,
 	true,false,"SeTime","",PMparameter::DateTime,136,
 	false,false,"SeMethodName","",PMparameter::StringType,312,
 	false,false,"SeUsername","",PMparameter::StringType,872
@@ -153,12 +157,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << node.getString(offset);
 			break;
 		case Boolean:
-			if (node.getChar(offset)) {
-				ss << "true";
-			}
-			else {
-				ss << "false";
-			}
+			ss << std::boolalpha << bool(node.getChar(offset));
 			break;
 		case LongReal4:
 			ss << "(";
@@ -184,6 +183,10 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case RecordingMode:
 			ss << RecordingModeNames.at((std::size_t)node.getChar(offset));
 			break;
+		case RootRelativeTime:
+			ss << std::fixed << std::setprecision(3) << 
+				(node.extractLongReal(offset) - getRootTime(node));
+			break;
 		default:
 			throw std::runtime_error("unknown data-type");
 			break;
@@ -194,6 +197,17 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		ss << "n/a";
 	}
 	ss << " " << unit;
+}
+
+double PMparameter::getRootTime(const hkTreeNode& node) const
+{
+	// finde root note:
+	auto p = node.getParent();
+	assert(p != nullptr);
+	while (p->getLevel() > hkTreeNode::LevelRoot) {
+		p = p->getParent();
+	}
+	return p->extractLongRealNoThrow(RoStartTime);
 }
 
 void PMparameter::format(const hkTreeNode& node, std::string& s) const

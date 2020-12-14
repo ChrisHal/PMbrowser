@@ -124,11 +124,8 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     (void)item;
     QString label = QString::fromStdString(sweep->getString(SeLabel));
-    double t = sweep->extractLongRealNoThrow(SwTime);
-    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
-    double timer = sweep->extractLongRealNoThrow(SwTimer);
     int32_t count = sweep->extractInt32(SwSweepCount);
-    QString txt = QString("Sweep %1 %2\nrel. time %3 s\ntimer %4 s").arg(label).arg(count).arg(t - start_time).arg(timer);
+    QString txt = QString("Sweep %1 %2").arg(label).arg(count);
     std::string str;
     formatParamListPrint(*sweep, parametersSweep, str);
     txt.append("\n");
@@ -140,10 +137,8 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 {
     (void)item;
     QString label = QString::fromStdString(series->getString(SeLabel));
-    double t = series->extractLongRealNoThrow(SeTime);
-    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
     int32_t count = series->extractInt32(SeSeriesCount);
-    QString txt = QString("Series %1 %2\nrel. time %3 s").arg(label).arg(count).arg(t - start_time);
+    QString txt = QString("Series %1 %2").arg(label).arg(count);
     std::string str;
     formatParamListPrint(*series, parametersSeries, str);
     txt.append("\n");

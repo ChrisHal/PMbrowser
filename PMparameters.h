@@ -40,7 +40,8 @@ struct PMparameter {
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
 		LongReal16,  // 8 double
-		RecordingMode
+		RecordingMode,
+		RootRelativeTime
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -50,11 +51,13 @@ struct PMparameter {
 
 	void format(const hkTreeNode& node, std::string& s) const;
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
+private:
+	double getRootTime(const hkTreeNode& node) const;
 };
 
 extern std::array<PMparameter, 30>parametersTrace;
-extern std::array<PMparameter, 17>parametersSweep;
-extern std::array<PMparameter, 10>parametersSeries;
+extern std::array<PMparameter, 18>parametersSweep;
+extern std::array<PMparameter, 11>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
