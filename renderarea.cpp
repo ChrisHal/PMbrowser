@@ -34,7 +34,7 @@
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent), ndatapoints{}, 
-    xTrace{}, yTrace{}, tracebuffer{},
+    xTrace{}, yTrace{}, tracebuffer{}, backround_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
@@ -97,12 +97,15 @@ void RenderArea::paintEvent(QPaintEvent* event)
             }
             else {
                 setScaling(x_min, x_max, y_min, y_max);
-                // paint traces in persistance buffer
-                painter.setPen(QColor(128, 128, 128)); // grey
-                for (auto trace : tracebuffer) {
-                    trace->render(painter, this);
+                if (!backround_traces_hidden) {
+                    // paint traces in persistance buffer
+                    painter.setPen(QColor(128, 128, 128)); // grey
+                    for (auto trace : tracebuffer) {
+                        trace->render(painter, this);
+                    }
+                    painter.setPen(QColor(0, 0, 0)); // black
                 }
-                painter.setPen(QColor(0, 0, 0)); // black
+
                 yTrace.render(painter, this);
 
                 font = painter.font();
@@ -175,7 +178,14 @@ void RenderArea::doContextMenu(QMouseEvent* event)
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
     auto actAutoScale = menu.addAction("autoscale");
-    auto actWipeBK = menu.addAction("wipe background traces");
+    // auto actWipeBK = menu.addAction("wipe background traces");
+    QAction* actToggleBK = nullptr;
+    if (backround_traces_hidden) {
+        actToggleBK = menu.addAction("unhide background traces");
+    }
+    else {
+        actToggleBK = menu.addAction("hide background traces");
+    }
 
     auto response = menu.exec(event->globalPos());
     if (response == actZoomOut) {
@@ -187,8 +197,13 @@ void RenderArea::doContextMenu(QMouseEvent* event)
         autoScale();
         event->accept();
         }
-    else if (response == actWipeBK) {
-        wipeBuffer();
+    //else if (response == actWipeBK) {
+    //    wipeBuffer();
+    //    event->accept();
+    //}
+    else if (response == actToggleBK) {
+        backround_traces_hidden = !backround_traces_hidden;
+        update();
         event->accept();
     }
 }
