@@ -66,6 +66,7 @@ private:
     void scaleFromPixToXY(int px, int py, double& x, double& y);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
+    void doContextMenu(QMouseEvent* event);
     size_t ndatapoints;
     DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;

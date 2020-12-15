@@ -19,6 +19,7 @@
 
 #include <QtGui>
 #include <QToolTip>
+#include <QMenu>
 #include <qdebug.h>
 #include <stdexcept>
 #include <limits>
@@ -169,12 +170,40 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void RenderArea::doContextMenu(QMouseEvent* event)
+{
+    QMenu menu(this);
+    auto actZoomOut = menu.addAction("zoom out");
+    auto actAutoScale = menu.addAction("autoscale");
+    auto actWipeBK = menu.addAction("wipe background traces");
+
+    auto response = menu.exec(event->globalPos());
+    if (response == actZoomOut) {
+        double x, y;
+        scaleFromPixToXY(event->x(), event->y(), x, y);
+        zoomIn(x, y, 0.5);
+        event->accept();
+    } else if (response == actAutoScale) {
+        autoScale();
+        event->accept();
+        }
+    else if (response == actWipeBK) {
+        wipeBuffer();
+        event->accept();
+    }
+}
+
 void RenderArea::mousePressEvent(QMouseEvent* event)
 {
+    if (yTrace.isValid() && (event->button() == Qt::MouseButton::RightButton) && !isSelecting) {
+        doContextMenu(event);
+        return;
+    }
     if (!yTrace.isValid() || (event->button() != Qt::MouseButton::LeftButton)) {
         event->ignore();
         return;
     }
+    // start selecting for zoom
     setCursor(Qt::CrossCursor);
     tempPixMap = new QPixmap(grab());
     isSelecting = true;
@@ -188,9 +217,10 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
         event->ignore();
         return;
     }
-    double x, y;
-    scaleFromPixToXY(event->x(), event->y(), x, y);
+
     if (isSelecting && event->button() == Qt::MouseButton::LeftButton) {
+        double x, y;
+        scaleFromPixToXY(event->x(), event->y(), x, y);
         isSelecting = false;
         delete tempPixMap; tempPixMap = nullptr;
         unsetCursor();
@@ -204,12 +234,10 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
             y_max = std::max(y, ys);
         }
         update();
+        event->accept();
+        return;
     }
-    else if (event->button() == Qt::MouseButton::RightButton) {
-        // zoom out
-        zoomIn(x, y, 0.5);
-    }
-    event->accept();
+    event->ignore();
 }
 
 void RenderArea::wheelEvent(QWheelEvent* event)
