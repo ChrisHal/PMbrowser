@@ -70,7 +70,7 @@ private:
     size_t ndatapoints;
     DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
-    bool backround_traces_hidden;
+    bool background_traces_hidden;
     bool clipped; // Amp. was clipping
     double x_min, x_max, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
