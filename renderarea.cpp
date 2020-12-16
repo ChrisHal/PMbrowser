@@ -201,6 +201,7 @@ void RenderArea::doContextMenu(QMouseEvent* event)
         y_min = nymin;
         y_max = nymax;
         update();
+        event->accept();
     }
     else if (response == actAutoScale) {
         autoScale();
