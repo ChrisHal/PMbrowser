@@ -177,6 +177,7 @@ void RenderArea::doContextMenu(QMouseEvent* event)
 {
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
+    auto actShrinkV = menu.addAction("vertical shrink");
     auto actAutoScale = menu.addAction("autoscale");
     // auto actWipeBK = menu.addAction("wipe background traces");
     QAction* actToggleBK = nullptr;
@@ -193,7 +194,15 @@ void RenderArea::doContextMenu(QMouseEvent* event)
         scaleFromPixToXY(event->x(), event->y(), x, y);
         zoomIn(x, y, 0.5);
         event->accept();
-    } else if (response == actAutoScale) {
+    }
+    else if (response == actShrinkV) {
+        double nymin = 1.5 * y_min - 0.5 * y_max,
+            nymax = 1.5 * y_max - 0.5 * y_min;
+        y_min = nymin;
+        y_max = nymax;
+        update();
+    }
+    else if (response == actAutoScale) {
         autoScale();
         event->accept();
         }
