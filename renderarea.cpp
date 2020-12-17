@@ -175,7 +175,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
-void RenderArea::doContextMenu(QMouseEvent* event)
+void RenderArea::doContextMenu(QContextMenuEvent* event)
 {
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
@@ -222,10 +222,11 @@ void RenderArea::doContextMenu(QMouseEvent* event)
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
 {
-    if (yTrace.isValid() && (event->button() == Qt::MouseButton::RightButton) && !isSelecting) {
-        doContextMenu(event);
-        return;
-    }
+    // This should be habdked by a context menu event!
+    //if (yTrace.isValid() && (event->button() == Qt::MouseButton::RightButton) && !isSelecting) {
+    //    doContextMenu(event);
+    //    return;
+    //}
     if (!yTrace.isValid() || (event->button() != Qt::MouseButton::LeftButton)) {
         event->ignore();
         return;
@@ -237,6 +238,16 @@ void RenderArea::mousePressEvent(QMouseEvent* event)
     selEnd = selStart = event->pos();
     event->accept();
  }
+
+void RenderArea::contextMenuEvent(QContextMenuEvent* event)
+{
+    if (yTrace.isValid() && !isSelecting) {
+        doContextMenu(event);
+    }
+    else {
+        event->ignore();
+    }
+}
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {

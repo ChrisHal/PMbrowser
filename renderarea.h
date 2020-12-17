@@ -62,6 +62,7 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event);
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
@@ -69,7 +70,7 @@ private:
     void scaleFromPixToXY(int px, int py, double& x, double& y);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
-    void doContextMenu(QMouseEvent* event);
+    void doContextMenu(QContextMenuEvent* event);
     size_t ndatapoints;
     DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
