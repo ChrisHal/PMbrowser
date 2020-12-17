@@ -17,3 +17,4 @@ moc_*
 *.aps
 QtPMbrowser.aps
 *.ibw
+/PMbrowserSetup/Release
