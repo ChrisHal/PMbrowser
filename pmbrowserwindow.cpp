@@ -19,7 +19,9 @@
 
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
 #include <QApplication>
+#include <QSettings>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QString>
 #include <QDir>
@@ -184,6 +186,10 @@ void PMbrowserWindow::loadFile(QString filename)
             QString("error opening file:\n") + QString(std::strerror(errno)));
     }
     currentFile = filename;
+    lastloadpath = QFileInfo(filename).path();
+    //settings_modified = true;
+    QSettings settings;
+    settings.setValue("pmbrowserwindow/lastloadpath", lastloadpath);
     datfile = new DatFile;
     try {
         datfile->InitFromStream(infile);
@@ -221,8 +227,9 @@ void PMbrowserWindow::loadFile(QString filename)
 
 PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{},
-    filterStrGrp{ ".*" }, filterStrSer{ ".*" }, filterStrSwp{ ".*" }, filterStrTr{ ".*" }
+    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{ nullptr }, lastloadpath{}, lastexportpath{},
+    filterStrGrp{ ".*" }, filterStrSer{ ".*" }, filterStrSwp{ ".*" }, filterStrTr{ ".*" },
+    settings_modified{ false }
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(QString(":/myappico.ico")));
@@ -238,6 +245,9 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
     QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip("Show the Qt library's About box");
+
+    loadSettings();
+    ui->renderArea->loadSettings();
 }
 
 PMbrowserWindow::~PMbrowserWindow()
@@ -252,9 +262,9 @@ void PMbrowserWindow::on_actionOpen_triggered()
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter("DAT-file (*.dat)");
     dialog.setViewMode(QFileDialog::Detail);
+    dialog.setDirectory(lastloadpath);
     if (dialog.exec()) {
-        currentFile = dialog.selectedFiles().at(0);
-        loadFile(currentFile);
+        loadFile(dialog.selectedFiles().at(0));
     }
 }
 
@@ -327,6 +337,7 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
             path.append('/');
         }
         lastexportpath = path;
+        settings_modified = true;
         return true;
     }
     else {
@@ -434,7 +445,7 @@ void PMbrowserWindow::on_actionExport_IBW_File_triggered()
     auto item = ui->treePulse->currentItem();
     if (!datfile) {
         QMessageBox msg;
-        msg.setText("no file open");
+        msg.setText("no file");
         msg.exec();
     }
     else if(!item){
@@ -489,6 +500,7 @@ void PMbrowserWindow::on_actionFilter_triggered()
 {
     DlgTreeFilter dlg(this, filterStrGrp, filterStrSer, filterStrSwp, filterStrTr);
     if (dlg.exec()) {
+        settings_modified = true;
         filterStrGrp = dlg.grp;
         filterStrSer = dlg.ser;
         filterStrSwp = dlg.swp;
@@ -584,6 +596,7 @@ void PMbrowserWindow::on_actionSelect_Parameters_triggered()
     DlgSelectParameters dlg;
     if (dlg.exec()) {
         dlg.storeParams();
+        settings_modified = true;
     }
 }
 
@@ -666,4 +679,93 @@ void PMbrowserWindow::resizeEvent(QResizeEvent* event)
    auto s = event->size();
    ui->widget->resize(s);
    ui->splitterH->setGeometry(5, 5, s.width() - 10, s.height() - 30);
+}
+
+void PMbrowserWindow::closeEvent(QCloseEvent* event)
+{
+    if (settings_modified || ui->renderArea->isSettingsModified()) {
+        auto res = QMessageBox::question(this, "Save Settings",
+            "Some settings have bee modified.\nDo you want to save them?",
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+        if (res == QMessageBox::Cancel) {
+            event->ignore();
+        }
+        else {
+            if (res == QMessageBox::Yes) {
+                saveSettings();
+                ui->renderArea->saveSettings();
+            }
+            event->accept();
+        }
+    }
+}
+
+
+void PMbrowserWindow::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("pmbrowserwindow");
+    settings.setValue("lastloadpath", lastloadpath);
+    settings.setValue("lastexportpath", lastexportpath);
+    settings.setValue("filterStrGrp", filterStrGrp);
+    settings.setValue("filterStrSer", filterStrSer);
+    settings.setValue("filterStrSwp", filterStrSwp);
+    settings.setValue("filterStrTr", filterStrTr);
+    settings.endGroup();
+
+    settings.beginGroup("params_group");
+    for (const auto& p : parametersGroup) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_series");
+    for (const auto& p : parametersSeries) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_sweep");
+    for (const auto& p : parametersSweep) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_trace");
+    for (const auto& p : parametersTrace) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    
+}
+
+void PMbrowserWindow::loadSettings()
+{
+    QSettings settings;
+	settings.beginGroup("pmbrowserwindow");
+    lastloadpath = settings.value("lastloadpath", lastloadpath).toString();
+    lastexportpath = settings.value("lastexportpath", lastexportpath).toString();
+	filterStrGrp = settings.value("filterStrGrp", filterStrGrp).toString();
+	filterStrSer = settings.value("filterStrSer", filterStrSer).toString();
+	filterStrSwp = settings.value("filterStrSwp", filterStrSwp).toString();
+	filterStrTr = settings.value("filterStrTr", filterStrTr).toString();
+    settings.endGroup();
+
+    settings.beginGroup("params_group");
+    for (auto& p : parametersGroup) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_series");
+    for (auto& p : parametersSeries) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_sweep");
+    for (auto& p : parametersSweep) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_trace");
+    for (auto& p : parametersTrace) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
 }

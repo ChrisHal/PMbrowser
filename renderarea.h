@@ -44,6 +44,9 @@ public:
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void clearTrace();
     bool isXYmode() { return xTrace.isValid(); };
+    bool isSettingsModified() { return settings_modified; };
+    void saveSettings();
+    void loadSettings();
 
 public slots:
     void showSettingsDialog();
@@ -80,6 +83,7 @@ private:
     bool isSelecting;
     QPoint selStart, selEnd;
     QPixmap* tempPixMap;
+    bool settings_modified;
 
     friend class DisplayTrace;
 };

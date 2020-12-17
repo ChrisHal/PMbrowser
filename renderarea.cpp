@@ -20,7 +20,8 @@
 #include <QtGui>
 #include <QToolTip>
 #include <QMenu>
-#include <qdebug.h>
+#include <QDebug>
+#include <QSettings>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -39,7 +40,8 @@ RenderArea::RenderArea(QWidget* parent) :
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true },
-    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr }
+    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
+    settings_modified{ false }
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -375,6 +377,7 @@ void RenderArea::showSettingsDialog()
     DlgGraphSettings dlg(this);
     dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
     if (dlg.exec()) {
+        settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
         // if numtraces has been reduced we ant to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
@@ -468,4 +471,22 @@ void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
     y = y_max - double(py) / double(height()) * (y_max - y_min);
+}
+
+void RenderArea::loadSettings()
+{
+    QSettings s;
+    s.beginGroup("renderarea");
+    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();;
+    numtraces = s.value("numtraces", numtraces).toInt();
+    s.endGroup();
+}
+
+void RenderArea::saveSettings()
+{
+    QSettings s;
+    s.beginGroup("renderarea");
+    s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("numtraces", numtraces);
+    s.endGroup();
 }

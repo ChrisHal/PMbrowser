@@ -51,6 +51,8 @@ struct PMparameter {
 
 	void format(const hkTreeNode& node, std::string& s) const;
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
+	int toInt() const { return int(exportIBW) | (int(print) << 1); };
+	void fromInt(int i) { exportIBW = i & 1; print = i & 2; };
 private:
 	double getRootTime(const hkTreeNode& node) const;
 };

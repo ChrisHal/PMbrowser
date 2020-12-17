@@ -59,6 +59,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     void loadFile(QString filename);
@@ -78,11 +79,14 @@ private:
     void treeSetHidden(QTreeWidgetItem* item, bool hidden);
     void unhideTreeItems(QTreeWidgetItem* item);
     void filterTree();
+    void saveSettings();
+    void loadSettings();
     Ui::PMbrowserWindow *ui;
     QString currentFile;
     std::ifstream infile;
     DatFile* datfile;
-    QString lastexportpath;
+    QString lastloadpath, lastexportpath;
     QString filterStrGrp, filterStrSer, filterStrSwp, filterStrTr;
+    bool settings_modified;
 };
 #endif // PMBROWSERWINDOW_H

@@ -20,11 +20,17 @@
 #include "pmbrowserwindow.h"
 //#include <stdexcept>
 #include <QApplication>
+#include <QSettings>
 //#include <QDebug>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QCoreApplication::setOrganizationName("CRHalaszovichMD");
+    QCoreApplication::setOrganizationDomain("halaszovich.de");
+    QCoreApplication::setApplicationName("PM browser");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
     PMbrowserWindow w;
     w.show();
     return a.exec();
