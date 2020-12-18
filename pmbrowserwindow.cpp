@@ -262,7 +262,12 @@ void PMbrowserWindow::on_actionOpen_triggered()
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter("DAT-file (*.dat)");
     dialog.setViewMode(QFileDialog::Detail);
-    dialog.setDirectory(lastloadpath);
+    if(QDir(lastloadpath).exists()) {
+        dialog.setDirectory(lastloadpath);
+    }
+    else {
+        dialog.setDirectory("./");
+    }
     if (dialog.exec()) {
         loadFile(dialog.selectedFiles().at(0));
     }
