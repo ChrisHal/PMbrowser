@@ -329,6 +329,9 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
 
 bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
 {
+    if (!QDir(lastexportpath).exists()) {
+        lastexportpath.clear();
+    }
     DlgChoosePathAndPrefix dlg(this, lastexportpath);
     if (dlg.exec())
     {
