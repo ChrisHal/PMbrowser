@@ -181,7 +181,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << ")";
 			break;
 		case RecordingMode:
-			ss << RecordingModeNames.at((std::size_t)node.getChar(offset));
+			ss << RecordingModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 			break;
 		case RootRelativeTime:
 			ss << std::fixed << std::setprecision(3) <<
