@@ -184,8 +184,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << RecordingModeNames.at((std::size_t)node.getChar(offset));
 			break;
 		case RootRelativeTime:
-			ss << std::fixed << std::setprecision(3) << 
-				(node.extractLongReal(offset) - getRootTime(node));
+			ss << std::fixed << std::setprecision(3) <<
+				(node.extractLongReal(offset) - getRootTime(node))
+				<< std::defaultfloat << std::setprecision(6);
 			break;
 		default:
 			throw std::runtime_error("unknown data-type");
