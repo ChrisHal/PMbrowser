@@ -209,7 +209,11 @@ void PMbrowserWindow::loadFile(QString filename)
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
         }
         try {
-            std::string ampname = datfile->GetAmpTree().GetRootNode().getString(RoAmplifierName);
+            const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
+            std::string ampname = amprootnode.getString(RoAmplifierName);
+            // turns out, the following filed are somewhat obscure/useless
+            // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
+            // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
             txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
         }
         catch (std::out_of_range& e) {
@@ -553,6 +557,11 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
+        QAction* actAmpstate = nullptr;
+        const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+        if (node->getLevel() == hkTreeNode::LevelSeries) {
+            actAmpstate = menu.addAction("amplifier state");
+        }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
             exportSubTreeAsIBW(item);
@@ -565,6 +574,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (response == actPrintAllP) {
             printAllParameters(item);
+        }
+        else if (actAmpstate != nullptr && actAmpstate == response) {
+            printAmplifierState(node);
         }
     }
 }
@@ -644,6 +656,36 @@ void ::PMbrowserWindow::printAllParameters(hkTreeNode* n)
         break;
     }
     ui->textEdit->append(lb + s.c_str());
+}
+
+void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
+{
+    assert(series->getLevel() == hkTreeNode::LevelSeries);
+    hkTreeNode amprecord;
+    amprecord.len = AmplifierStateSize;
+    amprecord.isSwapped = series->getIsSwapped();
+    auto ampstateflag = series->extractInt32(SeAmplStateFlag),
+        ampstateref = series->extractInt32(SeAmplStateRef);
+    if (ampstateflag > 0 || ampstateref == 0) {
+        // use local amp state record
+        amprecord.Data = series->Data + SeOldAmpState;
+        std::string s;
+        formatParamList(amprecord, parametersAmpplifierState, s);
+        ui->textEdit->append(QString("Amplifier State:\n") + s.c_str());
+    }
+    else {
+        // auto secount = series->extractInt32(SeSeriesCount);
+        const auto& amproot = datfile->GetAmpTree().GetRootNode();
+        const auto& ampse = amproot.Children.at(ampstateref - 1); // Is this correct? Or seCount?
+        for (const auto& ampre : ampse.Children) { // there might be multiple amplifiers
+            auto ampstatecount = ampre.extractInt32(AmStateCount);
+            amprecord.Data = ampre.Data + AmAmplifierState;
+            std::string s;
+            formatParamList(amprecord, parametersAmpplifierState, s);
+            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n").arg(ampstatecount) + s.c_str());
+        }
+    }
+
 }
 
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()

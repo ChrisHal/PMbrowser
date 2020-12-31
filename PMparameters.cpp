@@ -124,6 +124,26 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
+extern std::array<PMparameter, 16>parametersAmpplifierState = {
+	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
+	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
+	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
+	false, true, "RsValue", "Ohm", PMparameter::LongReal,32,
+	false, true, "RsFraction", "", PMparameter::LongReal,40,
+	false, true, "GLeak", "S", PMparameter::LongReal,48,
+	false, true, "CFastAmp1", "F", PMparameter::LongReal,56,
+	false, true, "CFastAmp2", "F", PMparameter::LongReal,64,
+	false, true, "CFastTau", "s", PMparameter::LongReal,72,
+	false, true, "CSlow", "F", PMparameter::LongReal,80,
+	false, true, "GSeries", "S", PMparameter::LongReal,88,
+	false, true, "VCStimDacScale", "", PMparameter::LongReal,96,
+	false, true, "CCStimDacScale", "", PMparameter::LongReal,104,
+	false, true, "VHold", "V", PMparameter::LongReal,112,
+	false, true, "LastVHold", "V", PMparameter::LongReal,120,
+	false, true, "VpOffset", "V", PMparameter::LongReal,128
+};
+
+
 void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 {
 	ss << name << "=";

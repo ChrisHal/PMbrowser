@@ -73,13 +73,12 @@ public:
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
     int getLevel() const { return level; };
-private:
+
     hkTreeNode* Parent;
     bool isSwapped;
     char* Data;
     int level;
     int32_t len;
-public:
     std::vector<hkTreeNode> Children;
     friend class hkTree;
 };

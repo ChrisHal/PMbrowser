@@ -72,6 +72,7 @@ private:
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
     void printAllParameters(QTreeWidgetItem* item);
     void printAllParameters(hkTreeNode* node);
+    void printAmplifierState(const hkTreeNode* series);
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix);
     bool choosePathAndPrefix(QString& path, QString& prefix);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
