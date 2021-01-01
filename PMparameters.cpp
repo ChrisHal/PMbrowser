@@ -124,7 +124,7 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
-extern std::array<PMparameter, 16>parametersAmpplifierState = {
+extern std::array<PMparameter, 24>parametersAmpplifierState = {
 	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
 	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
 	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
@@ -140,7 +140,15 @@ extern std::array<PMparameter, 16>parametersAmpplifierState = {
 	false, true, "CCStimDacScale", "", PMparameter::LongReal,104,
 	false, true, "VHold", "V", PMparameter::LongReal,112,
 	false, true, "LastVHold", "V", PMparameter::LongReal,120,
-	false, true, "VpOffset", "V", PMparameter::LongReal,128
+	false, true, "VpOffset", "V", PMparameter::LongReal,128,
+	false,true,"VLiquidJunction","V",PMparameter::LongReal,136,
+	false,true,"CCIHold","A",PMparameter::LongReal,144,
+	false,true,"MConductance","S",PMparameter::LongReal,184,
+	false,true,"MCapacitance","F",PMparameter::LongReal,192,
+	false,true,"IMonAdc","",PMparameter::Int16,212,
+	false,true,"VMonAdc","",PMparameter::Int16,192,
+	false,true,"StimDac","",PMparameter::Int16,220,
+	false,true,"Mode","",PMparameter::Byte,237
 };
 
 

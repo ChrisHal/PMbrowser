@@ -63,7 +63,7 @@ extern std::array<PMparameter, 11>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
-extern std::array<PMparameter, 16>parametersAmpplifierState;
+extern std::array<PMparameter, 24>parametersAmpplifierState;
 
 extern const std::array<const char*, 7>RecordingModeNames;
 
