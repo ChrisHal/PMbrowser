@@ -181,15 +181,15 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     auto actZoomOut = menu.addAction("zoom out");
     auto actShrinkV = menu.addAction("vertical shrink");
     auto actAutoScale = menu.addAction("autoscale");
+    menu.addSeparator();
     // auto actWipeBK = menu.addAction("wipe background traces");
-    QAction* actToggleBK = nullptr;
-    if (background_traces_hidden) {
-        actToggleBK = menu.addAction("unhide background traces");
-    }
-    else {
-        actToggleBK = menu.addAction("hide background traces");
-    }
-
+    auto actASOL = menu.addAction("autoscale on load");
+    actASOL->setCheckable(true);
+    actASOL->setChecked(do_autoscale_on_load);
+    QAction* actToggleBK = menu.addAction("show background traces");
+    actToggleBK->setCheckable(true);
+    actToggleBK->setChecked(!background_traces_hidden);
+    
     auto response = menu.exec(event->globalPos());
     if (response == actZoomOut) {
         double x, y;
@@ -209,10 +209,10 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         autoScale();
         event->accept();
         }
-    //else if (response == actWipeBK) {
-    //    wipeBuffer();
-    //    event->accept();
-    //}
+    else if (response == actASOL) {
+        do_autoscale_on_load = !do_autoscale_on_load;
+        // settings_modified = true;
+    }
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
         update();
@@ -353,6 +353,11 @@ void RenderArea::autoScale()
     y_min = *std::min_element(yTrace.data.constBegin(), yTrace.data.constEnd());
     y_max = *std::max_element(yTrace.data.constBegin(), yTrace.data.constEnd());
     update();
+}
+
+void RenderArea::toggleDoAutoscale(bool checked)
+{
+    do_autoscale_on_load = checked;
 }
 
 void RenderArea::wipeBuffer()

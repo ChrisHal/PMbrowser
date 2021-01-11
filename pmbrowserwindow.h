@@ -54,6 +54,7 @@ private slots:
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_actionSelect_Parameters_triggered();
     void on_actionPrint_All_Params_triggered();
+    void on_menuGraph_aboutToShow();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;

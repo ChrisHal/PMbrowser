@@ -45,12 +45,14 @@ public:
     void clearTrace();
     bool isXYmode() { return xTrace.isValid(); };
     bool isSettingsModified() { return settings_modified; };
+    bool isAutoscaleEnabled() { return do_autoscale_on_load; };
     void saveSettings();
     void loadSettings();
 
 public slots:
     void showSettingsDialog();
     void autoScale();
+    void toggleDoAutoscale(bool checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
     void setXYmode();

@@ -241,6 +241,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     setAcceptDrops(true);
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(ui->actionDo_Autoscale_on_Load, &QAction::toggled, ui->renderArea, &RenderArea::toggleDoAutoscale);
     QObject::connect(ui->treePulse, &QTreeWidget::customContextMenuRequested, this, &PMbrowserWindow::prepareTreeContextMenu);
     QObject::connect(ui->actionSettings, &QAction::triggered, ui->renderArea, &RenderArea::showSettingsDialog);
     QObject::connect(ui->actionWipe, &QAction::triggered, ui->renderArea, &RenderArea::wipeAll);
@@ -694,6 +695,11 @@ void PMbrowserWindow::on_actionPrint_All_Params_triggered()
     if (item) {
         printAllParameters(item);
     }
+}
+
+void PMbrowserWindow::on_menuGraph_aboutToShow()
+{
+    ui->actionDo_Autoscale_on_Load->setChecked(ui->renderArea->isAutoscaleEnabled());
 }
 
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
