@@ -70,6 +70,13 @@ public:
     double extractLongRealNoThrow(size_t offset) const; // instead of throwing an exception, returns NaN if out of range
     char getChar(size_t offset) const;
     std::string getString(size_t offset) const;
+    template<std::size_t N> std::string getString(size_t offset) const
+    {
+        if (len < offset + N) {
+            throw std::out_of_range("offset to large while accessing tree node");
+        }
+        return std::string(Data + offset, N);
+    };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
     int getLevel() const { return level; };

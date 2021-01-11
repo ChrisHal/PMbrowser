@@ -35,6 +35,13 @@ const std::array<const char*, 7> RecordingModeNames = {
 	"<none>"
 };
 
+const std::array<const char*, 4> AmpModeNames = {
+	"TestMode",
+	"VCMode",
+	"CCMode",
+	"NoMode"
+};
+
 
 std::array<PMparameter, 30>parametersTrace = {
 	false,false,"TrMark","",PMparameter::Int32,0,
@@ -124,7 +131,7 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
-extern std::array<PMparameter, 24>parametersAmpplifierState = {
+extern std::array<PMparameter, 25>parametersAmpplifierState = {
 	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
 	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
 	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
@@ -148,7 +155,8 @@ extern std::array<PMparameter, 24>parametersAmpplifierState = {
 	false,true,"IMonAdc","",PMparameter::Int16,212,
 	false,true,"VMonAdc","",PMparameter::Int16,192,
 	false,true,"StimDac","",PMparameter::Int16,220,
-	false,true,"Mode","",PMparameter::Byte,237
+	false,true,"Mode","",PMparameter::AmpModeName,237,
+	false,true,"SerialNumber","",PMparameter::String8,200
 };
 
 
@@ -184,6 +192,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case StringType:
 			ss << node.getString(offset);
 			break;
+		case String8:
+			ss << node.getString<8>(offset);
+			break;
 		case Boolean:
 			ss << std::boolalpha << bool(node.getChar(offset));
 			break;
@@ -215,6 +226,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << std::fixed << std::setprecision(3) <<
 				(node.extractLongReal(offset) - getRootTime(node))
 				<< std::defaultfloat << std::setprecision(6);
+			break;
+		case AmpModeName:
+			ss << AmpModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 			break;
 		default:
 			throw std::runtime_error("unknown data-type");

@@ -35,13 +35,15 @@ struct PMparameter {
 		LongReal, // i.e. double
 		DateTime, // weird PowerMod date
 		StringType,
+		String8, // String of length 8
 		Boolean,
 		InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
 		LongReal16,  // 8 double
 		RecordingMode,
-		RootRelativeTime
+		RootRelativeTime,
+		AmpModeName
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -63,9 +65,10 @@ extern std::array<PMparameter, 11>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
-extern std::array<PMparameter, 24>parametersAmpplifierState;
+extern std::array<PMparameter, 25>parametersAmpplifierState;
 
 extern const std::array<const char*, 7>RecordingModeNames;
+extern const std::array<const char*, 4> AmpModeNames;
 
 template<std::size_t Nrows> void formatParamList(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::string& str)
