@@ -157,10 +157,10 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         }
         QString txt;
         if (isXYmode()) {
-            txt = QString("(%1%2/%3%4)\nclick L/R: zoom in/out").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
+            txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
-            txt = QString("(%1%2/%3%4)\ndata: %5%6\nclick L/R: zoom in/out").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
+            txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
         event->accept();
