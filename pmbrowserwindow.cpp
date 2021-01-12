@@ -672,7 +672,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         amprecord.Data = series->Data + SeOldAmpState;
         std::string s;
         formatParamList(amprecord, parametersAmpplifierState, s);
-        ui->textEdit->append(QString("Amplifier State:\n") + s.c_str());
+        ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
     }
     else {
         // auto secount = series->extractInt32(SeSeriesCount);
@@ -683,7 +683,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
             amprecord.Data = ampre.Data + AmAmplifierState;
             std::string s;
             formatParamList(amprecord, parametersAmpplifierState, s);
-            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n").arg(ampstatecount) + s.c_str());
+            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));
         }
     }
 
