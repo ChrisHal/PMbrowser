@@ -125,7 +125,7 @@
      <x>0</x>
      <y>0</y>
      <width>674</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -252,7 +252,7 @@
   </action>
   <action name="actionSettings">
    <property name="text">
-    <string>Settings and Ranges</string>
+    <string>Settings and Ranges...</string>
    </property>
   </action>
   <action name="actionWipe">
