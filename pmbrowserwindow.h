@@ -72,7 +72,7 @@ private:
     void seriesSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void sweepSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
-    void drawChildren(QTreeWidgetItem* item, int level);
+    void collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list);
     void printAllParameters(QTreeWidgetItem* item);
     void printAllParameters(hkTreeNode* node);
     void printAmplifierState(const hkTreeNode* series);

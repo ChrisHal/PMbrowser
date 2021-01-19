@@ -23,6 +23,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QProgressDialog>
+#include <QProgressBar>
 #include <QString>
 #include <QDir>
 #include <QDebug>
@@ -43,6 +45,7 @@
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
+
 
 const QString myAppName("PM browser");
 const QString appVersion("1.2 experimental");
@@ -123,19 +126,20 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, infile);
 }
 
-void PMbrowserWindow::drawChildren(QTreeWidgetItem* item, int level)
+void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list)
 {
     if (!item->isHidden()) {
         if (level < hkTreeNode::LevelTrace) {
             int N = item->childCount();
             for (int i = 0; i < N; ++i) {
-                drawChildren(item->child(i), level + 1);
+                collectChildTraces(item->child(i), level + 1, trace_list);
             }
         }
         else {
             auto trace = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            ui->renderArea->renderTrace(trace, infile);
-            ui->renderArea->repaint();
+            trace_list.append(trace);
+            //ui->renderArea->renderTrace(trace, infile);
+            //ui->renderArea->repaint();
         }
     }
 }
@@ -639,11 +643,29 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
     if (item != nullptr) {
         auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         auto level = node->getLevel();
-        if (level >= hkTreeNode::LevelSeries && level < hkTreeNode::LevelTrace) {
-            QString info = QString("(drawing all traces for '%1')").arg(item->text(0));
-            ui->textEdit->append(info);
+        if (/*level >= hkTreeNode::LevelSeries &&*/ level < hkTreeNode::LevelTrace) {
+            QString info = QString("Rendering child traces for '%1'.").arg(item->text(0));
             // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
-            drawChildren(item, level);
+            QVector<hkTreeNode*> child_traces;
+            collectChildTraces(item, level, child_traces);
+            int num_traces = child_traces.size();
+            QProgressDialog progress(info, "Abort", 0, num_traces, this);
+            QProgressBar* pbar = new QProgressBar(&progress);
+            pbar->setMaximum(num_traces);
+            pbar->setMinimum(0);
+            pbar->setFormat("%v/%m");
+            progress.setBar(pbar);
+            progress.setWindowModality(Qt::WindowModal);
+
+            for (int i = 0; i < num_traces; ++i) {
+                progress.setValue(i);
+                if (progress.wasCanceled()) {
+                    break;
+                }
+                ui->renderArea->renderTrace(child_traces.at(i), infile);
+                ui->renderArea->repaint();
+            }
+            progress.setValue(num_traces);
         }
     }
 }
