@@ -52,6 +52,7 @@ private slots:
     void on_actionExport_All_Visible_Traces_as_IBW_Files_triggered();
     void prepareTreeContextMenu(const QPoint& pos);
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int column);
     void on_actionSelect_Parameters_triggered();
     void on_actionPrint_All_Params_triggered();
     void on_menuGraph_aboutToShow();
@@ -71,6 +72,7 @@ private:
     void seriesSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void sweepSelected(QTreeWidgetItem* item, hkTreeNode* node);
     void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
+    void drawChildren(QTreeWidgetItem* item, int level);
     void printAllParameters(QTreeWidgetItem* item);
     void printAllParameters(hkTreeNode* node);
     void printAmplifierState(const hkTreeNode* series);

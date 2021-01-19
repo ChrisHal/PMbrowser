@@ -123,6 +123,23 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, infile);
 }
 
+void PMbrowserWindow::drawChildren(QTreeWidgetItem* item, int level)
+{
+    if (!item->isHidden()) {
+        if (level < hkTreeNode::LevelTrace) {
+            int N = item->childCount();
+            for (int i = 0; i < N; ++i) {
+                drawChildren(item->child(i), level + 1);
+            }
+        }
+        else {
+            auto trace = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+            ui->renderArea->renderTrace(trace, infile);
+            ui->renderArea->repaint();
+        }
+    }
+}
+
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     (void)item;
     QString label = QString::fromStdString(sweep->getString(SeLabel));
@@ -236,9 +253,13 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     settings_modified{ false }
 {
     ui->setupUi(this);
+
+    ui->treePulse->setExpandsOnDoubleClick(false);
+
     setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
+
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(ui->actionDo_Autoscale_on_Load, &QAction::toggled, ui->renderArea, &RenderArea::toggleDoAutoscale);
@@ -608,6 +629,21 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
             break;
         default:
             break;
+        }
+    }
+}
+
+void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int column)
+{
+    (void)column;
+    if (item != nullptr) {
+        auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+        auto level = node->getLevel();
+        if (level >= hkTreeNode::LevelSeries && level < hkTreeNode::LevelTrace) {
+            QString info = QString("(drawing all traces for '%1')").arg(item->text(0));
+            ui->textEdit->append(info);
+            // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
+            drawChildren(item, level);
         }
     }
 }
