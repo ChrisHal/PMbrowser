@@ -11,6 +11,7 @@ TEMPLATE = app
 TARGET = QtPMbrowser
 DESTDIR = ./release
 CONFIG += release
+DEFINES += NDEBUG
 #CONFIG += debug
 #LIBS += -L"../../../../../openssl/lib" \
 #    -L"../../../../../Utils/my_sql/mysql-5.7.25-winx64/lib" \
