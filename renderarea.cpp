@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020, 2021 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -19,7 +19,9 @@
 
 #include <QtGui>
 #include <QToolTip>
-#include <qdebug.h>
+#include <QMenu>
+#include <QDebug>
+#include <QSettings>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -33,12 +35,13 @@
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent), ndatapoints{}, 
-    xTrace{}, yTrace{}, tracebuffer{},
+    xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true },
-    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr }
+    isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
+    settings_modified{ false }
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -96,12 +99,15 @@ void RenderArea::paintEvent(QPaintEvent* event)
             }
             else {
                 setScaling(x_min, x_max, y_min, y_max);
-                // paint traces in persistance buffer
-                painter.setPen(QColor(128, 128, 128)); // grey
-                for (auto trace : tracebuffer) {
-                    trace->render(painter, this);
+                if (!background_traces_hidden) {
+                    // paint traces in persistance buffer
+                    painter.setPen(QColor(128, 128, 128)); // grey
+                    for (auto trace : tracebuffer) {
+                        trace->render(painter, this);
+                    }
+                    painter.setPen(QColor(0, 0, 0)); // black
                 }
-                painter.setPen(QColor(0, 0, 0)); // black
+
                 yTrace.render(painter, this);
 
                 font = painter.font();
@@ -151,10 +157,10 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         }
         QString txt;
         if (isXYmode()) {
-            txt = QString("(%1%2/%3%4)\nclick L/R: zoom in/out").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
+            txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
-            txt = QString("(%1%2/%3%4)\ndata: %5%6\nclick L/R: zoom in/out").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
+            txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
         event->accept();
@@ -169,12 +175,63 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+void RenderArea::doContextMenu(QContextMenuEvent* event)
+{
+    QMenu menu(this);
+    auto actZoomOut = menu.addAction("zoom out");
+    auto actShrinkV = menu.addAction("vertical shrink");
+    auto actAutoScale = menu.addAction("autoscale");
+    menu.addSeparator();
+    // auto actWipeBK = menu.addAction("wipe background traces");
+    auto actASOL = menu.addAction("autoscale on load");
+    actASOL->setCheckable(true);
+    actASOL->setChecked(do_autoscale_on_load);
+    QAction* actToggleBK = menu.addAction("show background traces");
+    actToggleBK->setCheckable(true);
+    actToggleBK->setChecked(!background_traces_hidden);
+    
+    auto response = menu.exec(event->globalPos());
+    if (response == actZoomOut) {
+        double x, y;
+        scaleFromPixToXY(event->x(), event->y(), x, y);
+        zoomIn(x, y, 0.5);
+        event->accept();
+    }
+    else if (response == actShrinkV) {
+        double nymin = 1.5 * y_min - 0.5 * y_max,
+            nymax = 1.5 * y_max - 0.5 * y_min;
+        y_min = nymin;
+        y_max = nymax;
+        update();
+        event->accept();
+    }
+    else if (response == actAutoScale) {
+        autoScale();
+        event->accept();
+        }
+    else if (response == actASOL) {
+        do_autoscale_on_load = !do_autoscale_on_load;
+        // settings_modified = true;
+    }
+    else if (response == actToggleBK) {
+        background_traces_hidden = !background_traces_hidden;
+        update();
+        event->accept();
+    }
+}
+
 void RenderArea::mousePressEvent(QMouseEvent* event)
 {
+    // This should be habdked by a context menu event!
+    //if (yTrace.isValid() && (event->button() == Qt::MouseButton::RightButton) && !isSelecting) {
+    //    doContextMenu(event);
+    //    return;
+    //}
     if (!yTrace.isValid() || (event->button() != Qt::MouseButton::LeftButton)) {
         event->ignore();
         return;
     }
+    // start selecting for zoom
     setCursor(Qt::CrossCursor);
     tempPixMap = new QPixmap(grab());
     isSelecting = true;
@@ -182,15 +239,26 @@ void RenderArea::mousePressEvent(QMouseEvent* event)
     event->accept();
  }
 
+void RenderArea::contextMenuEvent(QContextMenuEvent* event)
+{
+    if (yTrace.isValid() && !isSelecting) {
+        doContextMenu(event);
+    }
+    else {
+        event->ignore();
+    }
+}
+
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
     if (!yTrace.isValid()) {
         event->ignore();
         return;
     }
-    double x, y;
-    scaleFromPixToXY(event->x(), event->y(), x, y);
+
     if (isSelecting && event->button() == Qt::MouseButton::LeftButton) {
+        double x, y;
+        scaleFromPixToXY(event->x(), event->y(), x, y);
         isSelecting = false;
         delete tempPixMap; tempPixMap = nullptr;
         unsetCursor();
@@ -204,12 +272,10 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
             y_max = std::max(y, ys);
         }
         update();
+        event->accept();
+        return;
     }
-    else if (event->button() == Qt::MouseButton::RightButton) {
-        // zoom out
-        zoomIn(x, y, 0.5);
-    }
-    event->accept();
+    event->ignore();
 }
 
 void RenderArea::wheelEvent(QWheelEvent* event)
@@ -289,6 +355,11 @@ void RenderArea::autoScale()
     update();
 }
 
+void RenderArea::toggleDoAutoscale(bool checked)
+{
+    do_autoscale_on_load = checked;
+}
+
 void RenderArea::wipeBuffer()
 {
     while (tracebuffer.size() > 0) {
@@ -322,6 +393,7 @@ void RenderArea::showSettingsDialog()
     DlgGraphSettings dlg(this);
     dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
     if (dlg.exec()) {
+        settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
         // if numtraces has been reduced we ant to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
@@ -415,4 +487,22 @@ void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
     y = y_max - double(py) / double(height()) * (y_max - y_min);
+}
+
+void RenderArea::loadSettings()
+{
+    QSettings s;
+    s.beginGroup("renderarea");
+    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();;
+    numtraces = s.value("numtraces", numtraces).toInt();
+    s.endGroup();
+}
+
+void RenderArea::saveSettings()
+{
+    QSettings s;
+    s.beginGroup("renderarea");
+    s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("numtraces", numtraces);
+    s.endGroup();
 }

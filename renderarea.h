@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020, 2021 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -44,10 +44,15 @@ public:
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void clearTrace();
     bool isXYmode() { return xTrace.isValid(); };
+    bool isSettingsModified() { return settings_modified; };
+    bool isAutoscaleEnabled() { return do_autoscale_on_load; };
+    void saveSettings();
+    void loadSettings();
 
 public slots:
     void showSettingsDialog();
     void autoScale();
+    void toggleDoAutoscale(bool checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
     void setXYmode();
@@ -59,6 +64,7 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event);
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
@@ -66,9 +72,11 @@ private:
     void scaleFromPixToXY(int px, int py, double& x, double& y);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
+    void doContextMenu(QContextMenuEvent* event);
     size_t ndatapoints;
     DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
+    bool background_traces_hidden;
     bool clipped; // Amp. was clipping
     double x_min, x_max, y_min, y_max;
     double a_x, b_x, a_y, b_y; // for scaling
@@ -78,6 +86,7 @@ private:
     bool isSelecting;
     QPoint selStart, selEnd;
     QPixmap* tempPixMap;
+    bool settings_modified;
 
     friend class DisplayTrace;
 };

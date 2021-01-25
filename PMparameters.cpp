@@ -1,7 +1,29 @@
+/*
+	Copyright 2020 Christian R. Halaszovich
+
+	 This file is part of PMbrowser.
+
+	PMbrowser is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	PMbrowser is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include<sstream>
+#include<iomanip>
 #include<array>
 #include"PMparameters.h"
 #include "time_handling.h"
+#include <cassert>
+#include <DatFile.h>
 
 const std::array<const char*, 7> RecordingModeNames = {
 	"Inside-Out",
@@ -13,13 +35,19 @@ const std::array<const char*, 7> RecordingModeNames = {
 	"<none>"
 };
 
+const std::array<const char*, 4> AmpModeNames = {
+	"TestMode",
+	"VCMode",
+	"CCMode",
+	"NoMode"
+};
 
-// NOTE: This is preliminary, some paramaters are not yet included
+
 std::array<PMparameter, 30>parametersTrace = {
-	false,false,"Tr. Mark","",PMparameter::Int32,0,
-	false,false,"Tr. Label","",PMparameter::StringType,4,
+	false,false,"TrMark","",PMparameter::Int32,0,
+	false,false,"TrLabel","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
-	false,false,"TrHolding","V|A",PMparameter::LongReal,408,
+	false,false,"Holding","V|A",PMparameter::LongReal,408,
 	false,false,"Internal Solution","",PMparameter::Int32,48,
 	false,false,"Leak traces","",PMparameter::Int32,60,
 	false,false,"UseXStart","",PMparameter::Boolean,66,
@@ -36,7 +64,7 @@ std::array<PMparameter, 30>parametersTrace = {
 	true,true,"Rs","Ohm",PMparameter::InvLongReal,184,
 	false,false,"RsValue","",PMparameter::LongReal,192,
 	false,false,"Gleak","S",PMparameter::LongReal,200,
-	false,false,"Mem. conductance","S",PMparameter::LongReal,208,
+	false,false,"MemConductance","S",PMparameter::LongReal,208,
 	false,false,"CM","F",PMparameter::LongReal,248,
 	false,false,"GM","S",PMparameter::LongReal,256,
 	false,false,"GS","S",PMparameter::LongReal,280,
@@ -49,11 +77,12 @@ std::array<PMparameter, 30>parametersTrace = {
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 };
 
-std::array<PMparameter, 17>parametersSweep = {
+std::array<PMparameter, 18>parametersSweep = {
 	false,false,"SwMark","",PMparameter::Int32,0,
 	false,false,"SwLabel","",PMparameter::StringType,4,
 	false,false,"Stim Count","",PMparameter::Int32,40,
 	true,true,"Sweep Time raw","s",PMparameter::LongReal,48,
+	true,true,"Rel. Sweep Time","s",PMparameter::RootRelativeTime,48,
 	true,true,"Sweep Time","",PMparameter::DateTime,48,
 	true,true,"Timer Time","s",PMparameter::LongReal,56,
 	false,false,"User param. 1","",PMparameter::LongReal,64,
@@ -65,11 +94,11 @@ std::array<PMparameter, 17>parametersSweep = {
 	false,false,"DigitalOut","",PMparameter::UInt16,116,
 	false,false,"SweepKind","",PMparameter::UInt16,114,
 	false,false,"SwSwMarkers","",PMparameter::LongReal4,120,
-	false,false,"Sweep hodling 16x","",PMparameter::LongReal16,160,
+	false,false,"Sweep holding 16x","",PMparameter::LongReal16,160,
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 
-std::array<PMparameter, 10>parametersSeries = {
+std::array<PMparameter, 11>parametersSeries = {
 	false,false,"SeMark","",PMparameter::Int32,0,
 	false,false,"SeLabel","",PMparameter::StringType,4,
 	false,false,"SeComment","",PMparameter::StringType,36,
@@ -77,6 +106,7 @@ std::array<PMparameter, 10>parametersSeries = {
 	false,false,"SeNumberSweeps","",PMparameter::Int32,120,
 	false,false,"SeMethodTag","",PMparameter::Int32,132,
 	true,false,"SeTime_raw","s",PMparameter::LongReal,136,
+	true,true,"Rel. SeTime","s",PMparameter::RootRelativeTime,136,
 	true,false,"SeTime","",PMparameter::DateTime,136,
 	false,false,"SeMethodName","",PMparameter::StringType,312,
 	false,false,"SeUsername","",PMparameter::StringType,872
@@ -100,6 +130,35 @@ std::array<PMparameter, 8>parametersRoot = {
 	true, true, "RootStartTime", "", PMparameter::DateTime,520,
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
+
+extern std::array<PMparameter, 25>parametersAmpplifierState = {
+	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
+	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
+	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
+	false, true, "RsValue", "Ohm", PMparameter::LongReal,32,
+	false, true, "RsFraction", "", PMparameter::LongReal,40,
+	false, true, "GLeak", "S", PMparameter::LongReal,48,
+	false, true, "CFastAmp1", "F", PMparameter::LongReal,56,
+	false, true, "CFastAmp2", "F", PMparameter::LongReal,64,
+	false, true, "CFastTau", "s", PMparameter::LongReal,72,
+	false, true, "CSlow", "F", PMparameter::LongReal,80,
+	false, true, "GSeries", "S", PMparameter::LongReal,88,
+	false, true, "VCStimDacScale", "", PMparameter::LongReal,96,
+	false, true, "CCStimDacScale", "", PMparameter::LongReal,104,
+	false, true, "VHold", "V", PMparameter::LongReal,112,
+	false, true, "LastVHold", "V", PMparameter::LongReal,120,
+	false, true, "VpOffset", "V", PMparameter::LongReal,128,
+	false,true,"VLiquidJunction","V",PMparameter::LongReal,136,
+	false,true,"CCIHold","A",PMparameter::LongReal,144,
+	false,true,"MConductance","S",PMparameter::LongReal,184,
+	false,true,"MCapacitance","F",PMparameter::LongReal,192,
+	false,true,"IMonAdc","",PMparameter::Int16,212,
+	false,true,"VMonAdc","",PMparameter::Int16,192,
+	false,true,"StimDac","",PMparameter::Int16,220,
+	false,true,"Mode","",PMparameter::AmpModeName,237,
+	false,true,"SerialNumber","",PMparameter::String8,200
+};
+
 
 void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 {
@@ -133,13 +192,11 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case StringType:
 			ss << node.getString(offset);
 			break;
+		case String8:
+			ss << node.getString<8>(offset);
+			break;
 		case Boolean:
-			if (node.getChar(offset)) {
-				ss << "true";
-			}
-			else {
-				ss << "false";
-			}
+			ss << std::boolalpha << bool(node.getChar(offset));
 			break;
 		case LongReal4:
 			ss << "(";
@@ -163,7 +220,15 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << ")";
 			break;
 		case RecordingMode:
-			ss << RecordingModeNames.at((std::size_t)node.getChar(offset));
+			ss << RecordingModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+			break;
+		case RootRelativeTime:
+			ss << std::fixed << std::setprecision(3) <<
+				(node.extractLongReal(offset) - getRootTime(node))
+				<< std::defaultfloat << std::setprecision(6);
+			break;
+		case AmpModeName:
+			ss << AmpModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 			break;
 		default:
 			throw std::runtime_error("unknown data-type");
@@ -175,6 +240,17 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		ss << "n/a";
 	}
 	ss << " " << unit;
+}
+
+double PMparameter::getRootTime(const hkTreeNode& node) const
+{
+	// finde root note:
+	auto p = node.getParent();
+	assert(p != nullptr);
+	while (p->getLevel() > hkTreeNode::LevelRoot) {
+		p = p->getParent();
+	}
+	return p->extractLongRealNoThrow(RoStartTime);
 }
 
 void PMparameter::format(const hkTreeNode& node, std::string& s) const

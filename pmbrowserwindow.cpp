@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020, 2021 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -18,8 +18,13 @@
 */
 
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
+#include <QApplication>
+#include <QSettings>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
+#include <QProgressDialog>
+#include <QProgressBar>
 #include <QString>
 #include <QDir>
 #include <QDebug>
@@ -41,6 +46,7 @@
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
 
+
 const QString myAppName("PM browser");
 const QString appVersion("1.2 experimental");
 
@@ -56,45 +62,29 @@ void PMbrowserWindow::populateTreeView()
     auto& pultree=datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
     int i=0;
-    for(auto& groupe : pultree.GetRootNode().Children) {
+    for(auto& group : pultree.GetRootNode().Children) {
         QString count=QString("%1").arg(++i), label;
-        label = groupe.getString(GrLabel).c_str();//labelL1;
+        label = group.getString(GrLabel).c_str();
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
-        grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&groupe));
+        grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&group));
         grpitems.append(grpitem);
         int j=0;
-        for(auto& series : groupe.Children) {
+        for(auto& series : group.Children) {
             QString label2 = QString("%1").arg(++j)+" "+QString(series.getString(SeLabel).c_str());
-            auto seriesitem =new QTreeWidgetItem(grpitem,QStringList(label2));
+            auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             int k = 0;
             for(auto& sweep : series.Children) {
                 QString label3 = QString("sweep %1").arg(++k)+" "+QString(sweep.getString(SwLabel).c_str());
-                auto sweepitem = new QTreeWidgetItem(seriesitem,QStringList(label3));
+                auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 int l = 0;
                 for(auto& trace : sweep.Children) {
                     ++l;
-                    // int32_t datakind = trace.extractUInt16(TrDataKind);
                     QString tracelabel = formTraceName(trace, l).c_str();
-                    /*if(datakind & IsImon) {
-                        tracelabel = "Imon";
-                    } else if (datakind & IsVmon) {
-                        tracelabel = "Vmon";
-                    } else {
-                        tracelabel = trace.getString(TrLabel).c_str();
-                        if (tracelabel.isEmpty()) {
-                            if (datakind & IsLeak) {
-                                tracelabel = "Leak";
-                            }
-                            else {
-                                tracelabel = QString("trace %1").arg(l);
-                            }
-                        }
-                    }*/
-                    auto traceitem = new QTreeWidgetItem(sweepitem,QStringList(tracelabel));
+                    auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
             }
@@ -117,10 +107,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
     ui->textEdit->append(tracename);
 
-    // most of the following stuff should now be handled by PMparameters
-    //double sealresistance = trace->extractLongReal(TrSealResistance),
-    //    cslow = trace->extractLongReal(TrCSlow),
-    //    Rseries = 1.0 / trace->extractLongReal(TrGSeries);
+    // Give holding V / I special treatment, since we want to distingushe CC / VC mode
     double holding = trace->extractLongRealNoThrow(TrTrHolding);
     char mode = trace->getChar(TrRecordingMode);
     QString prefix = "Vhold", yunit = "V";
@@ -128,8 +115,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         yunit = "A";
         prefix = "Ihold";
     }
-//    QString info = QString("Recording Mode: ") + RecordingModeNames[size_t(mode)] + "\n";
-    // keep the following, since here we fromat it more nicely, with correct name an units
+    // keep the following, since here we format it more nicely, with correct name an units
     // this is beyond what PMparmaters can do right now.
     QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
     std::string str;
@@ -140,14 +126,29 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, infile);
 }
 
+void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list)
+{
+    if (!item->isHidden()) {
+        if (level < hkTreeNode::LevelTrace) {
+            int N = item->childCount();
+            for (int i = 0; i < N; ++i) {
+                collectChildTraces(item->child(i), level + 1, trace_list);
+            }
+        }
+        else {
+            auto trace = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+            trace_list.append(trace);
+            //ui->renderArea->renderTrace(trace, infile);
+            //ui->renderArea->repaint();
+        }
+    }
+}
+
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     (void)item;
     QString label = QString::fromStdString(sweep->getString(SeLabel));
-    double t = sweep->extractLongRealNoThrow(SwTime);
-    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
-    double timer = sweep->extractLongRealNoThrow(SwTimer);
     int32_t count = sweep->extractInt32(SwSweepCount);
-    QString txt = QString("Sweep %1 %2\nrel. time %3 s\ntimer %4 s").arg(label).arg(count).arg(t - start_time).arg(timer);
+    QString txt = QString("Sweep %1 %2").arg(label).arg(count);
     std::string str;
     formatParamListPrint(*sweep, parametersSweep, str);
     txt.append("\n");
@@ -159,10 +160,8 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 {
     (void)item;
     QString label = QString::fromStdString(series->getString(SeLabel));
-    double t = series->extractLongRealNoThrow(SeTime);
-    double start_time = datfile->GetPulTree().GetRootNode().extractLongRealNoThrow(RoStartTime);
     int32_t count = series->extractInt32(SeSeriesCount);
-    QString txt = QString("Series %1 %2\nrel. time %3 s").arg(label).arg(count).arg(t - start_time);
+    QString txt = QString("Series %1 %2").arg(label).arg(count);
     std::string str;
     formatParamListPrint(*series, parametersSeries, str);
     txt.append("\n");
@@ -208,6 +207,10 @@ void PMbrowserWindow::loadFile(QString filename)
             QString("error opening file:\n") + QString(std::strerror(errno)));
     }
     currentFile = filename;
+    lastloadpath = QFileInfo(filename).path();
+    //settings_modified = true;
+    QSettings settings;
+    settings.setValue("pmbrowserwindow/lastloadpath", lastloadpath);
     datfile = new DatFile;
     try {
         datfile->InitFromStream(infile);
@@ -227,7 +230,11 @@ void PMbrowserWindow::loadFile(QString filename)
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
         }
         try {
-            std::string ampname = datfile->GetAmpTree().GetRootNode().getString(RoAmplifierName);
+            const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
+            std::string ampname = amprootnode.getString(RoAmplifierName);
+            // turns out, the following filed are somewhat obscure/useless
+            // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
+            // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
             txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
         }
         catch (std::out_of_range& e) {
@@ -245,21 +252,32 @@ void PMbrowserWindow::loadFile(QString filename)
 
 PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{nullptr}, lastexportpath{},
-    filterStrGrp{ ".*" }, filterStrSer{ ".*" }, filterStrSwp{ ".*" }, filterStrTr{ ".*" }
+    , ui(new Ui::PMbrowserWindow), currentFile{}, infile{}, datfile{ nullptr }, lastloadpath{}, lastexportpath{},
+    filterStrGrp{ ".*" }, filterStrSer{ ".*" }, filterStrSwp{ ".*" }, filterStrTr{ ".*" },
+    settings_modified{ false }
 {
     ui->setupUi(this);
+
+    ui->treePulse->setExpandsOnDoubleClick(false);
+
     setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
+
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(ui->actionDo_Autoscale_on_Load, &QAction::toggled, ui->renderArea, &RenderArea::toggleDoAutoscale);
     QObject::connect(ui->treePulse, &QTreeWidget::customContextMenuRequested, this, &PMbrowserWindow::prepareTreeContextMenu);
     QObject::connect(ui->actionSettings, &QAction::triggered, ui->renderArea, &RenderArea::showSettingsDialog);
     QObject::connect(ui->actionWipe, &QAction::triggered, ui->renderArea, &RenderArea::wipeAll);
     QObject::connect(ui->actionYX_mode, &QAction::triggered, ui->renderArea, &RenderArea::setXYmode);
     QObject::connect(ui->actionYT_mode, &QAction::triggered, ui->renderArea, &RenderArea::setYTmode);
     QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
+    QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
+    aboutQtAct->setStatusTip("Show the Qt library's About box");
+
+    loadSettings();
+    ui->renderArea->loadSettings();
 }
 
 PMbrowserWindow::~PMbrowserWindow()
@@ -274,9 +292,14 @@ void PMbrowserWindow::on_actionOpen_triggered()
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter("DAT-file (*.dat)");
     dialog.setViewMode(QFileDialog::Detail);
+    if(QDir(lastloadpath).exists()) {
+        dialog.setDirectory(lastloadpath);
+    }
+    else {
+        dialog.setDirectory("./");
+    }
     if (dialog.exec()) {
-        currentFile = dialog.selectedFiles().at(0);
-        loadFile(currentFile);
+        loadFile(dialog.selectedFiles().at(0));
     }
 }
 
@@ -336,6 +359,9 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
 
 bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
 {
+    if (!QDir(lastexportpath).exists()) {
+        lastexportpath.clear();
+    }
     DlgChoosePathAndPrefix dlg(this, lastexportpath);
     if (dlg.exec())
     {
@@ -349,6 +375,7 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
             path.append('/');
         }
         lastexportpath = path;
+        settings_modified = true;
         return true;
     }
     else {
@@ -456,7 +483,7 @@ void PMbrowserWindow::on_actionExport_IBW_File_triggered()
     auto item = ui->treePulse->currentItem();
     if (!datfile) {
         QMessageBox msg;
-        msg.setText("no file open");
+        msg.setText("no file");
         msg.exec();
     }
     else if(!item){
@@ -496,7 +523,7 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
 void PMbrowserWindow::on_actionAbout_triggered()
 {
     QString txt = myAppName +  ", Version " + appVersion +
-                                "\n\n© Copyright 2020 Christian R. Halaszovich"
+                                "\n\n© Copyright 2020, 2021 Christian R. Halaszovich"
                                 "\n\nAn open source tool to handle PatchMaster Files.\n"
                                 "PatchMaster is a trademark of Heka GmbH\n\n"
                                 "Build using Qt Library version " + QT_VERSION_STR +
@@ -511,6 +538,7 @@ void PMbrowserWindow::on_actionFilter_triggered()
 {
     DlgTreeFilter dlg(this, filterStrGrp, filterStrSer, filterStrSwp, filterStrTr);
     if (dlg.exec()) {
+        settings_modified = true;
         filterStrGrp = dlg.grp;
         filterStrSer = dlg.ser;
         filterStrSwp = dlg.swp;
@@ -555,6 +583,11 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
+        QAction* actAmpstate = nullptr;
+        const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+        if (node->getLevel() == hkTreeNode::LevelSeries) {
+            actAmpstate = menu.addAction("amplifier state");
+        }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
             exportSubTreeAsIBW(item);
@@ -567,6 +600,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (response == actPrintAllP) {
             printAllParameters(item);
+        }
+        else if (actAmpstate != nullptr && actAmpstate == response) {
+            printAmplifierState(node);
         }
     }
 }
@@ -583,20 +619,53 @@ void PMbrowserWindow::on_treePulse_currentItemChanged(QTreeWidgetItem *current, 
     if (node != nullptr) {
         switch (node->getLevel())
         {
-        case 1:
+        case hkTreeNode::LevelGroup:
             groupSelected(current, node);
             break;
-        case 2:
+        case hkTreeNode::LevelSeries:
             seriesSelected(current, node);
             break;
-        case 3:
+        case hkTreeNode::LevelSweep:
             sweepSelected(current, node);
             break;
-        case 4:
+        case hkTreeNode::LevelTrace:
             traceSelected(current, node);
             break;
         default:
             break;
+        }
+    }
+}
+
+void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int column)
+{
+    (void)column;
+    if (item != nullptr) {
+        auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+        auto level = node->getLevel();
+        if (/*level >= hkTreeNode::LevelSeries &&*/ level < hkTreeNode::LevelTrace) {
+            QString info = QString("Rendering child traces for '%1'.").arg(item->text(0));
+            // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
+            QVector<hkTreeNode*> child_traces;
+            collectChildTraces(item, level, child_traces);
+            int num_traces = child_traces.size();
+            QProgressDialog progress(info, "Abort", 0, num_traces, this);
+            QProgressBar* pbar = new QProgressBar(&progress);
+            pbar->setMaximum(num_traces);
+            pbar->setMinimum(0);
+            pbar->setFormat("%v/%m");
+            progress.setBar(pbar);
+            progress.setWindowModality(Qt::WindowModal);
+
+            for (int i = 0; i < num_traces; ++i) {
+                progress.setValue(i);
+                if (progress.wasCanceled()) {
+                    break;
+                }
+                ui->renderArea->renderTrace(child_traces.at(i), infile);
+                ui->renderArea->repaint();
+            }
+            progress.setValue(num_traces);
         }
     }
 }
@@ -606,6 +675,7 @@ void PMbrowserWindow::on_actionSelect_Parameters_triggered()
     DlgSelectParameters dlg;
     if (dlg.exec()) {
         dlg.storeParams();
+        settings_modified = true;
     }
 }
 
@@ -623,28 +693,58 @@ void ::PMbrowserWindow::printAllParameters(hkTreeNode* n)
         printAllParameters(n->getParent());
     }
     switch (n->getLevel()) {
-    case 0: // root level
+    case hkTreeNode::LevelRoot:
         lb = "Root:\n";
         formatParamList(*n, parametersRoot, s);
         break;
-    case 1: // Group
+    case hkTreeNode::LevelGroup:
         lb = "Group:\n";
         formatParamList(*n, parametersGroup, s);
         break;
-    case 2:
+    case hkTreeNode::LevelSeries:
         lb = "Series:\n";
         formatParamList(*n, parametersSeries, s);
         break;
-    case 3:
+    case hkTreeNode::LevelSweep:
         lb = "Sweep:\n";
         formatParamList(*n, parametersSweep, s);
         break;
-    case 4:
+    case hkTreeNode::LevelTrace:
         lb = "Trace:\n";
         formatParamList(*n, parametersTrace, s);
         break;
     }
     ui->textEdit->append(lb + s.c_str());
+}
+
+void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
+{
+    assert(series->getLevel() == hkTreeNode::LevelSeries);
+    hkTreeNode amprecord;
+    amprecord.len = AmplifierStateSize;
+    amprecord.isSwapped = series->getIsSwapped();
+    auto ampstateflag = series->extractInt32(SeAmplStateFlag),
+        ampstateref = series->extractInt32(SeAmplStateRef);
+    if (ampstateflag > 0 || ampstateref == 0) {
+        // use local amp state record
+        amprecord.Data = series->Data + SeOldAmpState;
+        std::string s;
+        formatParamList(amprecord, parametersAmpplifierState, s);
+        ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
+    }
+    else {
+        // auto secount = series->extractInt32(SeSeriesCount);
+        const auto& amproot = datfile->GetAmpTree().GetRootNode();
+        const auto& ampse = amproot.Children.at(ampstateref - 1); // Is this correct? Or seCount?
+        for (const auto& ampre : ampse.Children) { // there might be multiple amplifiers
+            auto ampstatecount = ampre.extractInt32(AmStateCount);
+            amprecord.Data = ampre.Data + AmAmplifierState;
+            std::string s;
+            formatParamList(amprecord, parametersAmpplifierState, s);
+            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));
+        }
+    }
+
 }
 
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()
@@ -653,6 +753,11 @@ void PMbrowserWindow::on_actionPrint_All_Params_triggered()
     if (item) {
         printAllParameters(item);
     }
+}
+
+void PMbrowserWindow::on_menuGraph_aboutToShow()
+{
+    ui->actionDo_Autoscale_on_Load->setChecked(ui->renderArea->isAutoscaleEnabled());
 }
 
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
@@ -688,4 +793,93 @@ void PMbrowserWindow::resizeEvent(QResizeEvent* event)
    auto s = event->size();
    ui->widget->resize(s);
    ui->splitterH->setGeometry(5, 5, s.width() - 10, s.height() - 30);
+}
+
+void PMbrowserWindow::closeEvent(QCloseEvent* event)
+{
+    if (settings_modified || ui->renderArea->isSettingsModified()) {
+        auto res = QMessageBox::question(this, "Save Settings",
+            "Some settings have bee modified.\nDo you want to save them?",
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
+        if (res == QMessageBox::Cancel) {
+            event->ignore();
+        }
+        else {
+            if (res == QMessageBox::Yes) {
+                saveSettings();
+                ui->renderArea->saveSettings();
+            }
+            event->accept();
+        }
+    }
+}
+
+
+void PMbrowserWindow::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("pmbrowserwindow");
+    settings.setValue("lastloadpath", lastloadpath);
+    settings.setValue("lastexportpath", lastexportpath);
+    settings.setValue("filterStrGrp", filterStrGrp);
+    settings.setValue("filterStrSer", filterStrSer);
+    settings.setValue("filterStrSwp", filterStrSwp);
+    settings.setValue("filterStrTr", filterStrTr);
+    settings.endGroup();
+
+    settings.beginGroup("params_group");
+    for (const auto& p : parametersGroup) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_series");
+    for (const auto& p : parametersSeries) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_sweep");
+    for (const auto& p : parametersSweep) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_trace");
+    for (const auto& p : parametersTrace) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    
+}
+
+void PMbrowserWindow::loadSettings()
+{
+    QSettings settings;
+	settings.beginGroup("pmbrowserwindow");
+    lastloadpath = settings.value("lastloadpath", lastloadpath).toString();
+    lastexportpath = settings.value("lastexportpath", lastexportpath).toString();
+	filterStrGrp = settings.value("filterStrGrp", filterStrGrp).toString();
+	filterStrSer = settings.value("filterStrSer", filterStrSer).toString();
+	filterStrSwp = settings.value("filterStrSwp", filterStrSwp).toString();
+	filterStrTr = settings.value("filterStrTr", filterStrTr).toString();
+    settings.endGroup();
+
+    settings.beginGroup("params_group");
+    for (auto& p : parametersGroup) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_series");
+    for (auto& p : parametersSeries) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_sweep");
+    for (auto& p : parametersSweep) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_trace");
+    for (auto& p : parametersTrace) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
 }

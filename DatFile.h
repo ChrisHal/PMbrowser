@@ -103,14 +103,22 @@ SwTime = 48,
 SwTimer = 56,
 SeLabel = 4, //(*String32Type*)
 SeSeriesCount = 116,
-SeAmplStateRef = 128,
+SeAmplStateFlag = 124, // flag > 0 => load local oldAmpState, otherwise load from .amp File
+SeAmplStateRef = 128, // ref  = 0 => use local oldAmpState. Caution: This is a 1-based offset!
 SeTime = 136,
+SeOldAmpState = 472,
 GrLabel = 4,
 GrGroupCount = 120,
 RoVersionName = 8, // root record
 RoStartTime = 520,
 // now from Amp records:
-RoAmplifierName = 40;
+RoAmplifierName = 40,
+RoAmplifier = 72, // CHAR
+RoADBoard = 73, // CHAR
+// For AmplStateRecord:
+AmplifierStateSize = 400,
+AmStateCount = 4,
+AmAmplifierState = 112;
 
 // offset for Stim-Tree
 constexpr size_t seVoltage = 8;

@@ -5,7 +5,7 @@
 QT       += core gui
 QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 TEMPLATE = app
 TARGET = QtPMbrowser

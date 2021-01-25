@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020, 2021 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -57,22 +57,35 @@ public:
             return t;
         }
     }
+    enum TreeLevel {
+        LevelRoot = 0,
+        LevelGroup = 1,
+        LevelSeries = 2,
+        LevelSweep = 3,
+        LevelTrace = 4
+    };
     int32_t extractInt32(size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(size_t offset) const { return extractValue<double>(offset); };
     double extractLongRealNoThrow(size_t offset) const; // instead of throwing an exception, returns NaN if out of range
     char getChar(size_t offset) const;
     std::string getString(size_t offset) const;
+    template<std::size_t N> std::string getString(size_t offset) const
+    {
+        if (len < offset + N) {
+            throw std::out_of_range("offset to large while accessing tree node");
+        }
+        return std::string(Data + offset, N);
+    };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
     int getLevel() const { return level; };
-private:
+
     hkTreeNode* Parent;
     bool isSwapped;
     char* Data;
     int level;
     int32_t len;
-public:
     std::vector<hkTreeNode> Children;
     friend class hkTree;
 };

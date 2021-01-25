@@ -1,3 +1,22 @@
+/*
+	Copyright 2020, 2021 Christian R. Halaszovich
+
+	 This file is part of PMbrowser.
+
+	PMbrowser is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	PMbrowser is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #pragma once
 #include <array>
 #include <string>
@@ -16,12 +35,15 @@ struct PMparameter {
 		LongReal, // i.e. double
 		DateTime, // weird PowerMod date
 		StringType,
+		String8, // String of length 8
 		Boolean,
 		InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
 		LongReal16,  // 8 double
-		RecordingMode
+		RecordingMode,
+		RootRelativeTime,
+		AmpModeName
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -31,15 +53,22 @@ struct PMparameter {
 
 	void format(const hkTreeNode& node, std::string& s) const;
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
+	int toInt() const { return int(exportIBW) | (int(print) << 1); };
+	void fromInt(int i) { exportIBW = i & 1; print = i & 2; };
+private:
+	double getRootTime(const hkTreeNode& node) const;
 };
 
 extern std::array<PMparameter, 30>parametersTrace;
-extern std::array<PMparameter, 17>parametersSweep;
-extern std::array<PMparameter, 10>parametersSeries;
+extern std::array<PMparameter, 18>parametersSweep;
+extern std::array<PMparameter, 11>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
+extern std::array<PMparameter, 25>parametersAmpplifierState;
+
 extern const std::array<const char*, 7>RecordingModeNames;
+extern const std::array<const char*, 4> AmpModeNames;
 
 template<std::size_t Nrows> void formatParamList(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::string& str)
