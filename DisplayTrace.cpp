@@ -19,9 +19,9 @@
 
 #include <cmath>
 #include <algorithm>
-//#ifndef NDEBUG
-//#include <QDebug>
-//#endif
+#ifndef NDEBUG
+#include <QDebug>
+#endif
 #include "DisplayTrace.h"
 #include "renderarea.h"
 
@@ -58,15 +58,46 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 		int N = data.size();
 		int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
 		int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
-//#ifndef NDEBUG
-//		qDebug() << "first: " << pFirst << ", end: " << pEnd;
-//#endif
+#ifndef NDEBUG
+		qDebug() << "first: " << pFirst << ", end: " << pEnd;
+#endif
 		if (pFirst < pEnd) { // pFirst might even be larger than data.size(), we catch this case also here
-			path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data[pFirst]));
-			for (int i = 1 + pFirst; i < pEnd; ++i) {
-				path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+			int step = (pEnd - pFirst) / display->width();
+			if (step > 3) { // speed up drawing if we have a lot of datapoints
+#ifndef NDEBUG
+				qDebug() << "step: " << step;
+
+#endif // !NDEBUG
+
+				const auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
+				path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
+				path.lineTo(display->scaleToQPF(x0 + pFirst * deltax, data_max));
+				for (int i = step + pFirst; i < pEnd; i += step) {
+					const auto [data_min, data_max] = getDataMinMax(i, i + step);
+					path.lineTo(display->scaleToQPF(x0 + i * deltax, data_min));
+					path.lineTo(display->scaleToQPF(x0 + i * deltax, data_max));
+				}
+			}
+			else {
+				path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data[pFirst]));
+				for (int i = 1 + pFirst; i < pEnd; ++i) {
+					path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+				}
 			}
 		}
 	}
 	painter.drawPath(path);
+}
+
+std::tuple<double, double> DisplayTrace::getDataMinMax(int pLeft, int pRight)
+{
+	double min_val, max_val;
+	max_val = min_val = data[pLeft];
+	pRight = std::min(pRight, data.size());
+	for (int i = pLeft + 1; i < pRight; ++i) {
+		double v = data[i];
+		min_val = std::min(min_val, v);
+		max_val = std::max(max_val, v);
+	}
+	return {min_val, max_val};
 }

@@ -36,6 +36,7 @@ public:
 	bool isValid() { return !data.isEmpty(); }
 	QString getXUnit() { return x_unit; }
 	QString getYUnit() { return y_unit; }
+    std::tuple<double, double> getDataMinMax(int pLeft, int pRight);
 //	QVector<double>& Data() { return data; }
 //private:
 	double x0, deltax;
