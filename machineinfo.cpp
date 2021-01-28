@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020, 2021 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -22,8 +22,7 @@
 
 bool MachineIsLittleEndian()
 {
-	uint32_t t = 0;
-	char* p = reinterpret_cast<char*>(&t);
-	*p = 1;
-	return t == 1;
+	const uint32_t t = 1;
+	const char* const p = reinterpret_cast<const char* const>(&t);
+	return *p == 1;
 }
