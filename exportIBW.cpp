@@ -26,6 +26,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <memory>
 #include <cstring>
 #include <cassert>
 #include "helpers.h"
@@ -58,15 +59,15 @@ void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
 	double* target, int interleavesize, int interleaveskip)
 {
-	T* source = new T[trdatapoints];
+	auto source = std::make_unique<T[]>(trdatapoints);
 	if (interleavesize == 0) {
-		datafile.read((char*)source, sizeof(T) * trdatapoints);
+		datafile.read((char*)source.get(), sizeof(T) * trdatapoints);
 	}
 	else { // it's interleaved data
 		assert(interleaveskip >= interleavesize);
 		size_t bytesremaining = sizeof(T) * trdatapoints;
 		int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
-		char* p = (char*)source;
+		char* p = (char*)source.get();
 		while (bytesremaining > 0) {
 			size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
 			datafile.read(p, bytestoread);
@@ -91,7 +92,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_
 			target[i] = datascaler * swap_bytes(source[i]);
 		}
 	}
-	delete[] source; source = nullptr;
 }
 
 void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
@@ -110,22 +110,23 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	double datascaler = TrRecord.extractLongReal(TrDataScaler);
 	int32_t trdata = TrRecord.extractInt32(TrData), trdatapoints = TrRecord.extractInt32(TrDataPoints);
 
-	double* target = new double[trdatapoints];
+	//double* target = new double[trdatapoints];
+	auto target = std::make_unique<double[]>(trdatapoints);
 	datafile.seekg(trdata);
 
 	switch (dataformat)
 	{
 	case DFT_int16:
-		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
+		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
 		break;
 	case DFT_int32:
-		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
+		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
 		break;
 	case DFT_float:
-		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
+		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
 		break;
 	case DFT_double:
-		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target, interleavesize, interleaveskip);
+		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
 		break;
 	default:
 		throw std::runtime_error("unknown data format type");
@@ -172,10 +173,9 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 
 	outfile.write((char*)&bh, sizeof(bh));
 	outfile.write((char*)&wh, numbytes_wh);
-	outfile.write((char*)target, sizeof(double) * trdatapoints);
+	outfile.write((char*)target.get(), sizeof(double) * trdatapoints);
 	outfile.write(note.data(), note.size());
 	outfile.close();
-	delete[] target;
 }
 
 

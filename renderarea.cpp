@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
+#include <memory>
 #include <cmath>
 #include "DlgGraphSettings.h"
 #include "renderarea.h"
@@ -301,15 +302,17 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
  bool need_swap,
     double datascaler, size_t ndatapoints, int interleavesize, int interleaveskip, QVector<double>& data)
 {
-    T* source = new T[ndatapoints];
+
+    //T* source = new T[ndatapoints];
+    auto source = std::make_unique<T[]>(ndatapoints);
     if (interleavesize == 0) {
-        infile.read((char*)source, sizeof(T) * ndatapoints);
+        infile.read((char*)source.get(), sizeof(T) * ndatapoints);
     }
     else {
         assert(interleaveskip >= interleavesize);
         size_t bytesremaining = sizeof(T) * ndatapoints;
         int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
-        char* p = (char*)source;
+        char* p = (char*)source.get();
         while (bytesremaining > 0) {
             size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
             infile.read(p, bytestoread);
@@ -322,7 +325,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
         }
     }
     if (!infile) {
-        delete[]source;
         data.clear();
         QMessageBox::warning(nullptr, "File Error", "error while reading datafile");
         return;
@@ -337,7 +339,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& infile,
             data.push_back(datascaler * swap_bytes(source[i]));
         }
     }
-    delete[] source; source = nullptr;
 }
 
 void RenderArea::autoScale()
