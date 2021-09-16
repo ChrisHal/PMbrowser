@@ -21,6 +21,7 @@
 #include <istream>
 #include <vector>
 #include <string>
+#include <memory>
 #include <cstring>
 #include <cstdint>
 #include "helpers.h"
@@ -35,7 +36,7 @@ public:
             throw std::out_of_range("offset to large while accessing tree node");
         }
         T t;
-        std::memcpy(&t, Data + offset, sizeof(T));
+        std::memcpy(&t, Data.get() + offset, sizeof(T));
         if (isSwapped) {
             return swap_bytes(t);
         }
@@ -49,7 +50,7 @@ public:
             return defaultValue;
         }
         T t;
-        std::memcpy(&t, Data + offset, sizeof(T));
+        std::memcpy(&t, Data.get() + offset, sizeof(T));
         if (isSwapped) {
             return swap_bytes(t);
         }
@@ -75,7 +76,7 @@ public:
         if (len < offset + N) {
             throw std::out_of_range("offset to large while accessing tree node");
         }
-        return std::string(Data + offset, N);
+        return std::string(Data.get() + offset, N);
     };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
@@ -83,7 +84,8 @@ public:
 
     hkTreeNode* Parent;
     bool isSwapped;
-    char* Data;
+    //char* Data;
+    std::unique_ptr<char[]> Data;
     int level;
     int32_t len;
     std::vector<hkTreeNode> Children;
@@ -105,6 +107,6 @@ public:
     hkTreeNode& GetRootNode() { return RootNode; };
     size_t GetNumLevels() { return LevelSizes.size(); };
     bool getIsSwapped() { return isSwapped; };
-    ~hkTree();
+    //~hkTree();
 };
 

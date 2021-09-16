@@ -36,12 +36,14 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	node.level = level;
 	node.len = size;
 	node.isSwapped = isSwapped;
-	node.Data = new char[size];
+	node.Data = std::make_unique<char[]>(size);
 	node.Parent = parent;
-	std::memcpy(node.Data, *pdata, size);
+	std::memcpy(node.Data.get(), *pdata, size);
 	*pdata += size;
 	// cave: can we be certain that *pdata is 4 byte aligned?
-	int32_t nchildren = *reinterpret_cast<int32_t*>(*pdata);
+	//int32_t nchildren = *reinterpret_cast<int32_t*>(*pdata);
+	int32_t nchildren;
+	std::memcpy(&nchildren, *pdata, sizeof(int32_t));
 	if (isSwapped) { swapInPlace(nchildren); }
 	*pdata += sizeof(int32_t);
 	// std::cout << "level " << level << "\tnchildren " << nchildren << std::endl;
@@ -51,14 +53,14 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	}
 }
 
-void hkTree::FreeNodeMemory(hkTreeNode& node)
-{
-	delete[] node.Data;
-	node.Data = nullptr;
-	for (auto& child : node.Children) {
-		FreeNodeMemory(child);
-	}
-}
+//void hkTree::FreeNodeMemory(hkTreeNode& node)
+//{
+//	delete[] node.Data;
+//	node.Data = nullptr;
+//	for (auto& child : node.Children) {
+//		FreeNodeMemory(child);
+//	}
+//}
 
 bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 {
@@ -118,11 +120,11 @@ hkTreeNode& hkTree::GetNode(const std::vector<int>& nodeid)
 	return *n;
 }
 
-hkTree::~hkTree()
-{
-	if(RootNode.Data != nullptr)
-		FreeNodeMemory(RootNode);
-}
+//hkTree::~hkTree()
+//{
+//	if(RootNode.Data != nullptr)
+//		FreeNodeMemory(RootNode);
+//}
 
 double hkTreeNode::extractLongRealNoThrow(size_t offset) const
 {
@@ -145,5 +147,5 @@ std::string hkTreeNode::getString(size_t offset) const
 	if (len <= offset) {
 		throw std::out_of_range("offset to large while accessing tree node");
 	}
-	return std::string(Data + offset);
+	return std::string(Data.get() + offset);
 }

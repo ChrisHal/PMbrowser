@@ -189,7 +189,8 @@ void PMbrowserWindow::closeFile()
         ui->renderArea->clearTrace();
         ui->treePulse->clear();
         this->setWindowTitle(myAppName);
-        delete datfile; datfile = nullptr;
+        //delete datfile;
+        datfile = nullptr;
         infile.close();
     }
 }
@@ -211,15 +212,15 @@ void PMbrowserWindow::loadFile(QString filename)
     //settings_modified = true;
     QSettings settings;
     settings.setValue("pmbrowserwindow/lastloadpath", lastloadpath);
-    datfile = new DatFile;
+    datfile = std::make_unique<DatFile>();
     try {
         datfile->InitFromStream(infile);
     }
     catch (const std::exception& e) {
         QMessageBox::warning(this, QString("File Error"), 
             QString("error while processing dat file:\n") + QString(e.what()));
-        delete datfile;
-        datfile=nullptr;
+        // delete datfile;
+        datfile = nullptr;
         infile.close();
     }
     if(datfile) {
@@ -722,12 +723,13 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
     assert(series->getLevel() == hkTreeNode::LevelSeries);
     hkTreeNode amprecord;
     amprecord.len = AmplifierStateSize;
+    amprecord.Data = std::make_unique<char[]>(amprecord.len);
     amprecord.isSwapped = series->getIsSwapped();
     auto ampstateflag = series->extractInt32(SeAmplStateFlag),
         ampstateref = series->extractInt32(SeAmplStateRef);
     if (ampstateflag > 0 || ampstateref == 0) {
         // use local amp state record
-        amprecord.Data = series->Data + SeOldAmpState;
+        std::memcpy(amprecord.Data.get(), series->Data.get() + SeOldAmpState, amprecord.len);
         std::string s;
         formatParamList(amprecord, parametersAmpplifierState, s);
         ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
@@ -738,7 +740,8 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         const auto& ampse = amproot.Children.at(ampstateref - 1); // Is this correct? Or seCount?
         for (const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
-            amprecord.Data = ampre.Data + AmAmplifierState;
+            std::memcpy(amprecord.Data.get(), ampre.Data.get() + AmAmplifierState, amprecord.len);
+            //amprecord.Data = ampre.Data.get() + AmAmplifierState;
             std::string s;
             formatParamList(amprecord, parametersAmpplifierState, s);
             ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));

@@ -26,6 +26,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <fstream>
+#include <memory>
 #include "DatFile.h"
 
 QT_BEGIN_NAMESPACE
@@ -85,10 +86,10 @@ private:
     void filterTree();
     void saveSettings();
     void loadSettings();
-    Ui::PMbrowserWindow *ui;
+    Ui::PMbrowserWindow* ui;
     QString currentFile;
     std::ifstream infile;
-    DatFile* datfile;
+    std::unique_ptr<DatFile> datfile;
     QString lastloadpath, lastexportpath;
     QString filterStrGrp, filterStrSer, filterStrSwp, filterStrTr;
     bool settings_modified;
