@@ -53,15 +53,6 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	}
 }
 
-//void hkTree::FreeNodeMemory(hkTreeNode& node)
-//{
-//	delete[] node.Data;
-//	node.Data = nullptr;
-//	for (auto& child : node.Children) {
-//		FreeNodeMemory(child);
-//	}
-//}
-
 bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 {
 	assert(!!infile);
@@ -88,7 +79,6 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 #endif
 		//throw std::runtime_error("tree file has unsuported byte order");
 	} else if (root->Magic != MagicNumber) {
-
 		throw std::runtime_error("magic number does not match, wrong filetype?");
 	}
 	LevelSizes.clear();

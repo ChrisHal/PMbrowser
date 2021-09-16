@@ -84,7 +84,6 @@ public:
 
     hkTreeNode* Parent;
     bool isSwapped;
-    //char* Data;
     std::unique_ptr<char[]> Data;
     int level;
     int32_t len;
@@ -98,7 +97,6 @@ class hkTree
     hkTreeNode RootNode;
     bool isSwapped;
     void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
-    void FreeNodeMemory(hkTreeNode& node);
 public:
     hkTree() : LevelSizes{}, RootNode{}, isSwapped{ false } {};
     bool InitFromStream(std::istream& infile, int offset, int len);
@@ -107,6 +105,5 @@ public:
     hkTreeNode& GetRootNode() { return RootNode; };
     size_t GetNumLevels() { return LevelSizes.size(); };
     bool getIsSwapped() { return isSwapped; };
-    //~hkTree();
 };
 
