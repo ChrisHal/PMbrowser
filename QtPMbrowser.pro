@@ -12,10 +12,10 @@ DEFINES += NDEBUG
 OBJECTS_DIR += release
 DESTDIR = ./release
 }
-CONFIG(debug) {
-OBJECTS_DIR += debug
-DESTDIR = ./debug
-}
+#CONFIG(debug) {
+#OBJECTS_DIR += debug
+#DESTDIR = ./debug
+#}
 #LIBS += -L"../../../../../openssl/lib" \
 #    -L"../../../../../Utils/my_sql/mysql-5.7.25-winx64/lib" \
 #    -L"../../../../../Utils/postgresql/pgsql/lib"
