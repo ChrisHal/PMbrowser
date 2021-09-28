@@ -57,6 +57,7 @@ public slots:
     void wipeBuffer();
     void setXYmode();
     void setYTmode();
+    void copyToClipboard();
 
 protected:
     void paintEvent(QPaintEvent *event) override;

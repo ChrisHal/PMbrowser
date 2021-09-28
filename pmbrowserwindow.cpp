@@ -57,9 +57,9 @@ Q_DECLARE_METATYPE(hkTreeNode*)
 
 void PMbrowserWindow::populateTreeView()
 {
-    auto tree =ui -> treePulse;
+    auto tree = ui -> treePulse;
     tree->setColumnCount(1);
-    auto& pultree=datfile->GetPulTree();
+    auto& pultree = datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
     int i=0;
     for(auto& group : pultree.GetRootNode().Children) {
@@ -274,6 +274,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionYX_mode, &QAction::triggered, ui->renderArea, &RenderArea::setXYmode);
     QObject::connect(ui->actionYT_mode, &QAction::triggered, ui->renderArea, &RenderArea::setYTmode);
     QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
+    QObject::connect(ui->actionCopy, &QAction::triggered, ui->renderArea, &RenderArea::copyToClipboard);
     QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip("Show the Qt library's About box");
 

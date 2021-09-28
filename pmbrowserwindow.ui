@@ -125,7 +125,7 @@
      <x>0</x>
      <y>0</y>
      <width>674</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -165,6 +165,7 @@
     <addaction name="actionClear_Persitant_Traces"/>
     <addaction name="separator"/>
     <addaction name="actionSettings"/>
+    <addaction name="actionCopy"/>
    </widget>
    <widget class="QMenu" name="menuTree">
     <property name="title">
@@ -291,6 +292,11 @@
    </property>
    <property name="text">
     <string>Do Autoscale on Load</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
    </property>
   </action>
  </widget>

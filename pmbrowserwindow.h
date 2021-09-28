@@ -47,6 +47,7 @@ private slots:
     void on_actionClear_Text_triggered();
     void on_actionExport_IBW_File_triggered();
     void on_actionExport_All_as_IBW_triggered();
+    //void on_actionCopy_triggered();
     void on_actionAbout_triggered();
     void on_actionFilter_triggered();
     void on_actionRemove_Filter_triggered();

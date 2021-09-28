@@ -182,6 +182,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     auto actZoomOut = menu.addAction("zoom out");
     auto actShrinkV = menu.addAction("vertical shrink");
     auto actAutoScale = menu.addAction("autoscale");
+    auto actCopy = menu.addAction("copy");
     menu.addSeparator();
     // auto actWipeBK = menu.addAction("wipe background traces");
     auto actASOL = menu.addAction("autoscale on load");
@@ -217,6 +218,9 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
         update();
+        event->accept();
+    } else if (response == actCopy) {
+        copyToClipboard();
         event->accept();
     }
 }
@@ -389,6 +393,12 @@ void RenderArea::setYTmode()
     }
 }
 
+void RenderArea::copyToClipboard()
+{
+    QPixmap pixmap(grab());
+    QGuiApplication::clipboard()->setPixmap(pixmap);
+}
+
 void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
@@ -396,7 +406,7 @@ void RenderArea::showSettingsDialog()
     if (dlg.exec()) {
         settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
-        // if numtraces has been reduced we ant to get rid of excess traces
+        // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
         }
