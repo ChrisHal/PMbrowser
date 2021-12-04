@@ -353,20 +353,20 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
         QVariant v = item->data(0, Qt::UserRole);
         hkTreeNode* traceentry = v.value<hkTreeNode*>();
-        int32_t datakind = traceentry->extractUInt16(TrDataKind);
-        QString tracelabel;
-        if (datakind & IsImon) {
-            tracelabel = "Imon";
-        }
-        else if (datakind & IsVmon) {
-            tracelabel = "Vmon";
-        }
-        else if (datakind & IsLeak) {
-            tracelabel = "Leak";
-        }
-        else {
-            tracelabel = QString("%1").arg(indextrace);
-        }
+        //int32_t datakind = traceentry->extractUInt16(TrDataKind);
+        auto tracelabel = QString::fromStdString(formTraceName(*traceentry, indextrace));
+        //if (datakind & IsImon) {
+        //    tracelabel = "Imon";
+        //}
+        //else if (datakind & IsVmon) {
+        //    tracelabel = "Vmon";
+        //}
+        //else if (datakind & IsLeak) {
+        //    tracelabel = "Leak";
+        //}
+        //else {
+        //    tracelabel = QString("%1").arg(indextrace);
+        //}
         QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(tracelabel);
 
         ui->textEdit->append("exporting " + wavename);
