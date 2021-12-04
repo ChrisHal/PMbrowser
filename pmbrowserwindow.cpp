@@ -315,13 +315,30 @@ void PMbrowserWindow::on_actionClear_Text_triggered()
     ui->textEdit->clear();
 }
 
-void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix)
+void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders)
 {
     if (item->isHidden()) { return; } // export only visible items
     int N = item->childCount();
     if (N > 0) {
+        bool new_datafolder{ false };
+        if (create_datafolders) {
+            auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+            new_datafolder = (poutfile != nullptr) && (node->getLevel() == hkTreeNode::LevelGroup ||
+                node->getLevel() == hkTreeNode::LevelSeries);
+        }
+        if (new_datafolder) {
+            PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
+            char buf[32]{};
+            item->text(0).toStdString().copy(buf, 31);
+            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+            poutfile->write(buf, 32);
+        }
         for (int i = 0; i < N; ++i) {
-            exportSubTree(item->child(i), path, prefix);
+            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders);
+        }
+        if (new_datafolder) {
+            PackedFileRecordHeader pfrh{ kDataFolderEndRecord,0,0 };
+            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
         }
     }
     else {
@@ -351,15 +368,36 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
             tracelabel = QString("%1").arg(indextrace);
         }
         QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(tracelabel);
-        QString filename = path + wavename + ".ibw";
 
         ui->textEdit->append("exporting " + wavename);
         ui->textEdit->update();
-        ExportTrace(infile, *traceentry, filename.toStdString(), wavename.toStdString());
+
+        if (poutfile == nullptr) { // multi-file export
+            QString filename = path + wavename + ".ibw";
+            std::ofstream outfile(filename.toStdString(), std::ios::out | std::ios::binary);
+            if (!outfile) {
+                std::stringstream msg;
+                msg << "error opening file '" << filename.toStdString() << "' for writing: " << strerror(errno);
+                throw std::runtime_error(msg.str());
+            }
+            ExportTrace(infile, *traceentry, outfile, wavename.toStdString());
+        }
+        else {
+            PackedFileRecordHeader pfrh{};
+            pfrh.recordType = kWaveRecord;
+            size_t offset_record = poutfile->tellp();
+            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+            ExportTrace(infile, *traceentry, *poutfile, wavename.toStdString());
+            size_t offset_end = poutfile->tellp();
+            pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
+            poutfile->seekp(offset_record);
+            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+            poutfile->seekp(offset_end);
+        }
     }
 }
 
-bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
+bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders)
 {
     if (!QDir(lastexportpath).exists()) {
         lastexportpath.clear();
@@ -376,6 +414,8 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
         if (!path.endsWith('/')) {
             path.append('/');
         }
+        pxp_export = dlg.pxp_export;
+        create_datafolders = dlg.create_datafolders;
         lastexportpath = path;
         settings_modified = true;
         return true;
@@ -388,11 +428,28 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix)
 void PMbrowserWindow::exportAllVisibleTraces()
 {
     QString path, prefix;
-    if (choosePathAndPrefix(path, prefix)) {
+    bool pxp_export, create_datafolders;
+    std::ofstream outfile;
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+        if (pxp_export) {
+            // we need filename for pxp file
+            auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
+            outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
+            if (!outfile) {
+                QString msg = QString("Error while opening file:\n%1").arg(filename);
+                QMessageBox::warning(this, QString("Error"), msg);
+                return;
+            }
+        }
         try {
             int N = ui->treePulse->topLevelItemCount();
             for (int i = 0; i < N; ++i) {
-                exportSubTree(ui->treePulse->topLevelItem(i), path, prefix);
+                if (pxp_export) {
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders);
+                }
+                else {
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false);
+                }
             }
         }
         catch (std::exception& e) {
@@ -405,9 +462,27 @@ void PMbrowserWindow::exportAllVisibleTraces()
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
-    if (choosePathAndPrefix(path, prefix)) {
+    bool pxp_export, create_datafolders;
+    std::ofstream outfile;
+
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+        if (pxp_export) {
+            // we need filename for pxp file
+            auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
+            outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
+            if (!outfile) {
+                QString msg = QString("Error while opening file:\n%1").arg(filename);
+                QMessageBox::warning(this, QString("Error"), msg);
+                return;
+            }
+        }
         try {
-            exportSubTree(root, path, prefix);
+            if (pxp_export) {
+                exportSubTree(root, path, prefix, &outfile, create_datafolders);
+            }
+            else {
+                exportSubTree(root, path, prefix, nullptr, false);
+            }
         }
         catch (std::exception& e) {
             QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
@@ -507,7 +582,8 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     }
     else {
         QString path, prefix;
-        if (choosePathAndPrefix(path, prefix)) {
+        bool pxp_export, create_datafolders;
+        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
             ui->textEdit->append("exporting...");
             try {
                 ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());

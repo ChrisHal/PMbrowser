@@ -204,7 +204,7 @@
   </action>
   <action name="actionExport_IBW_File">
    <property name="text">
-    <string>Export Subtree as IBW Files...</string>
+    <string>Export Subtree for Igor...</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -248,7 +248,7 @@
   </action>
   <action name="actionExport_All_Visible_Traces_as_IBW_Files">
    <property name="text">
-    <string>Export All Visible Traces as IBW Files...</string>
+    <string>Export All Visible Traces for Igor...</string>
    </property>
   </action>
   <action name="actionSettings">

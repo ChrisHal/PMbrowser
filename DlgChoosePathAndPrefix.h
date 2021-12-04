@@ -36,6 +36,7 @@ public:
 	~DlgChoosePathAndPrefix();
     void accept() override;
 	QString path, prefix;
+    bool pxp_export, create_datafolders;
 
 private slots:
 	void choosePath();
