@@ -21,7 +21,8 @@
 #include <QFileDialog>
 #include "DlgChoosePathAndPrefix.h"
 
-DlgChoosePathAndPrefix::DlgChoosePathAndPrefix(QWidget* parent, const QString& Path) : QDialog(parent), path(Path), prefix{}, ui(new Ui::DlgChoosePathAndPrefix)
+DlgChoosePathAndPrefix::DlgChoosePathAndPrefix(QWidget* parent, const QString& Path) : QDialog(parent), path(Path), prefix{},
+pxp_export{}, create_datafolders{}, ui(new Ui::DlgChoosePathAndPrefix)
 {
 	ui->setupUi(this);
 	ui->lineEditPath->setText(path);
@@ -47,5 +48,7 @@ void DlgChoosePathAndPrefix::accept()
 {
 	path = ui->lineEditPath->text();
 	prefix = ui->lineEditPrefix->text();
+	pxp_export = ui->checkBox_pxp_export->isChecked();
+	create_datafolders = ui->checkBox_create_datafolders->isChecked();
 	QDialog::accept();
 }

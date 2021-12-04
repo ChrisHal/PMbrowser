@@ -18,5 +18,21 @@
 */
 
 #pragma once
+struct PackedFileRecordHeader {
+    uint16_t recordType; 	/* Record type plus superceded flag. */
+    int16_t version;				/* Version information depends on the type of record. */
+    int32_t numDataBytes;			/* Number of data bytes in the record following this record header. */
+};
+static_assert(sizeof(PackedFileRecordHeader) == 8, "struct PackedFileRecordHeader has wrong size");
+
+constexpr unsigned short
+PACKEDRECTYPE_MASK = 0x7FFF,
+SUPERCEDED_MASK = 0x8000; // on load: ignore pxp record if superceded bit is set
+
+// pxp record type IDs
+constexpr auto kWaveRecord = 3,	//  3: Contains the data for a wave
+kDataFolderStartRecord = 9,		// datafollder, followed by 32 chars, zero-terminated
+kDataFolderEndRecord = 10;
+
 void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
-void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename);
+void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, const std::string& wavename);

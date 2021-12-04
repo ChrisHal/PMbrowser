@@ -94,7 +94,7 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_
 	}
 }
 
-void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string& filename, const std::string& wavename)
+void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, const std::string& wavename)
 {
 	assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
 	char dataformat = TrRecord.getChar(TrDataFormat);
@@ -133,12 +133,12 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 		break;
 	}
 
-	std::ofstream outfile(filename, std::ios::out | std::ios::binary);
-	if (!outfile) {
-		std::stringstream msg;
-		msg << "error opening file '" << filename << "' for writing: " << strerror(errno);
-		throw std::runtime_error(msg.str());
-	}
+	//std::ofstream outfile(filename, std::ios::out | std::ios::binary);
+	//if (!outfile) {
+	//	std::stringstream msg;
+	//	msg << "error opening file '" << filename << "' for writing: " << strerror(errno);
+	//	throw std::runtime_error(msg.str());
+	//}
 
 	std::string note;
 	MakeWaveNote(TrRecord, note);
@@ -175,7 +175,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, const std::string
 	outfile.write((char*)&wh, numbytes_wh);
 	outfile.write((char*)target.get(), sizeof(double) * trdatapoints);
 	outfile.write(note.data(), note.size());
-	outfile.close();
+	//outfile.close();
 }
 
 
@@ -197,7 +197,8 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 					wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount << "_";
 					wavename << formTraceName(trace, tracecount);
 					std::string filename = path + wavename.str() + ".ibw";
-					ExportTrace(datafile, trace, filename, wavename.str());
+					std::ofstream outfile(filename, std::ios::binary | std::ios::out);
+					ExportTrace(datafile, trace, outfile, wavename.str());
 				}
 			}
 		}
