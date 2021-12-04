@@ -18,3 +18,4 @@ moc_*
 QtPMbrowser.aps
 *.ibw
 /PMbrowserSetup/Release
+*.user
