@@ -219,7 +219,6 @@ void PMbrowserWindow::loadFile(QString filename)
     catch (const std::exception& e) {
         QMessageBox::warning(this, QString("File Error"), 
             QString("error while processing dat file:\n") + QString(e.what()));
-        // delete datfile;
         datfile = nullptr;
         infile.close();
     }
@@ -233,7 +232,7 @@ void PMbrowserWindow::loadFile(QString filename)
         try {
             const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
             std::string ampname = amprootnode.getString(RoAmplifierName);
-            // turns out, the following filed are somewhat obscure/useless
+            // turns out, the following files are somewhat obscure/useless
             // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
             // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
             txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
@@ -353,20 +352,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
         QVariant v = item->data(0, Qt::UserRole);
         hkTreeNode* traceentry = v.value<hkTreeNode*>();
-        //int32_t datakind = traceentry->extractUInt16(TrDataKind);
         auto tracelabel = QString::fromStdString(formTraceName(*traceentry, indextrace));
-        //if (datakind & IsImon) {
-        //    tracelabel = "Imon";
-        //}
-        //else if (datakind & IsVmon) {
-        //    tracelabel = "Vmon";
-        //}
-        //else if (datakind & IsLeak) {
-        //    tracelabel = "Leak";
-        //}
-        //else {
-        //    tracelabel = QString("%1").arg(indextrace);
-        //}
         QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(tracelabel);
 
         ui->textEdit->append("exporting " + wavename);
@@ -550,9 +536,7 @@ void PMbrowserWindow::filterTree()
                 }
             }
         }
-
     }
-    //TODO
 }
 
 void PMbrowserWindow::on_actionExport_IBW_File_triggered()
