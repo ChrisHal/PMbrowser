@@ -28,7 +28,7 @@
 double swap_bytes(double x)
 {
     char* a = reinterpret_cast<char*>(&x);
-    uint64_t b;
+    uint64_t b{};
     char* p = reinterpret_cast<char*>(&b);
     p[0] = a[7];
     p[1] = a[6];
@@ -44,7 +44,7 @@ double swap_bytes(double x)
 float swap_bytes(float x)
 {
     char* a = reinterpret_cast<char*>(&x);
-    float b;
+    float b{};
     char* p = reinterpret_cast<char*>(&b);
     p[0] = a[3];
     p[1] = a[2];
@@ -56,7 +56,7 @@ float swap_bytes(float x)
 int32_t swap_bytes(int32_t x)
 {
     char* a = reinterpret_cast<char*>(&x);
-    int32_t b;
+    int32_t b{};
     char* p = reinterpret_cast<char*>(&b);
     p[0] = a[3];
     p[1] = a[2];
@@ -68,7 +68,7 @@ int32_t swap_bytes(int32_t x)
 uint32_t swap_bytes(uint32_t x)
 {
     char* a = reinterpret_cast<char*>(&x);
-    int32_t b;
+    int32_t b{};
     char* p = reinterpret_cast<char*>(&b);
     p[0] = a[3];
     p[1] = a[2];

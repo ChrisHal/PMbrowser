@@ -798,7 +798,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
     else {
         // auto secount = series->extractInt32(SeSeriesCount);
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
-        const auto& ampse = amproot.Children.at(ampstateref - 1); // Is this correct? Or seCount?
+        const auto& ampse = amproot.Children.at(size_t(ampstateref) - 1); // Is this correct? Or seCount?
         for (const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
             std::memcpy(amprecord.Data.get(), ampre.Data.get() + AmAmplifierState, amprecord.len);
