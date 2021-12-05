@@ -420,6 +420,7 @@ void PMbrowserWindow::exportAllVisibleTraces()
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
+            if (filename.length() == 0) return;
             outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
@@ -455,6 +456,7 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
+            if (filename.length() == 0) return;
             outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
@@ -568,6 +570,10 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
         QString path, prefix;
         bool pxp_export, create_datafolders;
         if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+            if (pxp_export) {
+                QMessageBox::warning(this, "Error", "pxp export for\nthis option\nnot yet implimented");
+                return;
+            }
             ui->textEdit->append("exporting...");
             try {
                 ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
