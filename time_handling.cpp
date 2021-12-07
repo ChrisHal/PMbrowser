@@ -37,18 +37,26 @@ std::time_t PMtime2time_t(double t)
     return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
 }
 
-std::string formatPMtimeDate(double t)
+static std::string formatPMtime(double t, const char* fmt_str)
 {
     auto unixtime = PMtime2time_t(t);
-    char buffer[128];
-    std::strftime(buffer, 128, "%F", gmtime(&unixtime));
-    return std::string(buffer);
+    char buffer[128]{};
+    auto tm = gmtime(&unixtime);
+    if (tm) {
+        std::strftime(buffer, 128, fmt_str, tm);
+        return std::string(buffer);
+    }
+    else {
+        return "<conversion error>";
+    }
+}
+
+std::string formatPMtimeDate(double t)
+{
+    return formatPMtime(t, "%F");
 }
 
 std::string formatPMtimeUTC(double t)
 {
-    auto unixtime = PMtime2time_t(t);
-    char buffer[128];
-    std::strftime(buffer, 128, "%FT%T UTC", gmtime(&unixtime));
-    return std::string(buffer);
+    return formatPMtime(t, "%FT%T UTC");
 }
