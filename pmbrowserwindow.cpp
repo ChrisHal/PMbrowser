@@ -320,7 +320,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
     int N = item->childCount();
     if (N > 0) {
         bool new_datafolder{ false };
-        if (create_datafolders) {
+        if (create_datafolders && poutfile!=nullptr) {
             auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
             new_datafolder = (poutfile != nullptr) && (node->getLevel() == hkTreeNode::LevelGroup ||
                 node->getLevel() == hkTreeNode::LevelSeries);
