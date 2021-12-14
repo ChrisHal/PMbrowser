@@ -143,14 +143,13 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	std::string note;
 	MakeWaveNote(TrRecord, note);
 
-	BinHeader5 bh;
+	BinHeader5 bh{};
 	// make sure the packing of the structs is as expected:
 	static_assert(sizeof(bh) == 64, "wrong size of bh");
-	memset((void*)&bh, 0, sizeof(bh));
-	WaveHeader5 wh;
+
+	WaveHeader5 wh{};
 	constexpr size_t numbytes_wh = offsetof(WaveHeader5, wData);
 	static_assert(numbytes_wh == 320, "wrong size of wh");
-	memset((void*)&wh, 0, sizeof(wh));
 
 	bh.version = 5;
 	bh.noteSize = int32_t(note.size());
