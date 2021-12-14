@@ -131,7 +131,7 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
-extern std::array<PMparameter, 25>parametersAmpplifierState = {
+std::array<PMparameter, 25>parametersAmpplifierState = {
 	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
 	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
 	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
