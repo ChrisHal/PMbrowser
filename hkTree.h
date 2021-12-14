@@ -21,6 +21,7 @@
 #include <istream>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <memory>
 #include <cstring>
 #include <cstdint>
@@ -65,18 +66,18 @@ public:
         LevelSweep = 3,
         LevelTrace = 4
     };
-    int32_t extractInt32(size_t offset) const { return extractValue<int32_t>(offset); };
-    uint16_t extractUInt16(size_t offset) const { return extractValue<uint16_t>(offset); };
-    double extractLongReal(size_t offset) const { return extractValue<double>(offset); };
-    double extractLongRealNoThrow(size_t offset) const; // instead of throwing an exception, returns NaN if out of range
-    char getChar(size_t offset) const;
-    std::string getString(size_t offset) const;
-    template<std::size_t N> std::string getString(size_t offset) const
+    int32_t extractInt32(std::size_t offset) const { return extractValue<int32_t>(offset); };
+    uint16_t extractUInt16(std::size_t offset) const { return extractValue<uint16_t>(offset); };
+    double extractLongReal(std::size_t offset) const { return extractValue<double>(offset); };
+    double extractLongRealNoThrow(std::size_t offset) const; // instead of throwing an exception, returns NaN if out of range
+    char getChar(std::size_t offset) const;
+    std::string getString(std::size_t offset) const;
+    template<std::size_t N> const std::string_view getString(std::size_t offset) const
     {
         if (len < offset + N) {
             throw std::out_of_range("offset to large while accessing tree node");
         }
-        return std::string(Data.get() + offset, N);
+        return std::string_view(Data.get() + offset, N);
     };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };

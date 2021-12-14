@@ -200,21 +200,21 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			break;
 		case LongReal4:
 			ss << "(";
-			for (int i = 0; i < 4; ++i) {
+			for (std::size_t i = 0; i < 4; ++i) {
 				ss << node.extractLongReal(offset + 8 * i) << ",";
 			}
 			ss << ")";
 			break;
 		case LongReal8:
 			ss << "(";
-			for (int i = 0; i < 8; ++i) {
+			for (std::size_t i = 0; i < 8; ++i) {
 				ss << node.extractLongReal(offset + 8 * i) << ",";
 			}
 			ss << ")";
 			break;
 		case LongReal16:
 			ss << "(";
-			for (int i = 0; i < 16; ++i) {
+			for (std::size_t i = 0; i < 16; ++i) {
 				ss << node.extractLongReal(offset + 8 * i) << ",";
 			}
 			ss << ")";
