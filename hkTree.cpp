@@ -56,14 +56,13 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 {
 	assert(!!infile);
-	auto buffer = new char[len];
-	infile.seekg(offset).read(buffer, len);
+	auto buffer = std::make_unique<char[]>(len);
+	infile.seekg(offset).read(buffer.get(), len);
 	if (!infile) {
 		infile.clear();
 		return false;
 	}
-	bool res = this->InitFromBuffer(buffer, len);
-	delete[] buffer;
+	bool res = this->InitFromBuffer(buffer.get(), len);
 	return res;
 }
 
