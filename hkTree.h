@@ -23,20 +23,17 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include <limits>
 #include <cstring>
 #include <cstdint>
 #include "helpers.h"
 
 constexpr int32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
 struct hkTreeNode {
-public:
-    hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
-    template<typename T> T extractValue(size_t offset) const
+private:
+    template<typename T> T extractValueNoCheck(std::size_t offset) const
     {
-        if (len < offset + sizeof(T)) {
-            throw std::out_of_range("offset to large while accessing tree node");
-        }
-        T t;
+        T t{};
         std::memcpy(&t, Data.get() + offset, sizeof(T));
         if (isSwapped) {
             return swap_bytes(t);
@@ -45,19 +42,21 @@ public:
             return t;
         }
     }
-    template<typename T> T extractValue(size_t offset, T defaultValue) const
+public:
+    hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
+    template<typename T> T extractValue(std::size_t offset) const
+    {
+        if (len < offset + sizeof(T)) {
+            throw std::out_of_range("offset to large while accessing tree node");
+        }
+        return extractValueNoCheck<T>(offset);
+    }
+    template<typename T> T extractValue(std::size_t offset, T defaultValue) const
     {
         if (len < offset + sizeof(T)) {
             return defaultValue;
         }
-        T t;
-        std::memcpy(&t, Data.get() + offset, sizeof(T));
-        if (isSwapped) {
-            return swap_bytes(t);
-        }
-        else {
-            return t;
-        }
+        return extractValueNoCheck<T>(offset);
     }
     enum TreeLevel {
         LevelRoot = 0,
@@ -69,7 +68,10 @@ public:
     int32_t extractInt32(std::size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(std::size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(std::size_t offset) const { return extractValue<double>(offset); };
-    double extractLongRealNoThrow(std::size_t offset) const; // instead of throwing an exception, returns NaN if out of range
+    double extractLongRealNoThrow(std::size_t offset) const // instead of throwing an exception, returns NaN if out of range
+    {
+        return extractValue(offset, std::numeric_limits<double>::quiet_NaN());
+    };
     char getChar(std::size_t offset) const;
     std::string getString(std::size_t offset) const;
     template<std::size_t N> const std::string_view getString(std::size_t offset) const
@@ -87,7 +89,7 @@ public:
     bool isSwapped;
     std::unique_ptr<char[]> Data;
     int level;
-    int32_t len;
+    std::size_t len;
     std::vector<hkTreeNode> Children;
     friend class hkTree;
 };

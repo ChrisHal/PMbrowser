@@ -21,7 +21,6 @@
 #include <cstdint>
 #include <cassert>
 #include <cstring>
-#include <limits>
 #include "DatFile.h"
 #include "hkTree.h"
 #include "helpers.h"
@@ -107,20 +106,6 @@ hkTreeNode& hkTree::GetNode(const std::vector<int>& nodeid)
 		n = &n->Children.at(0);
 	}
 	return *n;
-}
-
-//hkTree::~hkTree()
-//{
-//	if(RootNode.Data != nullptr)
-//		FreeNodeMemory(RootNode);
-//}
-
-double hkTreeNode::extractLongRealNoThrow(size_t offset) const
-{
-	if (len < offset + sizeof(double)) {
-		return std::numeric_limits<double>::quiet_NaN();
-	}
-	return extractValue<double>(offset);
 }
 
 char hkTreeNode::getChar(size_t offset) const
