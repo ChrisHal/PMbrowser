@@ -75,7 +75,7 @@ private:
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
     size_t ndatapoints;
-    DisplayTrace yTrace, xTrace; // TODO at least yTrace should be a pointer?
+    DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
     bool background_traces_hidden;
     bool clipped; // Amp. was clipping
