@@ -40,7 +40,7 @@ private:
 	template<std::size_t Nrows> void populateGrid(QGridLayout* grid,
 		const std::array<PMparameter, Nrows>& ar)
 	{
-		for (std::size_t i = 0; i < ar.size(); ++i) {
+		for (int i = 0; i < int(ar.size()); ++i) {
 			auto chk1 = new QCheckBox("export");
 			chk1->setChecked(ar[i].exportIBW);
 			//chk1->setFixedSize(50, 20);
@@ -62,7 +62,7 @@ private:
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
 		std::array<PMparameter, Nrows>& ar)
 	{
-		for (std::size_t i = 0; i < ar.size(); ++i) {
+		for (int i = 0; i < int(ar.size()); ++i) {
 			ar[i].exportIBW = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget()))->isChecked();
 			ar[i].print = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget()))->isChecked();
 		}
