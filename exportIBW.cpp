@@ -83,12 +83,12 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_
 		throw std::runtime_error("error while reading datafile");
 	}
 	if (!need_swap) {
-		for (int i = 0; i < trdatapoints; ++i) {
+		for (std::size_t i = 0; i < trdatapoints; ++i) {
 			target[i] = datascaler * source[i];
 		}
 	}
 	else {
-		for (int i = 0; i < trdatapoints; ++i) {
+		for (std::size_t i = 0; i < trdatapoints; ++i) {
 			target[i] = datascaler * swap_bytes(source[i]);
 		}
 	}
