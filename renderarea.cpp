@@ -33,6 +33,7 @@
 #include "DatFile.h"
 #include <QMessageBox>
 #include "DisplayTrace.h"
+#include "qstring_helper.h"
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent), ndatapoints{}, 
@@ -439,8 +440,8 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     bool need_swap = !(tracedatakind & LittleEndianBit);
     clipped = tracedatakind & ClipBit;
-    yTrace.y_unit = TrRecord->getString(TrYUnit).c_str(); // assuming the string is zero terminated...
-    yTrace.x_unit = TrRecord->getString(TrXUnit).c_str();
+    yTrace.y_unit = qs_from_sv(TrRecord->getString(TrYUnit)); // assuming the string is zero terminated...
+    yTrace.x_unit = qs_from_sv(TrRecord->getString(TrXUnit));
     yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
     double datascaler = TrRecord->extractLongReal(TrDataScaler);
     int32_t trdata = TrRecord->extractInt32(TrData);

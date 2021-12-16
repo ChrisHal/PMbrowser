@@ -208,6 +208,7 @@
   <ItemGroup>
     <ClInclude Include="DatFile.h" />
     <ClInclude Include="DisplayTrace.h" />
+    <ClInclude Include="qstring_helper.h" />
     <ClInclude Include="time_handling.h" />
     <QtMoc Include="DlgTreeFilter.h" />
     <QtMoc Include="DlgGraphSettings.h" />

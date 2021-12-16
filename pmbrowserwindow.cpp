@@ -45,6 +45,7 @@
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
+#include "qstring_helper.h"
 
 
 const QString myAppName("PM browser");
@@ -64,7 +65,7 @@ void PMbrowserWindow::populateTreeView()
     int i=0;
     for(auto& group : pultree.GetRootNode().Children) {
         QString count=QString("%1").arg(++i), label;
-        label = group.getString(GrLabel).c_str();
+        label = qs_from_sv(group.getString(GrLabel));
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
@@ -72,12 +73,12 @@ void PMbrowserWindow::populateTreeView()
         grpitems.append(grpitem);
         int j=0;
         for(auto& series : group.Children) {
-            QString label2 = QString("%1").arg(++j)+" "+QString(series.getString(SeLabel).c_str());
+            QString label2 = QString("%1").arg(++j)+" "+qs_from_sv(series.getString(SeLabel));
             auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             int k = 0;
             for(auto& sweep : series.Children) {
-                QString label3 = QString("sweep %1").arg(++k)+" "+QString(sweep.getString(SwLabel).c_str());
+                QString label3 = QString("sweep %1").arg(++k)+" "+qs_from_sv(sweep.getString(SwLabel));
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 int l = 0;
@@ -146,7 +147,7 @@ void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVect
 
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     (void)item;
-    QString label = QString::fromStdString(sweep->getString(SeLabel));
+    QString label = qs_from_sv(sweep->getString(SeLabel));
     int32_t count = sweep->extractInt32(SwSweepCount);
     QString txt = QString("Sweep %1 %2").arg(label).arg(count);
     std::string str;
@@ -159,7 +160,7 @@ void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
 void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 {
     (void)item;
-    QString label = QString::fromStdString(series->getString(SeLabel));
+    QString label = qs_from_sv(series->getString(SeLabel));
     int32_t count = series->extractInt32(SeSeriesCount);
     QString txt = QString("Series %1 %2").arg(label).arg(count);
     std::string str;
@@ -172,7 +173,7 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
 void PMbrowserWindow::groupSelected(QTreeWidgetItem* item, hkTreeNode* group)
 {
     (void)item;
-    QString label = QString::fromStdString(group->getString(GrLabel));
+    QString label = qs_from_sv(group->getString(GrLabel));
     int32_t count = group->extractInt32(GrGroupCount);
     QString txt = QString("Group %1 %2").arg(label).arg(count);
     std::string str;
@@ -231,7 +232,7 @@ void PMbrowserWindow::loadFile(QString filename)
         }
         try {
             const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
-            std::string ampname = amprootnode.getString(RoAmplifierName);
+            std::string ampname = std::string(amprootnode.getString(RoAmplifierName));
             // turns out, the following files are somewhat obscure/useless
             // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
             // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));

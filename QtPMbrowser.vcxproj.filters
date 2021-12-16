@@ -123,6 +123,9 @@
     <ClInclude Include="time_handling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="qstring_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">

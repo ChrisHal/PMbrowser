@@ -116,10 +116,10 @@ char hkTreeNode::getChar(size_t offset) const
 	return Data[offset];
 }
 
-std::string hkTreeNode::getString(size_t offset) const
+const std::string_view hkTreeNode::getString(size_t offset) const
 {
 	if (len <= offset) {
 		throw std::out_of_range("offset to large while accessing tree node");
 	}
-	return std::string(Data.get() + offset);
+	return std::string_view(Data.get() + offset);
 }

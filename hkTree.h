@@ -73,7 +73,7 @@ public:
         return extractValue(offset, std::numeric_limits<double>::quiet_NaN());
     };
     char getChar(std::size_t offset) const;
-    std::string getString(std::size_t offset) const;
+    const std::string_view getString(std::size_t offset) const;
     template<std::size_t N> const std::string_view getString(std::size_t offset) const
     {
         if (len < offset + N) {

@@ -24,6 +24,7 @@
 #include "time_handling.h"
 #include <cassert>
 #include <DatFile.h>
+#include "qstring_helper.h"
 
 const std::array<const char*, 7> RecordingModeNames = {
 	"Inside-Out",
