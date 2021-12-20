@@ -85,6 +85,9 @@
     <ClCompile Include="time_handling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="igor_ipf.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DatFile.h">

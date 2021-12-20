@@ -428,6 +428,7 @@ void PMbrowserWindow::exportAllVisibleTraces()
                 QMessageBox::warning(this, QString("Error"), msg);
                 return;
             }
+//            WriteIgorPlatformRecord(outfile);
         }
         try {
             int N = ui->treePulse->topLevelItemCount();
@@ -438,6 +439,9 @@ void PMbrowserWindow::exportAllVisibleTraces()
                 else {
                     exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false);
                 }
+            }
+            if (pxp_export && create_datafolders) {
+                WriteIgorProcedureRecord(outfile);
             }
         }
         catch (std::exception& e) {
@@ -464,6 +468,7 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
                 QMessageBox::warning(this, QString("Error"), msg);
                 return;
             }
+ //           WriteIgorPlatformRecord(outfile);
         }
         try {
             if (pxp_export) {
@@ -471,6 +476,9 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
             }
             else {
                 exportSubTree(root, path, prefix, nullptr, false);
+            }
+            if (pxp_export&&create_datafolders) {
+                WriteIgorProcedureRecord(outfile);
             }
         }
         catch (std::exception& e) {

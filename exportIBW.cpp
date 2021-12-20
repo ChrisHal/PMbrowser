@@ -24,6 +24,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <stdexcept>
 #include <memory>
@@ -34,6 +35,7 @@
 #include "DatFile.h"
 #include "PMparameters.h"
 #include "exportIBW.h"
+#include "igor_ipf.h"
 #include "Igor_IBW.h"
 
 //	This is how Igor wants its checksum done
@@ -177,6 +179,31 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	//outfile.close();
 }
 
+// Warning: this ist not recognize as a valid record by Igor!
+void WriteIgorPlatformRecord(std::ostream& outfile)
+{
+	PackedFileRecordHeader pfrh{kPlatformRecord,0,sizeof(PlatformInfo)};
+	PlatformInfo pli{ 2,2,0,0 };
+	//double igorVersion = 5.00;
+	//std::memcpy(pli.igorVersion, &igorVersion, sizeof(double));
+	outfile.write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+	outfile.write((char*)&pli, sizeof(PlatformInfo));
+}
+
+void WriteIgorProcedureRecord(std::ostream& outfile)
+{
+	using namespace std::literals::string_view_literals;
+	constexpr auto history_txt = "// pxp file created by PMbrowser\r"
+		"// Use \"Macros\" --> \"Display Waves\" to create graphs\r"sv;
+	PackedFileRecordHeader pfhr{ kHistoryRecord,0, int32_t(history_txt.size()) };
+	outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+	outfile.write(history_txt.data(), history_txt.size());
+	pfhr = { kProcedureRecord,0, int32_t(Igor_ipf.size()) };
+	outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+	outfile.write(Igor_ipf.data(), Igor_ipf.size());
+	pfhr = { kGetHistoryRecord,0,0 };
+	outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+}
 
 void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)
 {
@@ -203,3 +230,4 @@ void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& p
 		}
 	}
 }
+

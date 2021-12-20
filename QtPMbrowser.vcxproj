@@ -197,6 +197,7 @@
     <ClCompile Include="exportIBW.cpp" />
     <ClCompile Include="helpers.cpp" />
     <ClCompile Include="hkTree.cpp" />
+    <ClCompile Include="igor_ipf.h" />
     <ClCompile Include="machineinfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pmbrowserwindow.cpp" />
