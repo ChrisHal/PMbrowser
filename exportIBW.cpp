@@ -183,7 +183,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 void WriteIgorPlatformRecord(std::ostream& outfile)
 {
 	PackedFileRecordHeader pfrh{kPlatformRecord,0,sizeof(PlatformInfo)};
-	PlatformInfo pli{ 2,2,0,0 };
+	PlatformInfo pli{ 2,2,0, {0} };
 	//double igorVersion = 5.00;
 	//std::memcpy(pli.igorVersion, &igorVersion, sizeof(double));
 	outfile.write((char*)&pfrh, sizeof(PackedFileRecordHeader));
