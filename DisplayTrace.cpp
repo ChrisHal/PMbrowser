@@ -55,7 +55,7 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 	else {
 		//in YT-mode we speed things up by drawing only the
 		//datapoints actually visible
-		int N = data.size();
+		auto N = static_cast<int>(data.size());
 		int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
 		int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
 //#ifndef NDEBUG

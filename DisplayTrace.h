@@ -30,8 +30,8 @@ class DisplayTrace
 {
 public:
 	DisplayTrace() : x0{ 0.0 }, deltax{ 0.0 }, x_unit{}, y_unit{}, data{} {};
-    DisplayTrace(DisplayTrace&& dtrace) : x0{ dtrace.x0 }, deltax{ dtrace.deltax },
-        x_unit{dtrace.x_unit}, y_unit{ dtrace.y_unit }, data{ std::move(dtrace.data) } {};
+    DisplayTrace(DisplayTrace&& dtrace) noexcept : x0{ dtrace.x0 }, deltax{ dtrace.deltax },
+        x_unit{ std::move(dtrace.x_unit) }, y_unit{ std::move(dtrace.y_unit) }, data{ std::move(dtrace.data) } {};
     DisplayTrace& operator=(const DisplayTrace& dtrace) {
         x0 = dtrace.x0;
         deltax = dtrace.deltax;
