@@ -145,3 +145,42 @@ inline double extractLongReal(const char* data, size_t offset)
 {
 	return *reinterpret_cast<const double*>(data + offset);
 }
+
+// some routines to read trace data
+template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
+	double* target, int interleavesize, int interleaveskip)
+{
+	auto source = std::make_unique<T[]>(trdatapoints);
+	if (interleavesize == 0) {
+		datafile.read((char*)source.get(), sizeof(T) * trdatapoints);
+	}
+	else { // it's interleaved data
+		assert(interleaveskip >= interleavesize);
+		size_t bytesremaining = sizeof(T) * trdatapoints;
+		int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
+		char* p = (char*)source.get();
+		while (bytesremaining > 0) {
+			size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
+			datafile.read(p, bytestoread);
+			if (!datafile) { break; }
+			p += bytestoread;
+			bytesremaining -= bytestoread;
+			if (bytesremaining > 0) {
+				datafile.seekg(bytestoskip, std::ios::cur); // skip to next block
+			}
+		}
+	}
+	if (!datafile) {
+		throw std::runtime_error("error while reading datafile");
+	}
+	if (!need_swap) {
+		for (std::size_t i = 0; i < trdatapoints; ++i) {
+			target[i] = datascaler * source[i];
+		}
+	}
+	else {
+		for (std::size_t i = 0; i < trdatapoints; ++i) {
+			target[i] = datascaler * swap_bytes(source[i]);
+		}
+	}
+}
