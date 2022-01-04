@@ -147,9 +147,19 @@ inline double extractLongReal(const char* data, size_t offset)
 }
 
 // some routines to read trace data
-template<typename T> void ReadScaleAndConvert(std::istream& datafile, bool need_swap, size_t trdatapoints, double datascaler,
-	double* target, int interleavesize, int interleaveskip)
+template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, size_t trdatapoints, 
+	double* target)
 {
+	assert(trdatapoints == TrRecord.extractInt32(TrDataPoints));
+	int32_t trdata = TrRecord.extractInt32(TrData);
+	datafile.seekg(trdata);
+
+	int32_t     interleavesize = TrRecord.extractValue<int32_t>(TrInterleaveSize, 0),
+		interleaveskip = TrRecord.extractValue<int32_t>(TrInterleaveSkip, 0);
+	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
+	bool need_swap = !(tracekind & LittleEndianBit);
+	double datascaler = TrRecord.extractLongReal(TrDataScaler);
+
 	auto source = std::make_unique<T[]>(trdatapoints);
 	if (interleavesize == 0) {
 		datafile.read((char*)source.get(), sizeof(T) * trdatapoints);

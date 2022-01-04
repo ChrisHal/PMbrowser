@@ -392,31 +392,25 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
         }
     }
     char dataformat = TrRecord->getChar(TrDataFormat);
-    int32_t     interleavesize = TrRecord->extractValue<int32_t>(TrInterleaveSize ,0),
-                interleaveskip = TrRecord->extractValue<int32_t>(TrInterleaveSkip, 0);
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
-    bool need_swap = !(tracedatakind & LittleEndianBit);
     clipped = tracedatakind & ClipBit;
     yTrace.y_unit = qs_from_sv(TrRecord->getString(TrYUnit)); // assuming the string is zero terminated...
     yTrace.x_unit = qs_from_sv(TrRecord->getString(TrXUnit));
     yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
-    double datascaler = TrRecord->extractLongReal(TrDataScaler);
-    int32_t trdata = TrRecord->extractInt32(TrData);
     ndatapoints = TrRecord->extractInt32(TrDataPoints);
     yTrace.data.resize(ndatapoints);
-    infile.seekg(trdata);
 	try {
 		if (dataformat == DFT_int16) {
-			ReadScaleAndConvert<int16_t>(infile, need_swap, ndatapoints, datascaler, yTrace.data.data(), interleavesize, interleaveskip);
+			ReadScaleAndConvert<int16_t>(infile, *TrRecord, ndatapoints, yTrace.data.data());
 		}
 		else if (dataformat == DFT_int32) {
-			ReadScaleAndConvert<int32_t>(infile, need_swap, ndatapoints, datascaler, yTrace.data.data(), interleavesize, interleaveskip);
+			ReadScaleAndConvert<int32_t>(infile, *TrRecord, ndatapoints, yTrace.data.data());
 		}
 		else if (dataformat == DFT_float) {
-			ReadScaleAndConvert<float>(infile, need_swap, ndatapoints, datascaler, yTrace.data.data(), interleavesize, interleaveskip);
+			ReadScaleAndConvert<float>(infile, *TrRecord, ndatapoints, yTrace.data.data());
 		}
 		else if (dataformat == DFT_double) {
-			ReadScaleAndConvert<double>(infile, need_swap, ndatapoints, datascaler, yTrace.data.data(), interleavesize, interleaveskip);
+			ReadScaleAndConvert<double>(infile, *TrRecord, ndatapoints, yTrace.data.data());
 		}
 		else {
 			QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));

@@ -63,47 +63,33 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 {
 	assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
 	char dataformat = TrRecord.getChar(TrDataFormat);
-	int32_t     interleavesize = TrRecord.extractValue<int32_t>(TrInterleaveSize, 0),
-		interleaveskip = TrRecord.extractValue<int32_t>(TrInterleaveSkip, 0);
-	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
-	bool need_swap = !(tracekind & LittleEndianBit);
 
 	std::string xunit, yunit;
 	yunit = TrRecord.getString(TrYUnit); // assuming the string is zero terminated...
 	xunit = TrRecord.getString(TrXUnit);
 	double x0 = TrRecord.extractLongReal(TrXStart), deltax = TrRecord.extractLongReal(TrXInterval);
-	double datascaler = TrRecord.extractLongReal(TrDataScaler);
-	int32_t trdata = TrRecord.extractInt32(TrData), trdatapoints = TrRecord.extractInt32(TrDataPoints);
+	int32_t trdatapoints = TrRecord.extractInt32(TrDataPoints);
 
-	//double* target = new double[trdatapoints];
 	auto target = std::make_unique<double[]>(trdatapoints);
-	datafile.seekg(trdata);
 
 	switch (dataformat)
 	{
 	case DFT_int16:
-		ReadScaleAndConvert<int16_t>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
+		ReadScaleAndConvert<int16_t>(datafile, TrRecord, trdatapoints, target.get());
 		break;
 	case DFT_int32:
-		ReadScaleAndConvert<int32_t>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
+		ReadScaleAndConvert<int32_t>(datafile, TrRecord, trdatapoints, target.get());
 		break;
 	case DFT_float:
-		ReadScaleAndConvert<float>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
+		ReadScaleAndConvert<float>(datafile, TrRecord, trdatapoints, target.get());
 		break;
 	case DFT_double:
-		ReadScaleAndConvert<double>(datafile, need_swap, trdatapoints, datascaler, target.get(), interleavesize, interleaveskip);
+		ReadScaleAndConvert<double>(datafile, TrRecord, trdatapoints, target.get());
 		break;
 	default:
 		throw std::runtime_error("unknown data format type");
 		break;
 	}
-
-	//std::ofstream outfile(filename, std::ios::out | std::ios::binary);
-	//if (!outfile) {
-	//	std::stringstream msg;
-	//	msg << "error opening file '" << filename << "' for writing: " << strerror(errno);
-	//	throw std::runtime_error(msg.str());
-	//}
 
 	std::string note;
 	MakeWaveNote(TrRecord, note);
@@ -139,7 +125,6 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	outfile.write((char*)&wh, numbytes_wh);
 	outfile.write((char*)target.get(), sizeof(double) * trdatapoints);
 	outfile.write(note.data(), note.size());
-	//outfile.close();
 }
 
 // Warning: this ist not recognize as a valid record by Igor!
