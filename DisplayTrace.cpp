@@ -48,7 +48,7 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 			return;
 		}
 		path.moveTo(display->scaleToQPF(xdata[0], data[0]));
-		for (int i = 1; i < data.size(); ++i) {
+		for (std::size_t i = 1; i < data.size(); ++i) {
 			path.lineTo(display->scaleToQPF(xdata[i], data[i]));
 		}
 	}

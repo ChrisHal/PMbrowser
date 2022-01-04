@@ -154,7 +154,8 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         scaleFromPixToXY(event->x(), event->y(), x, y);
         long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
         double datay = std::numeric_limits<double>::quiet_NaN();
-        if (dataindex >= 0 && dataindex < yTrace.data.size()) {
+        if (dataindex >= 0 && 
+           static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
             datay = yTrace.data.at(dataindex);
         }
         QString txt;
