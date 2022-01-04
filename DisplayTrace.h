@@ -30,10 +30,10 @@ class DisplayTrace
 {
 public:
 	DisplayTrace() : x0{ 0.0 }, deltax{ 0.0 }, x_unit{}, y_unit{}, data{} {};
-	DisplayTrace(double X0, double DeltaX, const QString& xUnit, const QString& yUnit, const QVector<double>& Data);
+	//DisplayTrace(double X0, double DeltaX, const QString& xUnit, const QString& yUnit, const QVector<double>& Data);
 	void reset();
 	void render(QPainter& painter, RenderArea* display);
-	bool isValid() { return !data.isEmpty(); }
+	bool isValid() { return !data.empty(); }
 	QString getXUnit() { return x_unit; }
 	QString getYUnit() { return y_unit; }
     std::tuple<double, double> getDataMinMax(int pLeft, int pRight);

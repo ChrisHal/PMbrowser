@@ -25,11 +25,11 @@
 #include "DisplayTrace.h"
 #include "renderarea.h"
 
-DisplayTrace::DisplayTrace(double X0, double DeltaX, const QString& xUnit,
-	const QString& yUnit, const QVector<double>& Data):
-	x0{ X0 }, deltax{ DeltaX }, x_unit{ xUnit }, y_unit{ yUnit }, data{ Data }
-{
-}
+//DisplayTrace::DisplayTrace(double X0, double DeltaX, const QString& xUnit,
+//	const QString& yUnit, const QVector<double>& Data):
+//	x0{ X0 }, deltax{ DeltaX }, x_unit{ xUnit }, y_unit{ yUnit }, data{ Data }
+//{
+//}
 
 void DisplayTrace::reset()
 {

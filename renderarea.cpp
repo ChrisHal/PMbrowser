@@ -306,15 +306,15 @@ void RenderArea::wheelEvent(QWheelEvent* event)
 void RenderArea::autoScale()
 {
     if (isXYmode()) {
-        x_min = *std::min_element(xTrace.data.constBegin(), xTrace.data.constEnd());
-        x_max = *std::max_element(xTrace.data.constBegin(), xTrace.data.constEnd());
+        x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
+        x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
     }
     else {
         x_min = yTrace.x0;
         x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
     }
-    y_min = *std::min_element(yTrace.data.constBegin(), yTrace.data.constEnd());
-    y_max = *std::max_element(yTrace.data.constBegin(), yTrace.data.constEnd());
+    y_min = *std::min_element(yTrace.data.cbegin(), yTrace.data.cend());
+    y_max = *std::max_element(yTrace.data.cbegin(), yTrace.data.cend());
     update();
 }
 
