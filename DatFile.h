@@ -22,6 +22,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <algorithm>
 #include "machineinfo.h"
 #include "hkTree.h"
 
@@ -168,13 +169,10 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 		throw std::runtime_error("error while reading datafile");
 	}
 	if (!need_swap) {
-		for (std::size_t i = 0; i < trdatapoints; ++i) {
-			target[i] = datascaler * source[i];
-		}
+		std::transform(source.get(), source.get() + trdatapoints, target, [=](T x) { return datascaler * x; });
 	}
 	else {
-		for (std::size_t i = 0; i < trdatapoints; ++i) {
-			target[i] = datascaler * swap_bytes(source[i]);
-		}
+		std::transform(source.get(), source.get() + trdatapoints, target, [=](T x) {
+			return datascaler * swap_bytes(x); });
 	}
 }
