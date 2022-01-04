@@ -18,7 +18,7 @@
 */
 
 #pragma once
-#include <QVector>
+#include <vector>
 #include <QPainter>
 #include <QPainterPath>
 #include <QString>
@@ -41,6 +41,6 @@ public:
 //private:
 	double x0, deltax;
 	QString x_unit, y_unit;
-	QVector<double> data;
+	std::vector<double> data;
 };
 
