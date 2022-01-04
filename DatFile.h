@@ -132,7 +132,7 @@ constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon
 constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
 
 // some routines to read trace data
-template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, size_t trdatapoints, 
+template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, std::size_t trdatapoints, 
 	double* target)
 {
 	assert(trdatapoints == TrRecord.extractInt32(TrDataPoints));
@@ -151,11 +151,11 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 	}
 	else { // it's interleaved data
 		assert(interleaveskip >= interleavesize);
-		size_t bytesremaining = sizeof(T) * trdatapoints;
+		std::size_t bytesremaining = sizeof(T) * trdatapoints;
 		int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
 		char* p = (char*)source.get();
 		while (bytesremaining > 0) {
-			size_t bytestoread = std::min(bytesremaining, size_t(interleavesize));
+			auto bytestoread = std::min(bytesremaining, std::size_t(interleavesize));
 			datafile.read(p, bytestoread);
 			if (!datafile) { break; }
 			p += bytestoread;
