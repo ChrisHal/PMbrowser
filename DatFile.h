@@ -123,28 +123,11 @@ AmAmplifierState = 112;
 // offset for Stim-Tree
 constexpr size_t seVoltage = 8;
 
-
 // TrDataKind
 constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
 
 // TrDataFormatType
 constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
-
-// some helpers
-inline int32_t extractInt32(const char* data, size_t offset)
-{
-	return *reinterpret_cast<const int32_t*>(data + offset);
-}
-
-inline uint16_t extractUInt16(const char* data, size_t offset)
-{
-	return *reinterpret_cast<const uint16_t*>(data + offset);
-}
-
-inline double extractLongReal(const char* data, size_t offset)
-{
-	return *reinterpret_cast<const double*>(data + offset);
-}
 
 // some routines to read trace data
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, size_t trdatapoints, 
