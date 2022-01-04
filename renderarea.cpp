@@ -386,7 +386,7 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
 {
     if (yTrace.isValid()) {
-        tracebuffer.enqueue(new DisplayTrace(yTrace));
+        tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
         }

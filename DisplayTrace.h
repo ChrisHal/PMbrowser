@@ -30,6 +30,16 @@ class DisplayTrace
 {
 public:
 	DisplayTrace() : x0{ 0.0 }, deltax{ 0.0 }, x_unit{}, y_unit{}, data{} {};
+    DisplayTrace(DisplayTrace&& dtrace) : x0{ dtrace.x0 }, deltax{ dtrace.deltax },
+        x_unit{dtrace.x_unit}, y_unit{ dtrace.y_unit }, data{ std::move(dtrace.data) } {};
+    DisplayTrace& operator=(const DisplayTrace& dtrace) {
+        x0 = dtrace.x0;
+        deltax = dtrace.deltax;
+        x_unit = dtrace.x_unit;
+        y_unit = dtrace.y_unit;
+        data = dtrace.data;
+        return *this;
+    };
 	//DisplayTrace(double X0, double DeltaX, const QString& xUnit, const QString& yUnit, const QVector<double>& Data);
 	void reset();
 	void render(QPainter& painter, RenderArea* display);
