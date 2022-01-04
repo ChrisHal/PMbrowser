@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <cassert>
 #include "machineinfo.h"
 #include "hkTree.h"
 

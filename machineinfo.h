@@ -20,8 +20,8 @@
 #pragma once
 inline bool MachineIsLittleEndian()
 {
-    const unsigned t = 1;
-    const char* const p = reinterpret_cast<const char* const>(&t);
+    unsigned t = 1;
+    auto p = reinterpret_cast<char*>(&t);
     return *p == 1;
 }
 
