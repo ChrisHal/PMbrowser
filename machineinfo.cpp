@@ -17,12 +17,5 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <cstdint>
 #include "machineinfo.h"
 
-bool MachineIsLittleEndian()
-{
-	const uint32_t t = 1;
-	const char* const p = reinterpret_cast<const char* const>(&t);
-	return *p == 1;
-}

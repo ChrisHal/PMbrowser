@@ -22,6 +22,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include "machineinfo.h"
 #include "hkTree.h"
 
 struct BundleItem {
@@ -140,7 +141,7 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 	int32_t     interleavesize = TrRecord.extractValue<int32_t>(TrInterleaveSize, 0),
 		interleaveskip = TrRecord.extractValue<int32_t>(TrInterleaveSkip, 0);
 	uint16_t tracekind = TrRecord.extractUInt16(TrDataKind);
-	bool need_swap = !(tracekind & LittleEndianBit);
+	bool need_swap = bool(tracekind & LittleEndianBit) != MachineIsLittleEndian();
 	double datascaler = TrRecord.extractLongReal(TrDataScaler);
 
 	auto source = std::make_unique<T[]>(trdatapoints);
