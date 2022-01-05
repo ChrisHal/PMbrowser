@@ -49,7 +49,7 @@
 
 
 const QString myAppName("PM browser");
-const QString appVersion("1.2 experimental");
+const QString appVersion("2.0");
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 

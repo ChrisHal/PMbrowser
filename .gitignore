@@ -19,3 +19,4 @@ QtPMbrowser.aps
 *.ibw
 /PMbrowserSetup/Release
 *.user
+/PMbrowserSetup/Debug
