@@ -27,23 +27,30 @@
 #include "machineinfo.h"
 #include "hkTree.h"
 
+/// <summary>
+/// each BundleItem describes offset and length of
+/// a tree stored in the bundled dat file
+/// </summary>
 struct BundleItem {
-	int32_t Start;
-	int32_t Length;
-	char Extension[8];
+	int32_t Start; // file offset of tree/data 
+	int32_t Length; // length of data in bytes 
+	char Extension[8]; // file extension of tree, e.g. .pul
 };
 
+/// <summary>
+/// header of bundled .dat file
+/// </summary>
 struct BundleHeader {
-	char Signature[8];
-	char Version[32];
-	double Time;
+	char Signature[8]; // "DAT2" for valid files
+	char Version[32]; // name and version of file creator
+	double Time; // creation time in PatchMaster format (see time_handling.h)
 	int32_t Items;
 	char IsLittleEndian;
-	char pad[11];
-	BundleItem BundleItems[12];
+	char pad[11]; // unused
+	BundleItem BundleItems[12]; // one item for each tree stored in file
 };
-
-constexpr int32_t BundleHeaderSize = 256;
+constexpr auto BundleHeaderSize = 256;
+static_assert(sizeof(BundleHeader) == BundleHeaderSize, "unexpected size of BundleHeader");
 constexpr char BundleSignature[8] = "DAT2\0\0\0", BundleSignatureInvalid[8]= "DAT1\0\0\0";
 constexpr char ExtDat[] = ".dat", ExtPul[] = ".pul", ExtPgf[] = ".pgf", ExtAmp[] = ".amp";
 
@@ -58,12 +65,12 @@ public:
 	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
 	bool InitFromStream(std::istream& istream);
-	std::string getFileDate() const;
+	std::string getFileDate() const; // return formatted file creation date
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
 	hkTree& GetAmpTree() { return AmpTree; };
-	std::string getVersion() const { return Version; };
-	double GetTime() const { return Time; };
+	std::string getVersion() const { return Version; }; // returns name and version of file creator
+	double GetTime() const { return Time; }; // return creation time in PatchMaster format (see time_handling.h)
 	bool getIsSwapped() const { return isSwapped; };
 };
 
@@ -132,7 +139,17 @@ constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon
 // TrDataFormatType
 constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
 
-// some routines to read trace data
+// some routine to read trace data
+
+/// <summary>
+/// read trace data from dat file and convert to double using 
+/// the appropiate data-scaler (and byte swapping if needed) as specified in the trace record
+/// </summary>
+/// <typeparam name="T">type of raw data (short, long, float or double)</typeparam>
+/// <param name="datafile">stream (usually file-stream) from which to read data</param>
+/// <param name="TrRecord">trace record specifying the trace to be loaded</param>
+/// <param name="trdatapoints">number of datapoints (also size of target buffer provided by caller)</param>
+/// <param name="target">pointer to buffer allocated by caller, must have space for trdatapoints doubles</param>
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, std::size_t trdatapoints, 
 	double* target)
 {

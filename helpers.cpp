@@ -98,14 +98,17 @@ std::string formTraceName(const hkTreeNode& tr, int count)
         trace_ext << "Vmon";
     }
     else {
-        trace_ext << tr.getString(TrLabel);
-        if (trace_ext.str().length() == 0) {
+        auto lable = tr.getString(TrLabel);
+        if (lable.length() == 0) {
             if (datakind & IsLeak) {
                 trace_ext << "Leak";
             }
             else {
                 trace_ext << "trace_" << count;
             }
+        }
+        else {
+            trace_ext << lable;
         }
     }
     return trace_ext.str();

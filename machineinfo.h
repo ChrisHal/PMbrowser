@@ -18,6 +18,12 @@
 */
 
 #pragma once
+
+/// <summary>
+/// check endianess of machine
+/// (will be optimized to a constant by compiler)
+/// </summary>
+/// <returns>true if machine is little-endian</returns>
 inline bool MachineIsLittleEndian()
 {
     unsigned t = 1;

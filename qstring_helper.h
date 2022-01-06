@@ -21,6 +21,11 @@
 #include <QString>
 #include <string_view>
 
+/// <summary>
+/// create a QString from a latin-1 encoded std::string_view
+/// </summary>
+/// <param name="sv">std::string_view object to be converted</param>
+/// <returns>newly created QString</returns>
 inline QString qs_from_sv(const std::string_view& sv)
 {
 	return QString::fromLatin1(sv.data(), static_cast<int>(sv.size()));

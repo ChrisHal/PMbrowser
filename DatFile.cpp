@@ -18,9 +18,6 @@
 */
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings om Windows
 #include <istream>
-#ifdef _DEBUG
-#include <iostream>
-#endif
 #include <algorithm>
 #include <cstring>
 #include <ctime>
@@ -32,8 +29,6 @@
 #include "DatFile.h"
 #include "machineinfo.h"
 
-static_assert(sizeof(BundleHeader) == 256, "unexpected size of BundleHeader");
-
 bool DatFile::InitFromStream(std::istream& infile)
 {
     char buffer[BundleHeaderSize];
@@ -44,15 +39,15 @@ bool DatFile::InitFromStream(std::istream& infile)
     if (!infile) {
         throw std::runtime_error("cannot read file");
     }
-    bool isValid = std::strncmp(buffer, BundleSignature, 8) == 0;
-    bool isInvalidBundle = std::strncmp(buffer, BundleSignatureInvalid, 8) == 0;
     BundleHeader* bh = reinterpret_cast<BundleHeader*>(buffer);
+    bool isValid = std::strncmp(bh->Signature, BundleSignature, 8) == 0;
+    bool isInvalidBundle = std::strncmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
     if (!isValid) {
         if (isInvalidBundle) {
             throw std::runtime_error("invalid bundle signature");
         }
         else {
-            throw std::runtime_error("invalid file");
+            throw std::runtime_error("invalid file (not a PM dat file)");
         }
     }
     isSwapped = bool(bh->IsLittleEndian) != MachineIsLittleEndian();
@@ -62,7 +57,6 @@ bool DatFile::InitFromStream(std::istream& infile)
         swapInPlace(Time);
     }
 
-
     auto nitems = bh->Items;
     if (isSwapped) {
         swapInPlace(nitems);
@@ -70,7 +64,6 @@ bool DatFile::InitFromStream(std::istream& infile)
 
     nitems = std::min(nitems, 12); // make sure malformed files do not cause out of bounds read
     for (int i = 0; i < nitems; ++i) {
-        //assert(!!infile);
         auto& item = bh->BundleItems[i];
         if (isSwapped) {
             swapInPlace(item.Length);
@@ -83,22 +76,13 @@ bool DatFile::InitFromStream(std::istream& infile)
         }
         else if (std::strcmp(item.Extension, ExtPul) == 0) {
             // process pulse tree
-#ifdef _DEBUG
-            std::cerr << "loading pul tree\n";
-#endif // _DEBUG
             res = PulTree.InitFromStream(infile, item.Start, item.Length);
         }
         else if (std::strcmp(item.Extension, ExtPgf) == 0) {
             // process pgf tree
-#ifdef _DEBUG
-            std::cerr << "loading pgf tree\n";
-#endif // _DEBUG
             res = PgfTree.InitFromStream(infile, item.Start, item.Length);
         }
         else if (std::strcmp(item.Extension, ExtAmp) == 0) {
-#ifdef _DEBUG
-            std::cerr << "loading amp tree\n";
-#endif // _DEBUG
             // process amp tree
             res = AmpTree.InitFromStream(infile, item.Start, item.Length);
         }
@@ -111,9 +95,9 @@ bool DatFile::InitFromStream(std::istream& infile)
 
 std::string DatFile::getFileDate() const
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
     return formatPMtimeUTC(Time);
 #else
     return formatPMtimeDate(Time);
-#endif //_DEBUG
+#endif //NDEBUG
 }

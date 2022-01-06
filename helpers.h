@@ -36,4 +36,16 @@ template<typename T> void swapInPlace(T& x)
 
 struct hkTreeNode;
 
+/// <summary>
+/// form canonical displayname for trace
+/// treat Vmon, Imon and to some extend Leak traces
+/// as special cases.
+/// If a lable is provided in the trace-record and the trace is
+/// neither of type Vmon nor Imon, the lable will be used. Otherwise,
+/// leak traces will be labled "leak", all remaining traces will
+/// be labled "trace_&lt;count&gt;".
+/// </summary>
+/// <param name="tr">trace record</param>
+/// <param name="count">count of trace (starting from 1)</param>
+/// <returns>string containing canonical trace-name</returns>
 std::string formTraceName(const hkTreeNode& tr, int count);

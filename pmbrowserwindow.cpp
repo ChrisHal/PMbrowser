@@ -116,7 +116,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         yunit = "A";
         prefix = "Ihold";
     }
-    // keep the following, since here we format it more nicely, with correct name an units
+    // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
     QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
     std::string str;

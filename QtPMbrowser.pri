@@ -25,7 +25,6 @@ SOURCES += ./DatFile.cpp \
     ./exportIBW.cpp \
     ./helpers.cpp \
     ./hkTree.cpp \
-    ./machineinfo.cpp \
     ./main.cpp \
     ./pmbrowserwindow.cpp \
     ./PMparameters.cpp \
