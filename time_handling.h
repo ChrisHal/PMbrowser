@@ -18,5 +18,18 @@
 */
 
 #pragma once
+
+/// <summary>
+/// Convert time as found in .dat file, only return date part
+/// (ignore time)
+/// </summary>
+/// <param name="t">time found in .dat file</param>
+/// <returns>std::string containing formatted date</returns>
 std::string formatPMtimeDate(double t); // date only
+
+/// <summary>
+/// Convert time as found in .dat file to date and UTC time
+/// </summary>
+/// <param name="t">time found in .dat file</param>
+/// <returns>std::string containing formatted date and UTC time</returns>
 std::string formatPMtimeUTC(double t); // UTC date/time

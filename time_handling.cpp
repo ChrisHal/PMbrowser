@@ -17,6 +17,7 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <ctime>
@@ -28,7 +29,13 @@ constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
 constexpr double JanFirst1990MACTime = 1580970496.0; //1580947200.0; // better value?
 constexpr auto HIGH_DWORD = 4294967296.0;
 
-std::time_t PMtime2time_t(double t)
+/// <summary>
+/// Convert PatchMaster time to unix time_t
+/// This follows the documentation, but the result is not excact
+/// </summary>
+/// <param name="t">time as stored in .dat file</param>
+/// <returns>unix time_t</returns>
+static std::time_t PMtime2time_t(double t)
 {
     t -= JanFirst1990MACTime;
     if (t < 0.0) {
@@ -37,14 +44,17 @@ std::time_t PMtime2time_t(double t)
     return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
 }
 
+constexpr std::size_t BUFF_SIZE = 128;
+
 static std::string formatPMtime(double t, const char* fmt_str)
 {
     auto unixtime = PMtime2time_t(t);
-    char buffer[128]{};
-    auto tm = gmtime(&unixtime);
-    if (tm) {
-        std::strftime(buffer, 128, fmt_str, tm);
-        return std::string(buffer);
+    char buffer[BUFF_SIZE]{};
+    auto mtm = gmtime(&unixtime);
+    if (mtm) {
+        auto count = std::strftime(buffer, BUFF_SIZE, fmt_str, mtm);
+        assert(count != 0);
+        return std::string(buffer, count);
     }
     else {
         return "<conversion error>";
