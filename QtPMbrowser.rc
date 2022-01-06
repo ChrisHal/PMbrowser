@@ -81,7 +81,7 @@ BEGIN
             VALUE "FileDescription", "PMbrowser: Tool for  viewing PM files"
             VALUE "FileVersion", "2.0.0.1"
             VALUE "InternalName", "QtPMbrow.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2021 Christian R. Halaszovich"
+            VALUE "LegalCopyright", "Copyright (C) 2020 - 2022 Christian R. Halaszovich"
             VALUE "OriginalFilename", "QtPMbrow.exe"
             VALUE "ProductName", "PMbrowser"
             VALUE "ProductVersion", "2.0.0.1"
