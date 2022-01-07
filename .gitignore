@@ -3,12 +3,10 @@
 ################################################################################
 
 /.vs/QtPMbrowser/v16
-/debug
-/release
+/QtPMBrowser/debug
+/QtPMBrowser/release
 /.qmake.stash
-/ui_pmbrowserwindow.h
-/ui_renderarea.h
-/ui_*.h
+ui_*.h
 QtPMbrowser.pro.user.459d117
 GeneratedFiles/
 Makefile
@@ -20,3 +18,4 @@ QtPMbrowser.aps
 /PMbrowserSetup/Release
 *.user
 /PMbrowserSetup/Debug
+/.vs/
