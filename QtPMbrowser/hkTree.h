@@ -44,6 +44,14 @@ private:
     }
 public:
     hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
+    /// <summary>
+    /// extract a value from record data, swaps bytes if needed
+    /// throws out_of_range exception
+    /// if offset is too large
+    /// </summary>
+    /// <typeparam name="T">type of value to be extracted</typeparam>
+    /// <param name="offset">offset in record data (needn't be aligned)</param>
+    /// <returns>extracted value</returns>
     template<typename T> T extractValue(std::size_t offset) const
     {
         if (len < offset + sizeof(T)) {
@@ -51,6 +59,16 @@ public:
         }
         return extractValueNoCheck<T>(offset);
     }
+
+    /// <summary>
+    /// extract a value from record data, swaps bytes if needed,
+    /// return default value
+    /// if offset is too large
+    /// </summary>
+    /// <typeparam name="T">type of value to be extracted</typeparam>
+    /// <param name="offset">offset in record data (needn't be aligned)</param>
+    /// <param name="defaultValue">default to be returned if offset is too large</param>
+    /// <returns>extracted value or default value</returns>
     template<typename T> T extractValue(std::size_t offset, T defaultValue) const
     {
         if (len < offset + sizeof(T)) {
