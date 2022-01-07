@@ -18,3 +18,4 @@ QtPMbrowser.aps
 /PMbrowserSetup/Release
 *.user
 /PMbrowserSetup/Debug
+/.vs/
