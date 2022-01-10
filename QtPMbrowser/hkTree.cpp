@@ -69,7 +69,6 @@ bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 
 bool hkTree::InitFromBuffer(char* buffer, size_t len)
 {
-    (void)len;
     TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
 	isSwapped = false;
 	if (root->Magic == SwappedMagicNumber) {
@@ -87,6 +86,9 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	}
 	char* data = buffer + sizeof(uint32_t) * (2ull + root->nLevels); // start of first tree node
 	LoadToNode(nullptr, RootNode, &data, 0);
+	if (data - buffer != len) {
+		throw std::runtime_error("bytes read != bytes in buffer");
+	}
 	return true;
 }
 
