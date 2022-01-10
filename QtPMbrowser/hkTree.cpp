@@ -92,19 +92,6 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	return true;
 }
 
-hkTreeNode& hkTree::GetNode(const std::vector<int>& nodeid)
-{
-	if (nodeid.empty()) {
-		throw std::runtime_error("no nodeid provided");
-	}
-	auto n = &RootNode;
-	for (int index : nodeid) {
-        (void)index;
-		n = &n->Children.at(0);
-	}
-	return *n;
-}
-
 char hkTreeNode::getChar(size_t offset) const
 {
 	if (len < offset + sizeof(char)) {

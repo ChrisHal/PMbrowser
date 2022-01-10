@@ -142,7 +142,6 @@ public:
     /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
     /// <returns>true on success</returns>
     bool InitFromBuffer(char* buffer, size_t len);
-    hkTreeNode& GetNode(const std::vector<int>& nodeid); // nodeid contains "coordinates" of desired node, cannot access root node!
     hkTreeNode& GetRootNode() { return RootNode; };
     size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
     bool getIsSwapped() { return isSwapped; };
