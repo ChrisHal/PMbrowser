@@ -90,7 +90,7 @@ Exporting Traces to Igor
 
 Now we want to export the traces that we selected in the previous step for further analysis in :program:`IgorPro`.
 
-Select menu item ``File`` --> ``Exprot All Visible Traces for Igor...``. (All traces not hidden are considered visible.)
+Select menu item ``File`` --> ``Export All Visible Traces for Igor...``. (All traces not hidden are considered visible.)
 In the *Choose Path \& Prefix* dialog, we change the
 **prefix** to *Tails*. The names of the exported waves will now start with "Tails\_".
 
