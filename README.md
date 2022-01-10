@@ -5,6 +5,11 @@ Created using Qt under GPLv3.
 
 Licensing information: see file COPYING
 
+## Documentation
+The documentation is hosted here:
+
+https://www.halaszovich.de/pmbrowser/html/index.html
+
 ## Purpose
 This is a tool to browse the contents of PatchMaster(tm) .dat-files. PatchMaster is a trademark of Heka GmbH.
 "Big Endian" and "Little Endian" files are supported.
