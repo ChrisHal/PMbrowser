@@ -20,3 +20,4 @@ QtPMbrowser.aps
 /PMbrowserSetup/Debug
 /.vs/
 doc/_build/
+doc/doxy_html/
