@@ -131,7 +131,7 @@ public:
     /// </summary>
     /// <param name="infile">input stream (usually a filestream)</param>
     /// <param name="offset">offset of start of tree in infile stream</param>
-    /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
+    /// <param name="len">length in bytes of tree data in file (this data contains the total of the tree)</param>
     /// <returns>true on success</returns>
     bool InitFromStream(std::istream& infile, int offset, int len);
 
