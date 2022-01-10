@@ -15,7 +15,7 @@ as ibw-files that can be read by IgorPro(tm). IgorPro is a trademark of Wavemetr
 Currently, PMbrowser can be build for Windows and Linux.
 You will need to install the usual build tools and Qt-Library version 5.xx.
 ### Building on Linux
-On most distribution, Qt is provided as a package, e.g. `qt5-default` for Ubuntu.
+On most distributions, Qt is provided as a package, e.g. `qt5-default` for Ubuntu.
 Use the provided `.pro`-file. Usually, all you need to do is (inside the `QtPMbrowser` directory):
 ```
 qmake QtPMbrowser.pro

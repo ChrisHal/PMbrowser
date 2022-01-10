@@ -17,6 +17,10 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/** \file
+ * various helper functions, e.g. for byte-swapping
+ */
+
 #pragma once
 //#include "hkTree.h"
 #include <cstdint>

@@ -1,3 +1,7 @@
+/** \file
+ *	Classes and functions to handle PatchMaster dat files.
+ */
+
 /*
 	Copyright 2020 - 2022 Christian R. Halaszovich
 
@@ -16,6 +20,8 @@
 	You should have received a copy of the GNU General Public License
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+
 
 // some basic structs to handle HEKA Patchmaster dat-files
 

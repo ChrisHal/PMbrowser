@@ -25,8 +25,13 @@
 #include "hkTree.h"
 #include "helpers.h"
 
+/// <summary>
+/// header of tree as stored in file
+/// </summary>
 struct TreeRoot {
-	int32_t Magic, nLevels, LevelSizes[1];
+	uint32_t Magic, //!< magic nummber MagicNumber or SwappedMagicNumber
+		nLevels,	//!< number of tree levels
+		LevelSizes[1];	//!< variable length array (nLevels entries with size of level data in bytes)
 };
 
 void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
@@ -39,13 +44,10 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	node.Parent = parent;
 	std::memcpy(node.Data.get(), *pdata, size);
 	*pdata += size;
-	// cave: can we be certain that *pdata is 4 byte aligned?
-	//int32_t nchildren = *reinterpret_cast<int32_t*>(*pdata);
-	int32_t nchildren;
-	std::memcpy(&nchildren, *pdata, sizeof(int32_t));
+	uint32_t nchildren;
+	std::memcpy(&nchildren, *pdata, sizeof(uint32_t));
 	if (isSwapped) { swapInPlace(nchildren); }
-	*pdata += sizeof(int32_t);
-	// std::cout << "level " << level << "\tnchildren " << nchildren << std::endl;
+	*pdata += sizeof(uint32_t);
 	node.Children.resize(nchildren);
 	for (auto& child : node.Children) {
 		LoadToNode(&node, child, pdata, level + 1);
@@ -72,10 +74,6 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	isSwapped = false;
 	if (root->Magic == SwappedMagicNumber) {
 		isSwapped = true;
-#ifdef _DEBUG
-		std::cerr << "INFO: tree is swapped" << std::endl;
-#endif
-		//throw std::runtime_error("tree file has unsuported byte order");
 	} else if (root->Magic != MagicNumber) {
 		throw std::runtime_error("magic number does not match, wrong filetype?");
 	}
@@ -83,14 +81,11 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	if (isSwapped) {
 		swapInPlace(root->nLevels);
 	}
-	for (int i = 0; i < root->nLevels; ++i) {
+	for (unsigned i = 0; i < root->nLevels; ++i) {
 		if (isSwapped) { swapInPlace(root->LevelSizes[i]); }
 		LevelSizes.push_back(root->LevelSizes[i]);
-#ifdef _DEBUG
-		std::cerr << "level " << i << " size: " << root->LevelSizes[i] << "\n";
-#endif
 	}
-	char* data = buffer + sizeof(int32_t) * (2ll + root->nLevels); // start of first tree node
+	char* data = buffer + sizeof(uint32_t) * (2ull + root->nLevels); // start of first tree node
 	LoadToNode(nullptr, RootNode, &data, 0);
 	return true;
 }

@@ -28,7 +28,11 @@
 #include <cstdint>
 #include "helpers.h"
 
-constexpr int32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
+constexpr uint32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
+
+/// <summary>
+/// A node in the tree (pul., pgf, amp, etc. tree)
+/// </summary>
 struct hkTreeNode {
 private:
     template<typename T> T extractValueNoCheck(std::size_t offset) const
@@ -44,6 +48,7 @@ private:
     }
 public:
     hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
+
     /// <summary>
     /// extract a value from record data, swaps bytes if needed
     /// throws out_of_range exception
@@ -86,7 +91,7 @@ public:
     int32_t extractInt32(std::size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(std::size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(std::size_t offset) const { return extractValue<double>(offset); };
-    double extractLongRealNoThrow(std::size_t offset) const // instead of throwing an exception, returns NaN if out of range
+    double extractLongRealNoThrow(std::size_t offset) const //! instead of throwing an exception, returns NaN if out of range
     {
         return extractValue(offset, std::numeric_limits<double>::quiet_NaN());
     };
@@ -107,7 +112,7 @@ public:
     bool isSwapped;
     std::unique_ptr<char[]> Data;
     int level;
-    std::size_t len;
+    std::size_t len; //!< Length (in bytes) of data
     std::vector<hkTreeNode> Children;
     friend class hkTree;
 };
@@ -120,11 +125,26 @@ class hkTree
     void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
 public:
     hkTree() : LevelSizes{}, RootNode{}, isSwapped{ false } {};
+
+    /// <summary>
+    /// Initialize tree from istream
+    /// </summary>
+    /// <param name="infile">input stream (usually a filestream)</param>
+    /// <param name="offset">offset of start of tree in infile stream</param>
+    /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
+    /// <returns>true on success</returns>
     bool InitFromStream(std::istream& infile, int offset, int len);
+
+    /// <summary>
+    /// Initialize tree from data buffered in memory
+    /// </summary>
+    /// <param name="buffer">pointer to data stored in memory</param>
+    /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
+    /// <returns>true on success</returns>
     bool InitFromBuffer(char* buffer, size_t len);
     hkTreeNode& GetNode(const std::vector<int>& nodeid); // nodeid contains "coordinates" of desired node, cannot access root node!
     hkTreeNode& GetRootNode() { return RootNode; };
-    size_t GetNumLevels() { return LevelSizes.size(); };
+    size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
     bool getIsSwapped() { return isSwapped; };
 };
 
