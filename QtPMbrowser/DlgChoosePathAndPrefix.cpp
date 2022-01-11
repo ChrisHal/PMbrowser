@@ -27,7 +27,12 @@ pxp_export{}, create_datafolders{}, ui(new Ui::DlgChoosePathAndPrefix)
 	ui->setupUi(this);
 	ui->lineEditPath->setText(path);
 	ui->lineEditPrefix->setText("PM");
+
+
 	QObject::connect(ui->pushButtonChoosePath, SIGNAL(clicked()), this, SLOT(choosePath()));
+	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::stateChanged, this, &DlgChoosePathAndPrefix::stateExportPXPchanged);
+	QObject::connect(ui->checkBox_create_datafolders, &QCheckBox::stateChanged,
+		this, &DlgChoosePathAndPrefix::stateCreateFoldersChanged);
 }
 
 DlgChoosePathAndPrefix::~DlgChoosePathAndPrefix()
@@ -43,6 +48,16 @@ void DlgChoosePathAndPrefix::choosePath()
 		ui->lineEditPath->setText(dlg.selectedFiles()[0]);
 	}
 }
+
+void DlgChoosePathAndPrefix::stateExportPXPchanged(int state) {
+	if (!state) { ui->checkBox_create_datafolders->setChecked(false); }
+};
+
+
+void DlgChoosePathAndPrefix::stateCreateFoldersChanged(int state) {
+	if (state) { ui->checkBox_pxp_export->setChecked(true); }
+};
+
 
 void DlgChoosePathAndPrefix::accept()
 {

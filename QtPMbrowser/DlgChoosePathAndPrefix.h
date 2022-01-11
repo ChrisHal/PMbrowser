@@ -40,6 +40,8 @@ public:
 
 private slots:
 	void choosePath();
+    void stateExportPXPchanged(int state);
+    void stateCreateFoldersChanged(int state);
 
 private:
 	Ui::DlgChoosePathAndPrefix* ui;
