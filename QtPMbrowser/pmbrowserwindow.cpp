@@ -404,7 +404,11 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
         pxp_export = dlg.pxp_export;
         create_datafolders = dlg.create_datafolders;
         lastexportpath = path;
-        settings_modified = true;
+
+        QSettings settings;
+        settings.setValue("pmbrowserwindow/lastexportpath", lastexportpath);
+        //settings_modified = true;
+
         return true;
     }
     else {
