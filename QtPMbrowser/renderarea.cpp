@@ -382,9 +382,8 @@ void RenderArea::wheelEvent(QWheelEvent* event)
     int s_x{}, s_y{};
     if (delta.y()) {
         s_y = -delta.y();
-        if (source == Qt::MouseEventNotSynthesized
-            && !event->inverted()) {
-            // make behavior more "natural" for "real" mouse wheels
+        if (event->inverted()) {
+            // make behavior more "natural" for "real" mouse wheels?
             s_y *= -1;
         }
     }
