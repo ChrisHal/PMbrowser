@@ -86,7 +86,7 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	}
 	char* data = buffer + sizeof(uint32_t) * (2ull + root->nLevels); // start of first tree node
 	LoadToNode(nullptr, RootNode, &data, 0);
-	if (data - buffer != len) {
+	if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 		throw std::runtime_error("bytes read != bytes in buffer");
 	}
 	return true;
