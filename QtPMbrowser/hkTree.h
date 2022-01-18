@@ -38,7 +38,7 @@ struct hkTreeNode {
 private:
     template<typename T> T extractValueNoCheck(std::size_t offset) const
     {
-        T t{};
+        T t;
         auto src = Data.get() + offset;
         if (!isSwapped) {
             std::copy(src, src + sizeof t, reinterpret_cast<char*>(&t));
