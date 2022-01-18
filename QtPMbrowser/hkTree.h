@@ -143,9 +143,9 @@ public:
     /// <param name="buffer">pointer to data stored in memory</param>
     /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
     /// <returns>true on success</returns>
-    bool InitFromBuffer(char* buffer, size_t len);
+    bool InitFromBuffer(char* buffer, std::size_t len);
     hkTreeNode& GetRootNode() { return RootNode; };
-    size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
+    std::size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
     bool getIsSwapped() { return isSwapped; };
 };
 

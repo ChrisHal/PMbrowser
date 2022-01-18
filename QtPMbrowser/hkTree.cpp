@@ -67,7 +67,7 @@ bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 	return res;
 }
 
-bool hkTree::InitFromBuffer(char* buffer, size_t len)
+bool hkTree::InitFromBuffer(char* buffer, std::size_t len)
 {
     TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
 	isSwapped = false;
@@ -92,7 +92,7 @@ bool hkTree::InitFromBuffer(char* buffer, size_t len)
 	return true;
 }
 
-char hkTreeNode::getChar(size_t offset) const
+char hkTreeNode::getChar(std::size_t offset) const
 {
 	if (len < offset + sizeof(char)) {
 		throw std::out_of_range("offset to large while accessing tree node");
@@ -100,7 +100,7 @@ char hkTreeNode::getChar(size_t offset) const
 	return Data[offset];
 }
 
-const std::string_view hkTreeNode::getString(size_t offset) const
+const std::string_view hkTreeNode::getString(std::size_t offset) const
 {
 	if (len <= offset) {
 		throw std::out_of_range("offset to large while accessing tree node");
