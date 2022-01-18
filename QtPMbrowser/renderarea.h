@@ -62,11 +62,15 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    void wheelEvent(QWheelEvent* event);
+    void wheelEvent(QWheelEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
+    void enterEvent(QEvent* event) override;
+    void leaveEvent(QEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
@@ -85,6 +89,7 @@ private:
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;
+    bool isTraceDragging;
     // for marquee zoom function:
     bool isSelecting;
     QPoint selStart, selEnd;
