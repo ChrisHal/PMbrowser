@@ -83,7 +83,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.setFont(font);
     //painter.drawPath(path);
     const QRect rectangle = QRect(0, 0, width(), height());
-    if(!yTrace.isValid()) {
+    if(noData()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
         if (isSelecting) {
@@ -287,19 +287,35 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderArea::wheelEvent(QWheelEvent* event)
 {
-    auto pos = event->pos();
-    auto delta = event->angleDelta().y();
-    if (delta == 0) {
+    if (noData()) {
         event->ignore();
         return;
     }
-    double factor = 1.0 + std::abs(delta)/360.0;
-    if (delta < 0) {
-        factor = 1.0 / factor;
+    auto source = event->source();
+    auto shift = event->pixelDelta();
+    if (!shift.isNull()) {
+        event->accept();
+        shiftByPixel(shift);
+        return;
     }
-    double x, y;
-    scaleFromPixToXY(pos.x(), pos.y(), x, y);
-    zoomIn(x, y, factor);
+    auto delta = event->angleDelta();
+    if (delta.isNull()) {
+        event->ignore();
+        return;
+    }
+    int s_x{}, s_y{};
+    if (delta.y()) {
+        s_y = -delta.y();
+        if (source == Qt::MouseEventNotSynthesized
+            && !event->inverted()) {
+            // make behavior more "natural" for "real" mouse wheels
+            s_y *= -1;
+        }
+    }
+    if (delta.x()) {
+        s_x = -delta.x();
+    }
+    shiftByPixel({ s_x,s_y });
     event->accept();
 }
 
@@ -458,6 +474,22 @@ void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
     y = y_max - double(py) / double(height()) * (y_max - y_min);
+}
+
+void RenderArea::shiftByPixel(QPoint shift)
+{
+    if (shift.x() != 0) {
+        auto dx = (x_max - x_min) / width() * shift.x();
+        x_max += dx;
+        x_min += dx;
+        update();
+    }
+    if (shift.y() != 0) {
+        auto dy = -(y_max - y_min) / height() * shift.y();
+        y_max += dy;
+        y_min += dy;
+        update();
+    }
 }
 
 void RenderArea::loadSettings()
