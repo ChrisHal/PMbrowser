@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <algorithm>
 #include <memory>
 #include <limits>
 #include <cstring>
@@ -38,13 +39,14 @@ private:
     template<typename T> T extractValueNoCheck(std::size_t offset) const
     {
         T t{};
-        std::memcpy(&t, Data.get() + offset, sizeof(T));
-        if (isSwapped) {
-            return swap_bytes(t);
+        auto src = Data.get() + offset;
+        if (!isSwapped) {
+            std::copy(src, src + sizeof t, reinterpret_cast<char*>(&t));
         }
         else {
-            return t;
+            std::reverse_copy(src, src + sizeof t, reinterpret_cast<char*>(&t));
         }
+        return t;
     }
 public:
     hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
