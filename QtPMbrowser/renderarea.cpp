@@ -18,6 +18,7 @@
 */
 
 #include <QtGui>
+#include <QGuiApplication>
 #include <QToolTip>
 #include <QMenu>
 #include <QDebug>
@@ -41,12 +42,13 @@ RenderArea::RenderArea(QWidget* parent) :
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
-    do_autoscale_on_load{ true },
+    do_autoscale_on_load{ true }, isTraceDragging{ false },
     isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
     settings_modified{ false }
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
+    setFocusPolicy(Qt::WheelFocus);
     //ui->setupUi(this);
 }
 
@@ -147,9 +149,29 @@ void RenderArea::paintEvent(QPaintEvent* event)
     }
 }
 
+void RenderArea::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Shift && !isTraceDragging) {
+        setCursor(Qt::OpenHandCursor);
+    }
+    else {
+        QWidget::keyPressEvent(event);
+    }
+}
+
+void RenderArea::keyReleaseEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Shift && !isTraceDragging) {
+        unsetCursor();
+    }
+    else {
+        QWidget::keyPressEvent(event);
+    }
+}
+
 void RenderArea::mouseMoveEvent(QMouseEvent* event)
 {
-    if (yTrace.isValid() && event->buttons() == Qt::NoButton) {
+    if (!noData() && event->buttons() == Qt::NoButton) {
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
         long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
@@ -173,6 +195,21 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         update();
         event->accept();
     }
+    else if (isTraceDragging && event->buttons() == Qt::MouseButton::LeftButton) {
+        auto pos_curr = event->pos();
+        shiftByPixel(selStart - pos_curr);
+        selStart = pos_curr;
+        event->accept();
+    }
+    //else if (!isTraceDragging && event->buttons() == Qt::NoButton) {
+    //    if (QGuiApplication::keyboardModifiers() == Qt::ShiftModifier) {
+    //        setCursor(Qt::OpenHandCursor);
+    //    }
+    //    else {
+    //        unsetCursor();
+    //    }
+    //    event->accept();
+    //}
     else {
         event->ignore();
     }
@@ -229,21 +266,28 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
 {
-    // This should be habdked by a context menu event!
-    //if (yTrace.isValid() && (event->button() == Qt::MouseButton::RightButton) && !isSelecting) {
-    //    doContextMenu(event);
-    //    return;
-    //}
-    if (!yTrace.isValid() || (event->button() != Qt::MouseButton::LeftButton)) {
-        event->ignore();
-        return;
+	if (noData() || (event->button() != Qt::MouseButton::LeftButton)) {
+		event->ignore();
+		return;
+	}
+	auto keymod = QGuiApplication::keyboardModifiers();
+	if (keymod == Qt::ShiftModifier) {
+        isTraceDragging = true;
+        setCursor(Qt::ClosedHandCursor);
+        selEnd = selStart = event->pos();
+        event->accept();
     }
-    // start selecting for zoom
-    setCursor(Qt::CrossCursor);
-    tempPixMap = new QPixmap(grab());
-    isSelecting = true;
-    selEnd = selStart = event->pos();
-    event->accept();
+	else if (keymod == Qt::NoModifier) {
+		// start selecting for zoom
+		setCursor(Qt::CrossCursor);
+		tempPixMap = new QPixmap(grab());
+		isSelecting = true;
+		selEnd = selStart = event->pos();
+		event->accept();
+	}
+	else {
+		event->ignore();
+	}
  }
 
 void RenderArea::contextMenuEvent(QContextMenuEvent* event)
@@ -256,9 +300,30 @@ void RenderArea::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
+void RenderArea::enterEvent(QEvent* event)
+{
+    setFocus();
+    if (!noData() && !isTraceDragging && !isSelecting) {
+        if (QGuiApplication::keyboardModifiers()
+            == Qt::ShiftModifier) {
+            setCursor(Qt::OpenHandCursor);
+        }
+        else {
+            unsetCursor();
+        }
+    }
+    event->accept();
+}
+
+void RenderArea::leaveEvent(QEvent* event)
+{
+    clearFocus();
+    event->accept();
+}
+
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (!yTrace.isValid()) {
+    if (noData()) {
         event->ignore();
         return;
     }
@@ -279,6 +344,17 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
             y_max = std::max(y, ys);
         }
         update();
+        event->accept();
+        return;
+    }
+    else if (isTraceDragging && event->button() == Qt::MouseButton::LeftButton) {
+        isTraceDragging = false;
+        if (QGuiApplication::keyboardModifiers() == Qt::ShiftModifier) {
+            setCursor(Qt::OpenHandCursor);
+        }
+        else {
+            unsetCursor();
+        }
         event->accept();
         return;
     }
@@ -479,13 +555,13 @@ void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 void RenderArea::shiftByPixel(QPoint shift)
 {
     if (shift.x() != 0) {
-        auto dx = (x_max - x_min) / width() * shift.x();
+        auto dx = (x_max - x_min) / width() * double(shift.x());
         x_max += dx;
         x_min += dx;
         update();
     }
     if (shift.y() != 0) {
-        auto dy = -(y_max - y_min) / height() * shift.y();
+        auto dy = -(y_max - y_min) / height() * double(shift.y());
         y_max += dy;
         y_min += dy;
         update();
