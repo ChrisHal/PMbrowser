@@ -41,6 +41,7 @@ class RenderArea : public QWidget
 public:
     explicit RenderArea(QWidget *parent = nullptr);
     ~RenderArea();
+    bool noData() { return !yTrace.isValid(); };
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void clearTrace();
     bool isXYmode() { return xTrace.isValid(); };

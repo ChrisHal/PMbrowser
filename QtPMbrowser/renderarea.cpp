@@ -83,7 +83,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.setFont(font);
     //painter.drawPath(path);
     const QRect rectangle = QRect(0, 0, width(), height());
-    if(!yTrace.isValid()) {
+    if(noData()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
         if (isSelecting) {
@@ -287,6 +287,11 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderArea::wheelEvent(QWheelEvent* event)
 {
+    if (noData()) {
+        event->ignore();
+        return;
+    }
+    auto source = event->source();
     auto shift = event->pixelDelta();
     if (!shift.isNull()) {
         event->accept();
@@ -301,6 +306,11 @@ void RenderArea::wheelEvent(QWheelEvent* event)
     int s_x{}, s_y{};
     if (delta.y()) {
         s_y = -delta.y();
+        if (source == Qt::MouseEventNotSynthesized
+            && !event->inverted()) {
+            // make behavior more "natural" for "real" mouse wheels
+            s_y *= -1;
+        }
     }
     if (delta.x()) {
         s_x = -delta.x();
