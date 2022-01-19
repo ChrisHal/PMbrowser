@@ -44,13 +44,14 @@ const std::array<const char*, 4> AmpModeNames = {
 };
 
 
-std::array<PMparameter, 30>parametersTrace = {
+std::array<PMparameter, 31>parametersTrace = {
 	false,false,"TrMark","",PMparameter::Int32,0,
 	false,false,"TrLabel","",PMparameter::StringType,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
 	false,false,"Holding","V|A",PMparameter::LongReal,408,
 	false,false,"Internal Solution","",PMparameter::Int32,48,
 	false,false,"Leak traces","",PMparameter::Int32,60,
+	false,false,"TrDataKind","",PMparameter::Set16,64,
 	false,false,"UseXStart","",PMparameter::Boolean,66,
 	false,true,"Recording Mode","",PMparameter::RecordingMode,68,
 	false,false,"XStart","s",PMparameter::LongReal,112,
@@ -91,8 +92,8 @@ std::array<PMparameter, 18>parametersSweep = {
 	false,false,"Pip. pressure","a.u.",PMparameter::LongReal,80,
 	false,false,"RMS noise","A",PMparameter::LongReal,88, // not sure about units
 	false,false,"Temperature","°C",PMparameter::LongReal,96,
-	false,false,"DigitalIn","",PMparameter::UInt16,112,
-	false,false,"DigitalOut","",PMparameter::UInt16,116,
+	false,false,"DigitalIn","",PMparameter::Set16,112,
+	false,false,"DigitalOut","",PMparameter::Set16,116,
 	false,false,"SweepKind","",PMparameter::UInt16,114,
 	false,false,"SwSwMarkers","",PMparameter::LongReal4,120,
 	false,false,"Sweep holding 16x","",PMparameter::LongReal16,160,
@@ -163,7 +164,7 @@ std::array<PMparameter, 25>parametersAmpplifierState = {
 
 void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 {
-	ss << name << "=";
+	ss << name << '=';
 	try {
 		switch (data_type) {
 		case Byte:
@@ -174,6 +175,21 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			break;
 		case UInt16:
 			ss << node.extractUInt16(offset);
+			break;
+		case Set16: {
+			auto t = node.extractValue<std::uint16_t>(offset);
+			ss << 'b';
+			std::uint16_t u = 1U << 15;
+			while (u) {
+				if (t & u) {
+					ss << '1';
+				}
+				else {
+					ss << '0';
+				}
+				u >>= 1;
+			}
+		}
 			break;
 		case Int32:
 			ss << node.extractInt32(offset);

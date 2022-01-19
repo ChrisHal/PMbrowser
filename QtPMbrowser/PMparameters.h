@@ -29,6 +29,7 @@ struct PMparameter {
 		Byte,
 		Int16,
 		UInt16,
+		Set16, // for bitfields
 		Int32,
 		UInt32,
 		//Real32,
@@ -59,7 +60,7 @@ private:
 	double getRootTime(const hkTreeNode& node) const;
 };
 
-extern std::array<PMparameter, 30>parametersTrace;
+extern std::array<PMparameter, 31>parametersTrace;
 extern std::array<PMparameter, 18>parametersSweep;
 extern std::array<PMparameter, 11>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
