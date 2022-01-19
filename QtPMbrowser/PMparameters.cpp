@@ -134,7 +134,7 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
-std::array<PMparameter, 25>parametersAmpplifierState = {
+std::array<PMparameter, 30>parametersAmpplifierState = {
 	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
 	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
 	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
@@ -158,8 +158,13 @@ std::array<PMparameter, 25>parametersAmpplifierState = {
 	false,true,"IMonAdc","",PMparameter::Int16,212,
 	false,true,"VMonAdc","",PMparameter::Int16,192,
 	false,true,"StimDac","",PMparameter::Int16,220,
+	false,true,"StimFilterOn","",PMparameter::Byte,282,
+	false,true,"StimFilter","Hz",PMparameter::LongReal,296,
 	false,true,"Mode","",PMparameter::AmpModeName,237,
-	false,true,"SerialNumber","",PMparameter::String8,200
+	false,true,"SerialNumber","",PMparameter::StringType,200,
+	false,true,"VmonFactor","x",PMparameter::LongReal,336,
+	false,true,"VmonOffset","V",PMparameter::LongReal,360,
+	false,true,"CalibDate","",PMparameter::StringType,344
 };
 
 
