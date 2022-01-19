@@ -367,7 +367,6 @@ void RenderArea::wheelEvent(QWheelEvent* event)
         event->ignore();
         return;
     }
-    auto source = event->source();
     auto shift = event->pixelDelta();
     if (!shift.isNull()) {
         event->accept();
