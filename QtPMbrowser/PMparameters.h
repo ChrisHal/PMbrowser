@@ -44,7 +44,8 @@ struct PMparameter {
 		LongReal16,  // 8 double
 		RecordingMode,
 		RootRelativeTime,
-		AmpModeName
+		AmpModeName,
+		UserParamDesc8
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -62,7 +63,7 @@ private:
 
 extern std::array<PMparameter, 31>parametersTrace;
 extern std::array<PMparameter, 18>parametersSweep;
-extern std::array<PMparameter, 11>parametersSeries;
+extern std::array<PMparameter, 12>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 

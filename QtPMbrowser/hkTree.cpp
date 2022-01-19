@@ -100,10 +100,24 @@ char hkTreeNode::getChar(std::size_t offset) const
 	return Data[offset];
 }
 
+const UserParamDescr hkTreeNode::getUserParamDescr(std::size_t offset) const
+{
+	return {
+		getString(offset),
+		getString(offset + UserParamDescr::SizeName)
+	};
+}
+
 const std::string_view hkTreeNode::getString(std::size_t offset) const
 {
 	if (len <= offset) {
 		throw std::out_of_range("offset to large while accessing tree node");
 	}
 	return std::string_view(Data.get() + offset);
+}
+
+std::ostream& operator<<(std::ostream& os, const UserParamDescr& p)
+{
+	os << '(' << p.Name << ',' << p.Unit << ')';
+	return os;
 }

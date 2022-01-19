@@ -19,6 +19,7 @@
 
 #pragma once
 #include <istream>
+#include <ostream>
 #include <vector>
 #include <string>
 #include <string_view>
@@ -30,6 +31,17 @@
 #include "helpers.h"
 
 constexpr uint32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
+
+struct UserParamDescr {
+    enum {
+        SizeName = 32,
+        SizeUnit = 8,
+        Size = 40
+    };
+    std::string_view Name, Unit;
+};
+std::ostream& operator<<(std::ostream& os, const UserParamDescr&);
+
 
 /// <summary>
 /// A node in the tree (pul., pgf, amp, etc. tree)
@@ -99,6 +111,7 @@ public:
     };
     char getChar(std::size_t offset) const;
     const std::string_view getString(std::size_t offset) const;
+    const UserParamDescr getUserParamDescr(std::size_t offset) const;
     template<std::size_t N> const std::string_view getString(std::size_t offset) const
     {
         if (len < offset + N) {

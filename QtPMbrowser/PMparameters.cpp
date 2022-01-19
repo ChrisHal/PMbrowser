@@ -100,7 +100,7 @@ std::array<PMparameter, 18>parametersSweep = {
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 
-std::array<PMparameter, 11>parametersSeries = {
+std::array<PMparameter, 12>parametersSeries = {
 	false,false,"SeMark","",PMparameter::Int32,0,
 	false,false,"SeLabel","",PMparameter::StringType,4,
 	false,false,"SeComment","",PMparameter::StringType,36,
@@ -111,7 +111,8 @@ std::array<PMparameter, 11>parametersSeries = {
 	true,true,"Rel. SeTime","s",PMparameter::RootRelativeTime,136,
 	true,false,"SeTime","",PMparameter::DateTime,136,
 	false,false,"SeMethodName","",PMparameter::StringType,312,
-	false,false,"SeUsername","",PMparameter::StringType,872
+	false,false,"SeUsername","",PMparameter::StringType,872,
+	false,false,"SeUserDescr2","",PMparameter::UserParamDesc8, 1408
 };
 
 std::array<PMparameter, 5>parametersGroup = {
@@ -246,6 +247,14 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			break;
 		case AmpModeName:
 			ss << AmpModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+			break;
+		case UserParamDesc8: {
+			ss << "(name,unit):[";
+			for (std::size_t i = 0; i < 8; ++i) {
+				ss << node.getUserParamDescr(offset + i * UserParamDescr::Size) << ';';
+			}
+			ss << ']';
+		}
 			break;
 		default:
 			throw std::runtime_error("unknown data-type");
