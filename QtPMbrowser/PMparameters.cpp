@@ -46,7 +46,7 @@ const std::array<const char*, 4> AmpModeNames = {
 
 std::array<PMparameter, 31>parametersTrace = {
 	false,false,"TrMark","",PMparameter::Int32,0,
-	false,false,"TrLabel","",PMparameter::StringType,4,
+	false,false,"TrLabel","",PMparameter::String32,4,
 	false,false,"TraceID","",PMparameter::Int32,36,
 	false,false,"Holding","V|A",PMparameter::LongReal,408,
 	false,false,"Internal Solution","",PMparameter::Int32,48,
@@ -74,21 +74,20 @@ std::array<PMparameter, 31>parametersTrace = {
 	false,false,"Ext.Sol.","",PMparameter::Int32,244,
 	false,false,"IntSolVal","",PMparameter::LongReal,424,
 	false,false,"ExtSolVal","",PMparameter::LongReal,432,
-	false,false,"IntSolName","",PMparameter::StringType,440,
-	false,false,"ExtSolName","",PMparameter::StringType,472//,
+	false,false,"IntSolName","",PMparameter::String32,440,
+	false,false,"ExtSolName","",PMparameter::String32,472//,
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 };
 
-std::array<PMparameter, 18>parametersSweep = {
+std::array<PMparameter, 17>parametersSweep = {
 	false,false,"SwMark","",PMparameter::Int32,0,
-	false,false,"SwLabel","",PMparameter::StringType,4,
+	false,false,"SwLabel","",PMparameter::String32,4,
 	false,false,"Stim Count","",PMparameter::Int32,40,
 	true,true,"Sweep Time raw","s",PMparameter::LongReal,48,
 	true,true,"Rel. Sweep Time","s",PMparameter::RootRelativeTime,48,
 	true,true,"Sweep Time","",PMparameter::DateTime,48,
 	true,true,"Timer Time","s",PMparameter::LongReal,56,
-	false,false,"User param. 1","",PMparameter::LongReal,64,
-	false,false,"User param. 2","",PMparameter::LongReal,72,
+	false,false,"User param. 1,2","",PMparameter::LongReal2,64,
 	false,false,"Pip. pressure","a.u.",PMparameter::LongReal,80,
 	false,false,"RMS noise","A",PMparameter::LongReal,88, // not sure about units
 	false,false,"Temperature","°C",PMparameter::LongReal,96,
@@ -100,25 +99,28 @@ std::array<PMparameter, 18>parametersSweep = {
 	false,false,"User param ex.","",PMparameter::LongReal8,288
 };
 
-std::array<PMparameter, 12>parametersSeries = {
+std::array<PMparameter, 15>parametersSeries = {
 	false,false,"SeMark","",PMparameter::Int32,0,
-	false,false,"SeLabel","",PMparameter::StringType,4,
-	false,false,"SeComment","",PMparameter::StringType,36,
+	false,false,"SeLabel","",PMparameter::String32,4,
+	false,false,"SeComment","",PMparameter::String80,36,
 	false,false,"SeSeriesCount","",PMparameter::Int32,116,
 	false,false,"SeNumberSweeps","",PMparameter::Int32,120,
 	false,false,"SeMethodTag","",PMparameter::Int32,132,
 	true,false,"SeTime_raw","s",PMparameter::LongReal,136,
 	true,true,"Rel. SeTime","s",PMparameter::RootRelativeTime,136,
 	true,false,"SeTime","",PMparameter::DateTime,136,
-	false,false,"SeMethodName","",PMparameter::StringType,312,
-	false,false,"SeUsername","",PMparameter::StringType,872,
+	false,false,"SeMethodName","",PMparameter::String32,312,
+	false,false,"SeUsername","",PMparameter::String80,872,
+	false,false,"SeUserDescr1","",PMparameter::UserParamDesc2,152,
+	false,false,"SeSeUserParams2","",PMparameter::LongReal4,1120,
+	false,false,"SeSeUserParamDescr2","",PMparameter::UserParamDesc4,1152,
 	false,false,"SeUserDescr2","",PMparameter::UserParamDesc8, 1408
 };
 
 std::array<PMparameter, 5>parametersGroup = {
 	false, false, "GrMark","",PMparameter::Int32,0,
-	false, false, "Label","",PMparameter::StringType,4,
-	false,false,"GrText","",PMparameter::StringType,36,
+	false, false, "Label","",PMparameter::String32,4,
+	false,false,"GrText","",PMparameter::String80,36,
 	false,false,"ExperimentNumber","",PMparameter::Int32,116,
 	false,false,"GroupCount","",PMparameter::Int32,120
 };
@@ -126,9 +128,9 @@ std::array<PMparameter, 5>parametersGroup = {
 std::array<PMparameter, 8>parametersRoot = {
 	false, false, "RoVersion","",PMparameter::Int32,0,
 	false, false, "RoMark","",PMparameter::Int32,4,
-	false, false, "RoVersionName","",PMparameter::StringType,8,
-	false, false, "RoAuxFileName", "", PMparameter::StringType,40,
-	false, false, "RootText", "", PMparameter::StringType,120,
+	false, false, "RoVersionName","",PMparameter::String32,8,
+	false, false, "RoAuxFileName", "", PMparameter::String80,40,
+	false, false, "RootText", "", PMparameter::String400,120,
 	true, true, "RootStartTime_raw", "s", PMparameter::LongReal,520,
 	true, true, "RootStartTime", "", PMparameter::DateTime,520,
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
@@ -218,8 +220,21 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case String8:
 			ss << node.getString<8>(offset);
 			break;
+		case String32:
+			ss << node.getString<32>(offset);
+		break;
+		case String80:
+			ss << node.getString<80>(offset);
+			break;
+		case String400:
+			ss << node.getString<400>(offset);
+			break;
 		case Boolean:
 			ss << std::boolalpha << bool(node.getChar(offset));
+			break;
+		case LongReal2:
+			ss << '(' << node.extractLongReal(offset) << ','
+				<< node.extractLongReal(offset + 8) << ')';
 			break;
 		case LongReal4:
 			ss << "(";
@@ -254,13 +269,17 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << AmpModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 			break;
 		case UserParamDesc8: {
-			ss << "(name,unit):[";
-			for (std::size_t i = 0; i < 8; ++i) {
-				ss << node.getUserParamDescr(offset + i * UserParamDescr::Size) << ';';
-			}
-			ss << ']';
+			formatUserParamDesc<8>(node, offset, ss);
 		}
 			break;
+		case UserParamDesc4: {
+			formatUserParamDesc<4>(node, offset, ss);
+		}
+		break;
+		case UserParamDesc2: {
+			formatUserParamDesc<2>(node, offset, ss);
+		}
+		break;
 		default:
 			throw std::runtime_error("unknown data-type");
 			break;

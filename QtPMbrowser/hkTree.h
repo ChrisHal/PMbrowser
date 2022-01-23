@@ -117,7 +117,14 @@ public:
         if (len < offset + N) {
             throw std::out_of_range("offset to large while accessing tree node");
         }
-        return std::string_view(Data.get() + offset, N);
+        if (Data[offset + N - 1]) {
+            // string is not zero terminated
+            return std::string_view(Data.get() + offset, N);
+        }
+        else {
+            return std::string_view(Data.get() + offset);
+        }
+        
     };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };

@@ -102,9 +102,12 @@ char hkTreeNode::getChar(std::size_t offset) const
 
 const UserParamDescr hkTreeNode::getUserParamDescr(std::size_t offset) const
 {
+	if (len < offset + UserParamDescr::Size) {
+		throw std::out_of_range("offset to large while accessing tree node");
+	}
 	return {
-		getString(offset),
-		getString(offset + UserParamDescr::SizeName)
+		getString<UserParamDescr::SizeName>(offset),
+		getString<UserParamDescr::SizeUnit>(offset + UserParamDescr::SizeName)
 	};
 }
 
