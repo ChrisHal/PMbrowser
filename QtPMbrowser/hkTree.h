@@ -18,6 +18,7 @@
 */
 
 #pragma once
+
 #include <istream>
 #include <ostream>
 #include <vector>
@@ -117,14 +118,16 @@ public:
         if (len < offset + N) {
             throw std::out_of_range("offset to large while accessing tree node");
         }
-        if (Data[offset + N - 1]) {
-            // string is not zero terminated
-            return std::string_view(Data.get() + offset, N);
+        auto *p = Data.get() + offset;
+        if (p[N - 1]) {
+            // in theory, string is not zero terminated
+            // unfortunately, some PM version mess this up
+            // by not prperly zero-initializing the cahr array
+            return std::string_view(p, std::min(std::strlen(p), N));
         }
         else {
             return std::string_view(Data.get() + offset);
         }
-        
     };
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };

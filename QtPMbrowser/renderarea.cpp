@@ -485,8 +485,8 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     char dataformat = TrRecord->getChar(TrDataFormat);
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     clipped = tracedatakind & ClipBit;
-    yTrace.y_unit = qs_from_sv(TrRecord->getString(TrYUnit)); // assuming the string is zero terminated...
-    yTrace.x_unit = qs_from_sv(TrRecord->getString(TrXUnit));
+    yTrace.y_unit = qs_from_sv(TrRecord->getString<8>(TrYUnit));
+    yTrace.x_unit = qs_from_sv(TrRecord->getString<8>(TrXUnit));
     yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
     ndatapoints = TrRecord->extractInt32(TrDataPoints);
     yTrace.data.resize(ndatapoints);
