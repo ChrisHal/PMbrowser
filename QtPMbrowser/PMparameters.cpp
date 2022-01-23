@@ -136,7 +136,8 @@ std::array<PMparameter, 8>parametersRoot = {
 	false,false, "RoMaxSamples","",PMparameter::Int32,528
 };
 
-std::array<PMparameter, 30>parametersAmpplifierState = {
+std::array<PMparameter, 31>parametersAmpplifierState = {
+	false,true,"StateVersion","",PMparameter::String8,0,
 	false, true, "CurrentGain", "V/A", PMparameter::LongReal,8,
 	false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16,
 	false, true, "F2Frequency", "Hz", PMparameter::LongReal,24,
@@ -163,10 +164,10 @@ std::array<PMparameter, 30>parametersAmpplifierState = {
 	false,true,"StimFilterOn","",PMparameter::Byte,282,
 	false,true,"StimFilter","Hz",PMparameter::LongReal,296,
 	false,true,"Mode","",PMparameter::AmpModeName,237,
-	false,true,"SerialNumber","",PMparameter::StringType,200,
+	false,true,"SerialNumber","",PMparameter::String8,200,
 	false,true,"VmonFactor","x",PMparameter::LongReal,336,
 	false,true,"VmonOffset","V",PMparameter::LongReal,360,
-	false,true,"CalibDate","",PMparameter::StringType,344
+	false,true,"CalibDate","",PMparameter::String16,344
 };
 
 
@@ -220,6 +221,9 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case String8:
 			ss << node.getString<8>(offset);
 			break;
+		case String16:
+			ss << node.getString<16>(offset);
+		break;
 		case String32:
 			ss << node.getString<32>(offset);
 		break;

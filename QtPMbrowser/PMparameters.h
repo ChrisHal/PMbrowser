@@ -37,6 +37,7 @@ struct PMparameter {
 		DateTime, // weird PowerMod date
 		StringType,
 		String8, // String of length 8
+		String16,
 		String32,
 		String80,
 		String400,
@@ -80,7 +81,7 @@ extern std::array<PMparameter, 15>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
-extern std::array<PMparameter, 30>parametersAmpplifierState;
+extern std::array<PMparameter, 31>parametersAmpplifierState;
 
 extern const std::array<const char*, 7>RecordingModeNames;
 extern const std::array<const char*, 4> AmpModeNames;

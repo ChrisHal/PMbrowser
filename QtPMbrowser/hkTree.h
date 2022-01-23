@@ -118,7 +118,7 @@ public:
         if (len < offset + N) {
             throw std::out_of_range("offset to large while accessing tree node");
         }
-        auto *p = Data.get() + offset;
+        const auto *p = Data.get() + offset;
         if (p[N - 1]) {
             // in theory, string is not zero terminated
             // unfortunately, some PM version mess this up
@@ -126,7 +126,7 @@ public:
             return std::string_view(p, std::min(std::strlen(p), N));
         }
         else {
-            return std::string_view(Data.get() + offset);
+            return std::string_view(p);
         }
     };
     hkTreeNode* getParent() const { return Parent; };

@@ -232,11 +232,11 @@ void PMbrowserWindow::loadFile(QString filename)
         }
         try {
             const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
-            std::string ampname = std::string(amprootnode.getString(RoAmplifierName));
+            auto ampname = amprootnode.getString<32>(RoAmplifierName);
             // turns out, the following files are somewhat obscure/useless
             // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
             // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
-            txt.append(QString("\nAmplifier: %1").arg(ampname.c_str()));
+            txt.append(QString("\nAmplifier: ") + qs_from_sv(ampname));
         }
         catch (std::out_of_range& e) {
             (void)e;
