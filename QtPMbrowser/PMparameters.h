@@ -29,6 +29,7 @@ struct PMparameter {
 		Byte,
 		Int16,
 		UInt16,
+		Set16, // for bitfields
 		Int32,
 		UInt32,
 		//Real32,
@@ -36,14 +37,21 @@ struct PMparameter {
 		DateTime, // weird PowerMod date
 		StringType,
 		String8, // String of length 8
+		String32,
+		String80,
+		String400,
 		Boolean,
 		InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
+		LongReal2, // array of 2 doubles
 		LongReal4, // array of 4 doubles
 		LongReal8,	// array of 8 double
 		LongReal16,  // 8 double
 		RecordingMode,
 		RootRelativeTime,
-		AmpModeName
+		AmpModeName,
+		UserParamDesc4, // 4x UserParamDesc
+		UserParamDesc2,
+		UserParamDesc8
 	};
 	bool exportIBW, print;
 	const char* const name;
@@ -57,15 +65,22 @@ struct PMparameter {
 	void fromInt(int i) { exportIBW = i & 1; print = i & 2; };
 private:
 	double getRootTime(const hkTreeNode& node) const;
+	template<std::size_t N>void formatUserParamDesc(const hkTreeNode& node, std::size_t offset, std::stringstream& ss) const {
+		ss << "(name,unit):[";
+		for (std::size_t i = 0; i < N; ++i) {
+			ss << node.getUserParamDescr(offset + i * UserParamDescr::Size) << ';';
+		}
+		ss << ']';
+	}
 };
 
-extern std::array<PMparameter, 30>parametersTrace;
-extern std::array<PMparameter, 18>parametersSweep;
-extern std::array<PMparameter, 11>parametersSeries;
+extern std::array<PMparameter, 31>parametersTrace;
+extern std::array<PMparameter, 17>parametersSweep;
+extern std::array<PMparameter, 15>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
 
-extern std::array<PMparameter, 25>parametersAmpplifierState;
+extern std::array<PMparameter, 30>parametersAmpplifierState;
 
 extern const std::array<const char*, 7>RecordingModeNames;
 extern const std::array<const char*, 4> AmpModeNames;
