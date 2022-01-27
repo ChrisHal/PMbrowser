@@ -31,7 +31,7 @@
 #include <cstdint>
 #include "helpers.h"
 
-constexpr uint32_t MagicNumber = 0x054726565, SwappedMagicNumber = 0x65657254;
+constexpr uint32_t MagicNumber = 0x54726565, SwappedMagicNumber = 0x65657254;
 
 struct UserParamDescr {
     enum {
