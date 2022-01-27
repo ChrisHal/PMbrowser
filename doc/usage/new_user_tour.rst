@@ -1,3 +1,5 @@
+.. _new-user-tour-label:
+
 #############
 New User Tour
 #############
@@ -60,6 +62,8 @@ You will realize that the graph auto-scales according to the last selected / add
 A certain number of "background" traces remains in an
 internal buffer of the graph display. You can influence the storage and display of these
 background traces and the autoscaling behavior (see below).
+
+.. _new-user-filtering-label:
 
 Selecting / Filtering Traces of Interest
 ========================================
