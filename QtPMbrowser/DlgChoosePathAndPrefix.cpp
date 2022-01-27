@@ -57,7 +57,8 @@ void DlgChoosePathAndPrefix::choosePath()
 	dlg.setFileMode(QFileDialog::Directory);
 	dlg.selectFile(path);
 	if (dlg.exec()) {
-		ui->lineEditPath->setText(dlg.selectedFiles()[0]);
+        auto files = dlg.selectedFiles();
+        ui->lineEditPath->setText(files[0]);
 	}
 }
 

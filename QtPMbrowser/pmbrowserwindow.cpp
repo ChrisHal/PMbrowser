@@ -847,7 +847,8 @@ void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
 {
     auto mimedata = event->mimeData();
     if (mimedata->hasUrls()) {
-        auto url = mimedata->urls()[0];
+        auto urls = mimedata->urls();
+        auto& url = urls[0];
         if (url.isLocalFile()) {
             auto filename = url.toLocalFile();
             if (filename.endsWith(".dat")) {
@@ -861,7 +862,8 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
 {
     auto mimedata = event->mimeData();
     if (mimedata->hasUrls()) {
-        auto url = mimedata->urls()[0];
+        auto urls = mimedata->urls();
+        auto& url = urls[0];
         if (url.isLocalFile()) {
             auto filename = url.toLocalFile();
             if (filename.endsWith(".dat")) {

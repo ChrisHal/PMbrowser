@@ -77,7 +77,6 @@ void RenderArea::drawMarquee(QPainter& painter)
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     (void)event;
-    QPainterPath path;
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
@@ -106,7 +105,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
                     painter.setPen(QColor(128, 128, 128)); // grey
-                    for (auto trace : tracebuffer) {
+                    for (auto trace : qAsConst(tracebuffer)) {
                         trace->render(painter, this);
                     }
                     painter.setPen(QColor(0, 0, 0)); // black
