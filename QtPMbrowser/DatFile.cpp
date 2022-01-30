@@ -31,15 +31,15 @@
 
 bool DatFile::InitFromStream(std::istream& infile)
 {
-    char buffer[BundleHeaderSize];
     if (!infile) {
         throw std::runtime_error("cannot access file");
     }
-    infile.read(buffer, BundleHeaderSize);
+    auto bh = std::make_unique<BundleHeader>();
+    infile.read(reinterpret_cast<char*>(bh.get()), BundleHeaderSize);
     if (!infile) {
         throw std::runtime_error("cannot read file");
     }
-    BundleHeader* bh = reinterpret_cast<BundleHeader*>(buffer);
+
     bool isValid = std::strncmp(bh->Signature, BundleSignature, 8) == 0;
     bool isInvalidBundle = std::strncmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
     if (!isValid) {
@@ -50,6 +50,7 @@ bool DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("invalid file (not a PM dat file)");
         }
     }
+
     isSwapped = bool(bh->IsLittleEndian) != MachineIsLittleEndian();
     Version = bh->Version;
     Time = bh->Time;
