@@ -42,21 +42,23 @@
 /// Calculate checksum for Igor binary waves
 /// Modified from code given by wavemetrics to avoid violation of strict
 /// aliasing rules and silent type conversions
+/// Still, it is somewhat odd...
 /// </summary>
 /// <param name="data">pointer to data for which to calculate the checksum</param>
 /// <param name="oldcksum">old value of checksum</param>
 /// <param name="numbytes">number of bytes of data</param>
 /// <returns>checksum (couriously, a some point they are converted to short)</returns>
-static int32_t Checksum(const char* data, int32_t oldcksum, std::size_t numbytes)
+static int16_t Checksum(const char* data, int16_t oldcksum, std::size_t numbytes)
 {
 	auto numshorts = numbytes >> 1;				// 2 bytes to a short -- ignore trailing odd byte.
+	int32_t cksum = oldcksum;
 	while (numshorts-- > 0) {
 		int16_t t;
 		std::memcpy(&t, data, sizeof t);
-		oldcksum += t;
+		cksum += t;
 		data += sizeof t;
 	}
-	return oldcksum & 0xffff;
+	return cksum & 0xffff;
 }
 
 void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
