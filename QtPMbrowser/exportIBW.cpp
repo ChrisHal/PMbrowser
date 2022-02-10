@@ -38,12 +38,24 @@
 #include "igor_ipf.h"
 #include "Igor_IBW.h"
 
-//	This is how Igor wants its checksum done
-static int32_t Checksum(int16_t* data, int32_t oldcksum, int32_t numbytes)
+/// <summary>
+/// Calculate checksum for Igor binary waves
+/// Modified from code given by wavemetrics to avoid violation of strict
+/// aliasing rules and silent type conversions
+/// </summary>
+/// <param name="data">pointer to data for which to calculate the checksum</param>
+/// <param name="oldcksum">old value of checksum</param>
+/// <param name="numbytes">number of bytes of data</param>
+/// <returns>checksum (couriously, a some point they are converted to short)</returns>
+static int32_t Checksum(const char* data, int32_t oldcksum, std::size_t numbytes)
 {
-	numbytes >>= 1;				// 2 bytes to a short -- ignore trailing odd byte.
-	while (numbytes-- > 0)
-		oldcksum += *data++; // Warning: violation of strict aliasing rule!
+	auto numshorts = numbytes >> 1;				// 2 bytes to a short -- ignore trailing odd byte.
+	while (numshorts-- > 0) {
+		int16_t t;
+		std::memcpy(&t, data, sizeof t);
+		oldcksum += t;
+		data += sizeof t;
+	}
 	return oldcksum & 0xffff;
 }
 
@@ -117,8 +129,9 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	yunit.copy(wh.dataUnits, MAX_UNIT_CHARS);
 	wh.platform = 2;
 
-	short cksum = Checksum((short*)&bh, 0, sizeof(bh));
-	cksum = Checksum((short*)&wh, cksum, numbytes_wh);
+	// NOTE: in original code "cksum" is a short, triggering a conversion from 32bit int to short
+	auto cksum = Checksum(reinterpret_cast<char*>(&bh), 0, sizeof(bh));
+	cksum = Checksum(reinterpret_cast<char*>(&wh), cksum, numbytes_wh);
 	bh.checksum = -cksum;
 
 	outfile.write((char*)&bh, sizeof(bh));
