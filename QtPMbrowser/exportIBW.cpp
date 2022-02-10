@@ -39,11 +39,11 @@
 #include "Igor_IBW.h"
 
 //	This is how Igor wants its checksum done
-int Checksum(short* data, int oldcksum, int numbytes)
+static int32_t Checksum(int16_t* data, int32_t oldcksum, int32_t numbytes)
 {
 	numbytes >>= 1;				// 2 bytes to a short -- ignore trailing odd byte.
 	while (numbytes-- > 0)
-		oldcksum += *data++;
+		oldcksum += *data++; // Warning: violation of strict aliasing rule!
 	return oldcksum & 0xffff;
 }
 
