@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <memory>
 #include <limits>
+#include <type_traits>
 #include <cstring>
 #include <cstdint>
 #include "helpers.h"
@@ -51,6 +52,7 @@ struct hkTreeNode {
 private:
     template<typename T> T extractValueNoCheck(std::size_t offset) const
     {
+        static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
         T t;
         auto src = Data.get() + offset;
         if (!isSwapped) {

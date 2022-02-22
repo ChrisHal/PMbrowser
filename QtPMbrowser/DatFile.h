@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <type_traits>
 #include <cassert>
 #include "machineinfo.h"
 #include "hkTree.h"
@@ -159,6 +160,7 @@ constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, std::size_t trdatapoints, 
 	double* target)
 {
+	static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
 	assert(trdatapoints == TrRecord.extractInt32(TrDataPoints));
 	int32_t trdata = TrRecord.extractInt32(TrData);
 	datafile.seekg(trdata);
