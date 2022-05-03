@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("halaszovich.de");
     QCoreApplication::setApplicationName("PM browser");
     QSettings::setDefaultFormat(QSettings::IniFormat);
-
+    QApplication::setWindowIcon(QIcon(QString(":/myappico.ico"))); // sets icon in OS X dock
     PMbrowserWindow w;
     w.show();
     return a.exec();
