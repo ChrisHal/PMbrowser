@@ -44,7 +44,7 @@ const std::array<const char*, 4> AmpModeNames = {
 };
 
 
-std::array<PMparameter, 31>parametersTrace = { {
+std::array<PMparameter, 31> parametersTrace{ {
 	{false,false,"TrMark","",PMparameter::Int32,0},
 	{false,false,"TrLabel","",PMparameter::String32,4},
 	{false,false,"TraceID","",PMparameter::Int32,36},
@@ -79,7 +79,7 @@ std::array<PMparameter, 31>parametersTrace = { {
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 } };
 
-std::array<PMparameter, 17>parametersSweep = { {
+std::array<PMparameter, 17> parametersSweep{ {
 	{false,false,"SwMark","",PMparameter::Int32,0},
 	{false,false,"SwLabel","",PMparameter::String32,4},
 	{false,false,"Stim Count","",PMparameter::Int32,40},
@@ -99,7 +99,7 @@ std::array<PMparameter, 17>parametersSweep = { {
 	{false,false,"User param ex.","",PMparameter::LongReal8,288}
 }};
 
-std::array<PMparameter, 15>parametersSeries = { {
+std::array<PMparameter, 15> parametersSeries{ {
 	{false,false,"SeMark","",PMparameter::Int32,0},
 	{false,false,"SeLabel","",PMparameter::String32,4},
 	{false,false,"SeComment","",PMparameter::String80,36},
@@ -117,7 +117,7 @@ std::array<PMparameter, 15>parametersSeries = { {
 	{false,false,"SeUserDescr2","",PMparameter::UserParamDesc8, 1408}
 } };
 
-std::array<PMparameter, 5>parametersGroup = { {
+std::array<PMparameter, 5> parametersGroup{ {
 	{false, false, "GrMark","",PMparameter::Int32,0},
 	{false, false, "Label","",PMparameter::String32,4},
 	{false,false,"GrText","",PMparameter::String80,36},
@@ -125,7 +125,7 @@ std::array<PMparameter, 5>parametersGroup = { {
 	{false,false,"GroupCount","",PMparameter::Int32,120}
 } };
 
-std::array<PMparameter, 8>parametersRoot = { {
+std::array<PMparameter, 8> parametersRoot{ {
 	{false, false, "RoVersion","",PMparameter::Int32,0},
 	{false, false, "RoMark","",PMparameter::Int32,4},
 	{false, false, "RoVersionName","",PMparameter::String32,8},
@@ -136,7 +136,7 @@ std::array<PMparameter, 8>parametersRoot = { {
 	{false,false, "RoMaxSamples","",PMparameter::Int32,528}
 } };
 
-std::array<PMparameter, 31>parametersAmpplifierState = { {
+std::array<PMparameter, 31> parametersAmpplifierState{ {
 	{false, true, "StateVersion", "", PMparameter::String8, 0},
 	{false, true, "CurrentGain", "V/A", PMparameter::LongReal, 8},
 	{false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16},
