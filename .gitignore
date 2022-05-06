@@ -27,4 +27,11 @@ build-QtPMbrowser-Desktop_Qt_5_15_2_clang_64bit-Debug/
 build-QtPMbrowser-Desktop_Qt_5_15_2_clang_64bit-Release/
 .DS_Store
 *.pro.user
+<<<<<<< HEAD
 QtPMbrowser/QtPMbrowser.pro.user
+=======
+QtPMbrowser/.qmake.stash
+QtPMbrowser/Makefile.Debug
+QtPMbrowser/Makefile.Release
+/UpgradeLog.htm
+>>>>>>> 8ed4675de2b976b6809c6c52358ea882c85fc842
