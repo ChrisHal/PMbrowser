@@ -1,7 +1,7 @@
 .. _grapharea-label:
 
 Graph Area
-############
+##########
 
 Here, the traces are displayed.
 
