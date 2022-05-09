@@ -34,6 +34,7 @@ that pertain to exports to packed experiment files (see :ref:`export-dlg-label` 
 
 This function also available from the context menue of the **tree-view**.
 
+.. _export-all-visible-traces-label:
 
 'Export All Visible Traces for Igor'
 ------------------------------------
@@ -99,7 +100,7 @@ Set scaling of graph axes to extents of most recently loaded trace.
 ----------------------
 
 Toggle to enable or disable automatic scaling when a new trace is loaded
-into the graph. Also avaible from the context menue of the **graph area**.
+into the graph. Also avaible from the context menue of the :ref:`grapharea-label`.
 
 'YX mode (cur. trace as X)'
 ---------------------------
@@ -116,7 +117,7 @@ Enter *YT mode*, which is the default mode. *Time* will be used as the abscissa 
 'Wipe All'
 ----------
 
-Clear the **graph area**.
+Clear the :ref:`grapharea-label`.
 
 'Wipe Background Traces'
 ------------------------
@@ -154,15 +155,44 @@ The Dialogs
 Igor Export: 'Choose Path & Prefix' Dialog
 ******************************************
 
+This dialog is displayed every time you are exporting Igor :file:`ibw` files.
+
+*'path'*: If multiple files are exported, this is the path they will be saved to.
+Use button *'choose...'* to call up a file dialog to choose the path (or enter a valid path manually).
+
+*'prefix'*: Exported waves will be prefixed with this text. If individual files are exported,
+they will have this prefix, too (since they will be named after the wave).
+
+Checkbox *'create pxp file'*: All waves will be exported into a single packaged experiment file (:file:`pxp`).
+After clicking *'OK'*, a file dialog will show up that allows you to select a filename for the file to be created.
+
+Checkbox *'create folder structure'*: If you export as a :file:`pxp` file, select this to create datafolders within
+the :file:`pxp` file that match the tree structure.
+
 .. _filter-dlg-label:
 
 'Tree-Filter' Dialog
 ********************
 
+This dialog allows you to hide nodes and traces of the data-tree that you are not interested in.
+The filtering is based on *perl* style `regular expressions <https://perldoc.perl.org/perlre>`_. Only elements that match the given expression
+will remain visible, all other elements will be hidden.
+
+The expression ``.*`` will match any name, therfore you can use it to display all nodes of a given category.
+
+See section :ref:`new-user-filtering-label` from the :ref:`new-user-tour-label` for an example how to use this feature.
+
 .. _select-params-dlg-label:
 
 'Select Parameters' Dialog
 **************************
+
+For each of the four tree levels *Group*, *Series*, *Sweep*, and * Trace* you can select which parameters
+will be printed into the **text area** when a node is selected in the **tree-view** (checkbox *'print'*)
+and / or added to the *wave-note* of exported traces (checkbox *'export'*, cf. section :ref:`igor-export-infos-label`).
+
+All paramters that might be of relevance should be available. If you miss something, please post a *feature request* 
+on PMbrowser's `issues page <https://github.com/ChrisHal/PMbrowser/issues>`_. 
 
 
 .. _ranges-dlg-label:

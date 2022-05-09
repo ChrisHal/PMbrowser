@@ -27,6 +27,7 @@ But even if you do not use :program:`IgorPro`, you might find :program:`PMbrowse
    usage/installation
    usage/new_user_tour
    usage/menues
+   usage/displayarea
    usage/igor_export_infos
 
 

@@ -1,3 +1,5 @@
+.. _new-user-tour-label:
+
 #############
 New User Tour
 #############
@@ -31,7 +33,7 @@ The application window is divided into three sections, the *tree view*, the *gra
   hidden and select menu item ``hide subtree``.
   A *double click* on any item will "play" all traces that a children of this item in the *graph area*.
   
-* Inside the **graph area** trace data will be displayed as soon as a trace has been selected in the *tree view*.
+* Inside the :ref:`grapharea-label` trace data will be displayed as soon as a trace has been selected in the *tree view*.
   Until then, it displays the text ``no data to display``.
   
 * In the **text area** mainly metadata will be printed according to the element being selected in the *tree view*.
@@ -60,6 +62,8 @@ You will realize that the graph auto-scales according to the last selected / add
 A certain number of "background" traces remains in an
 internal buffer of the graph display. You can influence the storage and display of these
 background traces and the autoscaling behavior (see below).
+
+.. _new-user-filtering-label:
 
 Selecting / Filtering Traces of Interest
 ========================================
