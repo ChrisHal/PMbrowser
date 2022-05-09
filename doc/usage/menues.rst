@@ -100,7 +100,7 @@ Set scaling of graph axes to extents of most recently loaded trace.
 ----------------------
 
 Toggle to enable or disable automatic scaling when a new trace is loaded
-into the graph. Also avaible from the context menue of the **graph area**.
+into the graph. Also avaible from the context menue of the :ref:`grapharea-label`.
 
 'YX mode (cur. trace as X)'
 ---------------------------
@@ -117,7 +117,7 @@ Enter *YT mode*, which is the default mode. *Time* will be used as the abscissa 
 'Wipe All'
 ----------
 
-Clear the **graph area**.
+Clear the :ref:`grapharea-label`.
 
 'Wipe Background Traces'
 ------------------------
