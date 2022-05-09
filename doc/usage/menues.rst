@@ -34,6 +34,7 @@ that pertain to exports to packed experiment files (see :ref:`export-dlg-label` 
 
 This function also available from the context menue of the **tree-view**.
 
+.. _export-all-visible-traces-label:
 
 'Export All Visible Traces for Igor'
 ------------------------------------
