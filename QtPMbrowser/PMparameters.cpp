@@ -17,13 +17,14 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include<sstream>
-#include<iomanip>
-#include<array>
-#include"PMparameters.h"
-#include "time_handling.h"
+#include <cstdint>
+#include <sstream>
+#include <iomanip>
+#include <array>
 #include <cassert>
-#include <DatFile.h>
+#include "PMparameters.h"
+#include "time_handling.h"
+#include "DatFile.h"
 #include "qstring_helper.h"
 
 const std::array<const char*, 7> RecordingModeNames = {
