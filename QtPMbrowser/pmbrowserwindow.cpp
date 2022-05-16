@@ -46,10 +46,11 @@
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
 #include "qstring_helper.h"
+#include "Config.h"
 
 
 const QString myAppName("PM browser");
-const QString appVersion("2.0");
+const QString appVersion(VERSION);
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
