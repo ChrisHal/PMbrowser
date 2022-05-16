@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # When using Qt 6.3, you can replace the code block below with
 # qt_standard_project_setup()
 set(CMAKE_AUTOMOC ON)
-#include(GNUInstallDirs)
+include(GNUInstallDirs)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -54,11 +54,6 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
     )
 endif()
 
-install(TARGETS QtPMbrowser
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
 # Consider using qt_generate_deploy_app_script() for app deployment if
 # the project can use Qt 6.3. In that case rerun qmake2cmake with
 # --min-qt-version=6.3.
@@ -71,10 +66,17 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 add_custom_command(TARGET QtPMbrowser POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            --verbose 0
+            # --verbose 0
             --no-compiler-runtime # will be added by CPack
             \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
+)
+install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" DESTINATION "${CMAKE_INSTALL_PREFIX}/PM browser")
+install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "${CMAKE_INSTALL_PREFIX}/PM browser")
+else()
+install(TARGETS QtPMbrowser
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 endif()
 
