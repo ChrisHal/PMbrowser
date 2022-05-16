@@ -12,6 +12,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets)
@@ -33,7 +34,11 @@ add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     pmbrowserwindow.cpp pmbrowserwindow.h pmbrowserwindow.ui
     renderarea.cpp renderarea.h renderarea.ui
     time_handling.cpp time_handling.h
+	QtPMbrowser.qrc
+	QtPMbrowser.rc
 )
+
+
 target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
@@ -42,24 +47,6 @@ target_link_libraries(QtPMbrowser PRIVATE
 
 configure_file(Config.h.in Config.h)
 target_include_directories(QtPMbrowser PUBLIC "${PROJECT_BINARY_DIR}")
-
-# Resources:
-set(QtPMbrowser_resource_files
-    "myappico.ico"
-)
-
-if(${QT_VERSION_MAJOR} EQUAL "5")
-qt5_add_resources(QtPMbrowser "QtPMbrowser"
-    FILES
-        ${QtPMbrowser_resource_files}
-)
-else()
-qt_add_resources(QtPMbrowser "QtPMbrowser"
-    FILES
-        ${QtPMbrowser_resource_files}
-)
-endif()
-
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
     target_compile_definitions(QtPMbrowser PRIVATE
