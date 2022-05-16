@@ -35,9 +35,9 @@ add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     time_handling.cpp time_handling.h
 )
 target_link_libraries(QtPMbrowser PRIVATE
-    Qt::Core
-    Qt::Gui
-    Qt::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
 )
 
 configure_file(Config.h.in Config.h)
@@ -48,10 +48,17 @@ set(QtPMbrowser_resource_files
     "myappico.ico"
 )
 
+if(${QT_VERSION_MAJOR} EQUAL "5")
+qt5_add_resources(QtPMbrowser "QtPMbrowser"
+    FILES
+        ${QtPMbrowser_resource_files}
+)
+else()
 qt_add_resources(QtPMbrowser "QtPMbrowser"
     FILES
         ${QtPMbrowser_resource_files}
 )
+endif()
 
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
