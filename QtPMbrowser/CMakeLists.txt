@@ -68,3 +68,19 @@ install(TARGETS QtPMbrowser
 # Consider using qt_generate_deploy_app_script() for app deployment if
 # the project can use Qt 6.3. In that case rerun qmake2cmake with
 # --min-qt-version=6.3.
+
+# deploy script for Qt5
+if(WIN32)
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+add_custom_command(TARGET QtPMbrowser POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E
+        env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+            --verbose 0
+            --no-compiler-runtime # will be added by CPack
+            \"$<TARGET_FILE:QtPMbrowser>\"
+    COMMENT "Deploying Qt..."
+)
+endif()
+
