@@ -32,3 +32,5 @@ QtPMbrowser/.qmake.stash
 QtPMbrowser/Makefile.Debug
 QtPMbrowser/Makefile.Release
 /UpgradeLog.htm
+out/
+CMakeSettings.json
