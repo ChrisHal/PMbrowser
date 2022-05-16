@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # When using Qt 6.3, you can replace the code block below with
 # qt_standard_project_setup()
 set(CMAKE_AUTOMOC ON)
-include(GNUInstallDirs)
+#include(GNUInstallDirs)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 

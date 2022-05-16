@@ -34,3 +34,4 @@ QtPMbrowser/Makefile.Release
 /UpgradeLog.htm
 out/
 CMakeSettings.json
+doc/conf.py
