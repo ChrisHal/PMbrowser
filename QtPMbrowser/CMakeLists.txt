@@ -71,8 +71,10 @@ add_custom_command(TARGET QtPMbrowser POST_BUILD
             \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
 )
-install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" DESTINATION "${CMAKE_INSTALL_PREFIX}/PM browser")
-install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "${CMAKE_INSTALL_PREFIX}/PM browser")
+#install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" DESTINATION "PM browser")
+#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
+install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" TYPE BIN)
+#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
 else()
 install(TARGETS QtPMbrowser
     BUNDLE DESTINATION .
