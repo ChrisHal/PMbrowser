@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # When using Qt 6.3, you can replace the code block below with
 # qt_standard_project_setup()
 set(CMAKE_AUTOMOC ON)
-include(GNUInstallDirs)
+#include(GNUInstallDirs)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -66,7 +66,7 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 add_custom_command(TARGET QtPMbrowser POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            # --verbose 0
+            --verbose 0
             --no-compiler-runtime # will be added by CPack
             \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."

@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PMbrowser'
-copyright = '2022, Christian R. Halaszovich'
+copyright = '@MY_COPYRIGHT@'
 author = 'Christian R. Halaszovich'
 
 # The full version, including alpha/beta/rc tags

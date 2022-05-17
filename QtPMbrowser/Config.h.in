@@ -1,2 +1,3 @@
 // the configured options and settings for QtPMbrowser
 #define VERSION "@CMAKE_PROJECT_VERSION@"
+constexpr char COPYRIGHT_NOTICE[]="© Copyright @MY_COPYRIGHT@";

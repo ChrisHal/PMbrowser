@@ -605,7 +605,7 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
 void PMbrowserWindow::on_actionAbout_triggered()
 {
     QString txt = myAppName +  ", Version " + appVersion +
-                                "\n\n© Copyright 2020 - 2022 Christian R. Halaszovich"
+                                "\n\n" + COPYRIGHT_NOTICE +
                                 "\n\nAn open source tool to handle PatchMaster Files.\n"
                                 "PatchMaster is a trademark of Heka GmbH\n\n"
                                 "Build using Qt Library version " + QT_VERSION_STR +
