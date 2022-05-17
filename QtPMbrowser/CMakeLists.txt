@@ -54,11 +54,6 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
     )
 endif()
 
-install(TARGETS QtPMbrowser
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
 # Consider using qt_generate_deploy_app_script() for app deployment if
 # the project can use Qt 6.3. In that case rerun qmake2cmake with
 # --min-qt-version=6.3.
@@ -75,6 +70,32 @@ add_custom_command(TARGET QtPMbrowser POST_BUILD
             --no-compiler-runtime # will be added by CPack
             \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
+)
+#install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" DESTINATION "PM browser")
+#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
+install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" TYPE BIN)
+#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
+elseif(APPLE)
+
+install(TARGETS QtPMbrowser
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+add_custom_command(TARGET QtPMbrowser POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E
+        env "${MACDEPLOYQT_EXECUTABLE}"
+        \"$<TARGET_BUNDLE_DIR:QtPMbrowser>\" # -dmg
+    COMMENT "Deploying Qt..."
+)
+
+else()
+install(TARGETS QtPMbrowser
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 endif()
 
