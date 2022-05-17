@@ -11,6 +11,7 @@ option(BUILD_DOCS "build documentation" OFF)
 include(GNUInstallDirs)
 
 include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_NAME "PMbrowser")
 set(CPACK_RESOURCE_FILE_LICENSE  ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt)
 #set(CPACK_PACKAGE_VERSION_MAJOR "2")
 #set(CPACK_PACKAGE_VERSION_MINOR "0")
