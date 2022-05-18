@@ -77,10 +77,8 @@ install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" TYPE BIN)
 #install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
 elseif(APPLE)
 
-install(TARGETS QtPMbrowser
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+install(TARGETS QtPMbrowser BUNDLE DESTINATION ./ COMPONENT pmbrowser)
+cpack_add_component(pmbrowser)
 
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)

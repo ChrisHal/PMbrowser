@@ -28,6 +28,9 @@ set(CPACK_WIX_PRODUCT_ICON ${CMAKE_CURRENT_SOURCE_DIR}/QtPMbrowser/myappico.ico)
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "PM browser")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "PM browser")
 set(CPACK_PACKAGE_EXECUTABLES "QtPMbrowser;PM browser")
+#if(APPLE)
+#set(CPACK_PACKAGING_INSTALL_PREFIX "/Applications")
+#endif()
 include(CPack)
 
 
