@@ -61,8 +61,8 @@ IDI_ICON1               ICON                    "myappico.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,0,1
- PRODUCTVERSION 2,0,0,1
+ FILEVERSION @CMAKE_PROJECT_VERSION_MAJOR@,@CMAKE_PROJECT_VERSION_MINOR@,@CMAKE_PROJECT_VERSION_PATCH@,1
+ PRODUCTVERSION @CMAKE_PROJECT_VERSION_MAJOR@,@CMAKE_PROJECT_VERSION_MINOR@,@CMAKE_PROJECT_VERSION_PATCH@,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -79,12 +79,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Christian R. Halaszovich, M.D."
             VALUE "FileDescription", "PMbrowser: Tool for  viewing PM files"
-            VALUE "FileVersion", "2.0.0.1"
+            VALUE "FileVersion", "@CMAKE_PROJECT_VERSION_MAJOR@.@CMAKE_PROJECT_VERSION_MINOR@.@CMAKE_PROJECT_VERSION_PATCH@.1"
             VALUE "InternalName", "QtPMbrow.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2020 - 2022 Christian R. Halaszovich"
+            VALUE "LegalCopyright", "Copyright (C) @MY_COPYRIGHT@"
             VALUE "OriginalFilename", "QtPMbrow.exe"
             VALUE "ProductName", "PMbrowser"
-            VALUE "ProductVersion", "2.0.0.1"
+            VALUE "ProductVersion", "@CMAKE_PROJECT_VERSION_MAJOR@.@CMAKE_PROJECT_VERSION_MINOR@.@CMAKE_PROJECT_VERSION_PATCH@.1"
         END
     END
     BLOCK "VarFileInfo"

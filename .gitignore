@@ -35,3 +35,4 @@ QtPMbrowser/Makefile.Release
 out/
 CMakeSettings.json
 doc/conf.py
+QtPMbrowser/QtPMbrowser.rc

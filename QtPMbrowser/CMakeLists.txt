@@ -46,6 +46,7 @@ target_link_libraries(QtPMbrowser PRIVATE
 )
 
 configure_file(Config.h.in Config.h)
+configure_file(QtPMbrowser.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/QtPMbrowser.rc)
 target_include_directories(QtPMbrowser PUBLIC "${PROJECT_BINARY_DIR}")
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
