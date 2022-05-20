@@ -105,13 +105,16 @@ Usually, these commands should work to build and install from the terminal:
   
 .. code-block:: bash
 
+	git clone https://github.com/ChrisHal/PMbrowser.git
+	mkdir PMbrowser_build
+	cd PMbrowser_build
 	cmake ../PMbrowser -DCMAKE_BUILD_TYPE=Release
 	cmake --build . --config Release
-	cmake --install .
+	cmake --install . --config Release
 
 You might need to set the :command:`cmake` variable `CMAKE_PREFIX_PATH` to your :file:`Qt` directory.
 You might find this easier to do using :program:`cmake-gui` .
 
-By default, the *documentation* will not be build / installed. You have to set the ´BUILD_DOCS` option
+By default, the *documentation* will not be build / installed. You have to set the `BUILD_DOCS` option
 for this.
 
