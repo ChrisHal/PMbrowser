@@ -127,7 +127,9 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         if (yunit == "A") {
             holding *= 1e-6; // for some strange reason this is in microA
         }
+#ifndef NDEBUG
         prefix += " (from stim record)";
+#endif // !NDEBUG
     }
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
