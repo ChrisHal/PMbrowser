@@ -137,6 +137,13 @@ AmplifierStateSize = 400,
 AmStateCount = 4,
 AmAmplifierState = 112;
 
+
+/// stim tree
+// cfrom channel record
+constexpr size_t
+	chDacUnit = 40, // String8Type
+	chHolding = 48; // LONGREAL, for CC in micro-ampere!
+
 // offset for Stim-Tree
 constexpr size_t seVoltage = 8;
 

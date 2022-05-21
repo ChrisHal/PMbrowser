@@ -45,7 +45,7 @@ const std::array<const char*, 4> AmpModeNames = {
 };
 
 
-std::array<PMparameter, 31> parametersTrace{ {
+std::array<PMparameter, 32> parametersTrace{ {
 	{false,false,"TrMark","",PMparameter::Int32,0},
 	{false,false,"TrLabel","",PMparameter::String32,4},
 	{false,false,"TraceID","",PMparameter::Int32,36},
@@ -76,7 +76,10 @@ std::array<PMparameter, 31> parametersTrace{ {
 	{false,false,"IntSolVal","",PMparameter::LongReal,424},
 	{false,false,"ExtSolVal","",PMparameter::LongReal,432},
 	{false,false,"IntSolName","",PMparameter::String32,440},
-	{false,false,"ExtSolName","",PMparameter::String32,472}//,
+	{false,false,"ExtSolName","",PMparameter::String32,472},
+	{false,true,"TrAdcChannel","",PMparameter::Int16,222}//,
+	//{false,true,"TrSelfChannel","",PMparameter::Int16,288},
+	//{false,true,"TrLinkDAChannel","",PMparameter::Int16,216}
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 } };
 

@@ -117,6 +117,18 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
         yunit = "A";
         prefix = "Ihold";
     }
+    if (std::isnan(holding)) {
+        // we can also try to get this info from the stim tree (usuful for old files):
+        const auto& sweep_record = trace->getParent();
+        int stim_index = sweep_record->extractValue<int32_t>(SwStimCount) - 1;
+        const auto& channel0_record = datfile->GetPgfTree().GetRootNode().Children.at(stim_index).Children.at(0);
+        yunit = qs_from_sv(channel0_record.getString(chDacUnit));
+        holding = channel0_record.extractLongRealNoThrow(chHolding);
+        if (yunit == "A") {
+            holding *= 1e-6; // for some strange reason this is in microA
+        }
+        prefix += " (from stim record)";
+    }
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
     QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
@@ -247,7 +259,6 @@ void PMbrowserWindow::loadFile(QString filename)
         ui->textEdit->append(txt);
         ui->textEdit->append(QString::fromUtf8("file date: ")
             + QString::fromStdString(datfile->getFileDate()));
-
     }
 }
 
