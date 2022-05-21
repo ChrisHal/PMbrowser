@@ -17,13 +17,22 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets)
 
-add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
-    DatFile.cpp DatFile.h
+set(MY_UI_FILES 
+	DlgChoosePathAndPrefix.ui
+	DlgGraphSettings.ui
+	DlgSelectParameters.ui
+	DlgTreeFilter.ui
+	pmbrowserwindow.ui
+	renderarea.ui
+)
+
+set(SOURCES
+DatFile.cpp DatFile.h
     DisplayTrace.cpp DisplayTrace.h
-    DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h DlgChoosePathAndPrefix.ui
-    DlgGraphSettings.cpp DlgGraphSettings.h DlgGraphSettings.ui
-    DlgSelectParameters.cpp DlgSelectParameters.h DlgSelectParameters.ui
-    DlgTreeFilter.cpp DlgTreeFilter.h DlgTreeFilter.ui
+    DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h 
+    DlgGraphSettings.cpp DlgGraphSettings.h 
+    DlgSelectParameters.cpp DlgSelectParameters.h 
+    DlgTreeFilter.cpp DlgTreeFilter.h 
     Igor_IBW.h
     PMparameters.cpp PMparameters.h
     exportIBW.cpp exportIBW.h
@@ -31,11 +40,15 @@ add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     hkTree.cpp hkTree.h
     machineinfo.h
     main.cpp
-    pmbrowserwindow.cpp pmbrowserwindow.h pmbrowserwindow.ui
-    renderarea.cpp renderarea.h renderarea.ui
+    pmbrowserwindow.cpp pmbrowserwindow.h
+    renderarea.cpp renderarea.h 
     time_handling.cpp time_handling.h
 	QtPMbrowser.qrc
 	QtPMbrowser.rc
+)
+#qt5_wrap_ui(SOURCES ${MY_UI_FILES})
+add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
+ 	${SOURCES} ${MY_UI_FILES}  
 )
 
 
