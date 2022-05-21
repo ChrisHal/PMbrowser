@@ -85,10 +85,7 @@ add_custom_command(TARGET QtPMbrowser POST_BUILD
             \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
 )
-#install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" DESTINATION "PM browser")
-#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
 install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" TYPE BIN)
-#install(FILES ${PROJECT_SOURCE_DIR}/myappico.ico DESTINATION "PM browser")
 elseif(APPLE)
 
 install(TARGETS QtPMbrowser BUNDLE DESTINATION ./ COMPONENT pmbrowser)
@@ -100,7 +97,7 @@ find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 add_custom_command(TARGET QtPMbrowser POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env "${MACDEPLOYQT_EXECUTABLE}"
-        \"$<TARGET_BUNDLE_DIR:QtPMbrowser>\" # -dmg
+        \"$<TARGET_BUNDLE_DIR:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
 )
 
