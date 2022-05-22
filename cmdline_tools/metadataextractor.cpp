@@ -23,9 +23,13 @@
 #include"PMparameters.h"
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cerr << "usage: " << argv[0] << " <filename>.dat\n";
+    if (argc < 2) {
+        std::cerr << "usage: " << argv[0] << " <filename>.dat [<max_level>]\n";
         return EXIT_FAILURE;
+    }
+    int max_level = hkTreeNode::LevelTrace;
+    if (argc > 2) {
+        max_level = std::strtol(argv[2],nullptr,10);
     }
     std::ifstream infile(argv[1], std::ios::binary);
     if (!infile) {
@@ -36,8 +40,7 @@ int main(int argc, char** argv) {
     try {
         df.InitFromStream(infile);
         auto& pulsetree = df.GetPulTree();
-        const auto& rootnode = pulsetree.GetRootNode();
-        PMparameter::formatStimMetadataAsTableExport(rootnode, std::cout);
+        df.formatStimMetadataAsTableExport(std::cout, max_level);
     }catch(const std::exception& e) {
         std::cerr << "error " << e.what() << " processing file " << argv[1] << '\n';
         return EXIT_FAILURE;
