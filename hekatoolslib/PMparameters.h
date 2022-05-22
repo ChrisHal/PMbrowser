@@ -21,6 +21,7 @@
 #include <array>
 #include <string>
 #include <sstream>
+#include <ostream>
 #include "hkTree.h"
 
 
@@ -62,11 +63,29 @@ struct PMparameter {
 
 	void format(const hkTreeNode& node, std::string& s) const;
 	void format(const hkTreeNode& node, std::stringstream& ss) const;
+	void formatValueOnly(const hkTreeNode& node, std::ostream& ss) const;
+
+	/// <summary>
+	/// encode flog state as int for saving in setting
+	/// </summary>
+	/// <returns>flags</returns>
 	int toInt() const { return int(exportIBW) | (int(print) << 1); };
+
+	/// <summary>
+	/// decode flags from int (cf. toInt())
+	/// </summary>
+	/// <param name="i">flags</param>
 	void fromInt(int i) { exportIBW = i & 1; print = i & 2; };
+
+	/// <summary>
+	/// format metadata with et export flag as tab delimited table
+	/// </summary>
+	/// <param name="pultree_root_node">root node of th e Pulse Tree</param>
+	/// <param name="os">stream to receive output</param>
+	static void formatStimMetadataAsTableExport(const hkTreeNode& pultree_root_node, std::ostream& os);
 private:
 	double getRootTime(const hkTreeNode& node) const;
-	template<std::size_t N>void formatUserParamDesc(const hkTreeNode& node, std::size_t offset, std::stringstream& ss) const {
+	template<std::size_t N>void formatUserParamDesc(const hkTreeNode& node, std::size_t offset, std::ostream& ss) const {
 		ss << "(name,unit):[";
 		for (std::size_t i = 0; i < N; ++i) {
 			ss << node.getUserParamDescr(offset + i * UserParamDescr::Size) << ';';
@@ -86,6 +105,13 @@ extern std::array<PMparameter, 31>parametersAmpplifierState;
 extern const std::array<const char*, 7>RecordingModeNames;
 extern const std::array<const char*, 4> AmpModeNames;
 
+/// <summary>
+/// Format parameters stored in node n using
+/// all parameters defined in array ar
+/// </summary>
+/// <param name="n">node coontaining data</param>
+/// <param name="ar">array of parameters</param>
+/// <param name="str">string that will receive result</param>
 template<std::size_t Nrows> void formatParamList(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::string& str)
 {
@@ -127,4 +153,59 @@ template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
 	std::stringstream ss;
 	formatParamListExportIBW(n, ar, ss);
 	str.append(ss.str());
+}
+
+/// <summary>
+/// format haders for format as tab-delimited list (no tab after last element)
+/// format is "name[unit]"
+/// </summary>
+/// <param name="ar">parameter array</param>
+/// <param name="ss">stream to receive output</param>
+template<std::size_t Nrows> std::ostream& getTableHeadersExport(
+	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
+{
+	for (std::size_t i = 0; i < ar.size() - 1;++i) {
+		const PMparameter& p = ar.at(i);
+		if (p.exportIBW) {
+			ss << p.name << '[' << p.unit << ']' << "\t";
+		}
+	}
+	const PMparameter& p = ar.back();
+	ss << p.name << '[' << p.unit << ']';
+	return ss;
+}
+
+/// <summary>
+/// format tab del. list for export as table
+/// </summary>
+/// <param name="n">node containg data to be exported</param>
+/// <param name="ar">definition of parameters</param>
+/// <param name="ss">stream to recevie output</param>
+template<std::size_t Nrows> std::ostream& formatParamListExportTable(const hkTreeNode& n,
+	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
+{
+	for (std::size_t i = 0; i < ar.size() - 1; ++i) {
+		const PMparameter& p = ar.at(i);
+		if (p.exportIBW) {
+			p.formatValueOnly(n, ss);
+			ss << "\t";
+		}
+	}
+	const PMparameter& p = ar.back();
+	p.formatValueOnly(n, ss);
+	return ss;
+}
+
+/// <summary>
+/// format tab del. list for export as table
+/// </summary>
+/// <param name="n">node containg data to be exported</param>
+/// <param name="ar">definition of parameters</param>
+/// <returns>string containing result</returns>
+template<std::size_t Nrows> std::string formatParamListExportTable(const hkTreeNode& n,
+	const std::array<PMparameter, Nrows>& ar)
+{
+	std::stringstream ss;
+	formatParamListExportTable(n, ar, ss);
+	return ss.str();
 }
