@@ -29,7 +29,7 @@
 #include "DatFile.h"
 #include "machineinfo.h"
 
-bool DatFile::InitFromStream(std::istream& infile)
+void DatFile::InitFromStream(std::istream& infile)
 {
     if (!infile) {
         throw std::runtime_error("cannot access file");
@@ -91,7 +91,6 @@ bool DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("error processing tree");
         }
     }
-    return true;
 }
 
 std::string DatFile::getFileDate() const

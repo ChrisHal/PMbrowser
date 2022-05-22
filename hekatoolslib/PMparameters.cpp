@@ -173,10 +173,8 @@ std::array<PMparameter, 31> parametersAmpplifierState{ {
 	{false,true,"CalibDate","",PMparameter::String16,344}
 } };
 
-
-void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
+void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 {
-	ss << name << '=';
 	try {
 		switch (data_type) {
 		case Byte:
@@ -202,7 +200,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 				u >>= 1;
 			}
 		}
-			break;
+				  break;
 		case Int32:
 			ss << node.extractInt32(offset);
 			break;
@@ -216,7 +214,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << formatPMtimeUTC(node.extractLongReal(offset));
 			break;
 		case InvLongReal:
-			ss << 1.0/node.extractLongReal(offset);
+			ss << 1.0 / node.extractLongReal(offset);
 			break;
 		case StringType:
 			ss << node.getString(offset);
@@ -226,10 +224,10 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			break;
 		case String16:
 			ss << node.getString<16>(offset);
-		break;
+			break;
 		case String32:
 			ss << node.getString<32>(offset);
-		break;
+			break;
 		case String80:
 			ss << node.getString<80>(offset);
 			break;
@@ -278,15 +276,15 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case UserParamDesc8: {
 			formatUserParamDesc<8>(node, offset, ss);
 		}
-			break;
+						   break;
 		case UserParamDesc4: {
 			formatUserParamDesc<4>(node, offset, ss);
 		}
-		break;
+						   break;
 		case UserParamDesc2: {
 			formatUserParamDesc<2>(node, offset, ss);
 		}
-		break;
+						   break;
 		default:
 			throw std::runtime_error("unknown data-type");
 			break;
@@ -296,6 +294,12 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		(void)e;
 		ss << "n/a";
 	}
+}
+
+void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
+{
+	ss << name << '=';
+	formatValueOnly(node, ss);
 	ss << " " << unit;
 }
 
@@ -315,4 +319,34 @@ void PMparameter::format(const hkTreeNode& node, std::string& s) const
 	std::stringstream ss;
 	format(node, ss);
 	s = ss.str();
+}
+
+void PMparameter::formatStimMetadataAsTableExport(const hkTreeNode& rootnode, std::ostream& os)
+{
+	os << "GrpCount\tSerCount\tSwCount\tTrCount\t";
+	getTableHeadersExport(parametersRoot, os) << '\t';
+	getTableHeadersExport(parametersGroup, os) << '\t';
+	getTableHeadersExport(parametersSeries, os) << '\t';
+	getTableHeadersExport(parametersSweep, os) << '\t';
+	getTableHeadersExport(parametersTrace, os) << '\n';
+	std::string root_entry = formatParamListExportTable(rootnode, parametersRoot);
+	for (const auto& grp : rootnode.Children) {
+		auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+		std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+		for (const auto& series : grp.Children) {
+			auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+			std::string se_entry = formatParamListExportTable(series, parametersSeries);
+			for (const auto& sweep : series.Children) {
+				auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+				std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+				for (const auto& trace : sweep.Children) {
+					auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+					std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+					os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+						<< tr_count << '\t' << root_entry << '\t' << grp_entry << '\t'
+						<< se_entry << '\t' << sw_entry << 't' << tr_entry << '\n';
+				}
+			}
+		}
+	}
 }

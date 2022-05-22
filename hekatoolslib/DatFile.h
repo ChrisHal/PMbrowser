@@ -71,7 +71,7 @@ class DatFile
 public:
 	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
-	bool InitFromStream(std::istream& istream);
+	void InitFromStream(std::istream& istream);
 	std::string getFileDate() const; // return formatted file creation date
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
