@@ -157,14 +157,12 @@ template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
 template<std::size_t Nrows> std::ostream& getTableHeadersExport(
 	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
 {
-	for (std::size_t i = 0; i < ar.size() - 1;++i) {
-		const PMparameter& p = ar.at(i);
+	//bool is_first{ true };
+	for (const auto& p : ar) {
 		if (p.exportIBW) {
-			ss << p.name << '[' << p.unit << ']' << "\t";
+			ss << '\t' << p.name << '[' << p.unit << ']';
 		}
 	}
-	const PMparameter& p = ar.back();
-	ss << p.name << '[' << p.unit << ']';
 	return ss;
 }
 
@@ -177,15 +175,12 @@ template<std::size_t Nrows> std::ostream& getTableHeadersExport(
 template<std::size_t Nrows> std::ostream& formatParamListExportTable(const hkTreeNode& n,
 	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
 {
-	for (std::size_t i = 0; i < ar.size() - 1; ++i) {
-		const PMparameter& p = ar.at(i);
+	for(const auto& p : ar) {
 		if (p.exportIBW) {
+			ss << '\t';
 			p.formatValueOnly(n, ss);
-			ss << "\t";
 		}
 	}
-	const PMparameter& p = ar.back();
-	p.formatValueOnly(n, ss);
 	return ss;
 }
 

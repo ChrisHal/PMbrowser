@@ -25,6 +25,7 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include "ui_pmbrowserwindow.h"
 #include <fstream>
 #include <memory>
 #include "DatFile.h"
@@ -47,6 +48,7 @@ private slots:
     void on_actionClear_Text_triggered();
     void on_actionExport_IBW_File_triggered();
     void on_actionExport_All_as_IBW_triggered();
+    void on_actionExport_Metadata_as_Table_triggered();
     //void on_actionCopy_triggered();
     void on_actionAbout_triggered();
     void on_actionFilter_triggered();
