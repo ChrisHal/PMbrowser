@@ -32,6 +32,7 @@ set(CPACK_PACKAGE_EXECUTABLES "QtPMbrowser;PM browser")
 include(CPack)
 
 
+add_subdirectory(hekatoolslib)
 add_subdirectory("QtPMbrowser")
 if(BUILD_DOCS)
 add_subdirectory("doc")

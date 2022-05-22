@@ -27,22 +27,16 @@ set(MY_UI_FILES
 )
 
 set(SOURCES
-DatFile.cpp DatFile.h
+
     DisplayTrace.cpp DisplayTrace.h
     DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h 
     DlgGraphSettings.cpp DlgGraphSettings.h 
     DlgSelectParameters.cpp DlgSelectParameters.h 
     DlgTreeFilter.cpp DlgTreeFilter.h 
-    Igor_IBW.h
-    PMparameters.cpp PMparameters.h
-    exportIBW.cpp exportIBW.h
-    helpers.cpp helpers.h
-    hkTree.cpp hkTree.h
-    machineinfo.h
     main.cpp
     pmbrowserwindow.cpp pmbrowserwindow.h
     renderarea.cpp renderarea.h 
-    time_handling.cpp time_handling.h
+
 	QtPMbrowser.qrc
 	QtPMbrowser.rc
 )
@@ -57,6 +51,7 @@ target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
 )
+target_link_libraries(QtPMbrowser PUBLIC hekatoolslib)
 
 configure_file(Config.h.in Config.h)
 configure_file(QtPMbrowser.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/QtPMbrowser.rc)
