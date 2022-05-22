@@ -111,13 +111,13 @@ void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
         throw std::runtime_error("max_level exceeds LevelTrace(=4)");
     }
     auto& rootnode = GetPulTree().GetRootNode();
-    os << "GrpCount\tSerCount\tSwCount\tTrCount\t";
-    getTableHeadersExport(parametersRoot, os) << '\t';
-    getTableHeadersExport(parametersGroup, os) << '\t';
-    getTableHeadersExport(parametersSeries, os) << '\t';
-    getTableHeadersExport(parametersSweep, os) << '\t';
+    os << "GrpCount\tSerCount\tSwCount\tTrCount";
+    //getTableHeadersExport(parametersRoot, os) << '\t';
+    getTableHeadersExport(parametersGroup, os);
+    getTableHeadersExport(parametersSeries, os);
+    getTableHeadersExport(parametersSweep, os);
     getTableHeadersExport(parametersTrace, os) << '\n';
-    std::string root_entry = formatParamListExportTable(rootnode, parametersRoot);
+    //std::string root_entry = formatParamListExportTable(rootnode, parametersRoot);
     for (const auto& grp : rootnode.Children) {
         auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
         std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
@@ -131,8 +131,9 @@ void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
                     auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
                     std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
                     os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
-                        << tr_count << '\t' << root_entry << '\t' << grp_entry << '\t'
-                        << se_entry << '\t' << sw_entry << 't' << tr_entry << '\n';
+                        << tr_count  << //root_entry << 
+                        grp_entry 
+                        << se_entry << sw_entry << tr_entry << '\n';
                     if (max_level < hkTreeNode::LevelTrace) break;
                 }
                 if (max_level < hkTreeNode::LevelSweep) break;
