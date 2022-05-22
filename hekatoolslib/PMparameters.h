@@ -66,7 +66,7 @@ struct PMparameter {
 	void formatValueOnly(const hkTreeNode& node, std::ostream& ss) const;
 
 	/// <summary>
-	/// encode flog state as int for saving in setting
+	/// encode flag state as int for saving in setting
 	/// </summary>
 	/// <returns>flags</returns>
 	int toInt() const { return int(exportIBW) | (int(print) << 1); };
@@ -76,13 +76,6 @@ struct PMparameter {
 	/// </summary>
 	/// <param name="i">flags</param>
 	void fromInt(int i) { exportIBW = i & 1; print = i & 2; };
-
-	/// <summary>
-	/// format metadata with et export flag as tab delimited table
-	/// </summary>
-	/// <param name="pultree_root_node">root node of th e Pulse Tree</param>
-	/// <param name="os">stream to receive output</param>
-	static void formatStimMetadataAsTableExport(const hkTreeNode& pultree_root_node, std::ostream& os);
 private:
 	double getRootTime(const hkTreeNode& node) const;
 	template<std::size_t N>void formatUserParamDesc(const hkTreeNode& node, std::size_t offset, std::ostream& ss) const {

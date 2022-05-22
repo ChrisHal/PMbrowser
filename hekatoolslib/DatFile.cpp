@@ -24,10 +24,12 @@
 #include <cmath>
 #include <cassert>
 #include <cinttypes>
+#include <cstdint>
 #include "time_handling.h"
 #include "helpers.h"
 #include "DatFile.h"
 #include "machineinfo.h"
+#include "PMparameters.h"
 
 void DatFile::InitFromStream(std::istream& infile)
 {
@@ -100,4 +102,43 @@ std::string DatFile::getFileDate() const
 #else
     return formatPMtimeDate(Time);
 #endif //NDEBUG
+}
+
+
+void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
+{
+    if (max_level > hkTreeNode::LevelTrace) {
+        throw std::runtime_error("max_level exceeds LevelTrace(=4)");
+    }
+    auto& rootnode = GetPulTree().GetRootNode();
+    os << "GrpCount\tSerCount\tSwCount\tTrCount\t";
+    getTableHeadersExport(parametersRoot, os) << '\t';
+    getTableHeadersExport(parametersGroup, os) << '\t';
+    getTableHeadersExport(parametersSeries, os) << '\t';
+    getTableHeadersExport(parametersSweep, os) << '\t';
+    getTableHeadersExport(parametersTrace, os) << '\n';
+    std::string root_entry = formatParamListExportTable(rootnode, parametersRoot);
+    for (const auto& grp : rootnode.Children) {
+        auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+        std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+        for (const auto& series : grp.Children) {
+            auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+            std::string se_entry = formatParamListExportTable(series, parametersSeries);
+            for (const auto& sweep : series.Children) {
+                auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+                for (const auto& trace : sweep.Children) {
+                    auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                    std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+                    os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+                        << tr_count << '\t' << root_entry << '\t' << grp_entry << '\t'
+                        << se_entry << '\t' << sw_entry << 't' << tr_entry << '\n';
+                    if (max_level < hkTreeNode::LevelTrace) break;
+                }
+                if (max_level < hkTreeNode::LevelSweep) break;
+            }
+            if (max_level < hkTreeNode::LevelSeries) break;
+        }
+        if (max_level < hkTreeNode::LevelGroup) break;
+    }
 }

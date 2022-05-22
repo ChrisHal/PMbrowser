@@ -104,7 +104,7 @@ std::array<PMparameter, 17> parametersSweep{ {
 
 std::array<PMparameter, 15> parametersSeries{ {
 	{false,false,"SeMark","",PMparameter::Int32,0},
-	{false,false,"SeLabel","",PMparameter::String32,4},
+	{true,false,"SeLabel","",PMparameter::String32,4},
 	{false,false,"SeComment","",PMparameter::String80,36},
 	{false,false,"SeSeriesCount","",PMparameter::Int32,116},
 	{false,false,"SeNumberSweeps","",PMparameter::Int32,120},
@@ -122,7 +122,7 @@ std::array<PMparameter, 15> parametersSeries{ {
 
 std::array<PMparameter, 5> parametersGroup{ {
 	{false, false, "GrMark","",PMparameter::Int32,0},
-	{false, false, "Label","",PMparameter::String32,4},
+	{true, false, "GrLabel","",PMparameter::String32,4},
 	{false,false,"GrText","",PMparameter::String80,36},
 	{false,false,"ExperimentNumber","",PMparameter::Int32,116},
 	{false,false,"GroupCount","",PMparameter::Int32,120}
@@ -319,34 +319,4 @@ void PMparameter::format(const hkTreeNode& node, std::string& s) const
 	std::stringstream ss;
 	format(node, ss);
 	s = ss.str();
-}
-
-void PMparameter::formatStimMetadataAsTableExport(const hkTreeNode& rootnode, std::ostream& os)
-{
-	os << "GrpCount\tSerCount\tSwCount\tTrCount\t";
-	getTableHeadersExport(parametersRoot, os) << '\t';
-	getTableHeadersExport(parametersGroup, os) << '\t';
-	getTableHeadersExport(parametersSeries, os) << '\t';
-	getTableHeadersExport(parametersSweep, os) << '\t';
-	getTableHeadersExport(parametersTrace, os) << '\n';
-	std::string root_entry = formatParamListExportTable(rootnode, parametersRoot);
-	for (const auto& grp : rootnode.Children) {
-		auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
-		std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
-		for (const auto& series : grp.Children) {
-			auto se_count = series.extractValue<int32_t>(SeSeriesCount);
-			std::string se_entry = formatParamListExportTable(series, parametersSeries);
-			for (const auto& sweep : series.Children) {
-				auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
-				std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
-				for (const auto& trace : sweep.Children) {
-					auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
-					std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
-					os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
-						<< tr_count << '\t' << root_entry << '\t' << grp_entry << '\t'
-						<< se_entry << '\t' << sw_entry << 't' << tr_entry << '\n';
-				}
-			}
-		}
-	}
 }

@@ -79,6 +79,12 @@ public:
 	std::string getVersion() const { return Version; }; // returns name and version of file creator
 	double GetTime() const { return Time; }; // return creation time in PatchMaster format (see time_handling.h)
 	bool getIsSwapped() const { return isSwapped; };
+	/// <summary>
+	/// format metadata with set export flag as tab delimited table
+	/// </summary>
+	/// <param name="os">stream to receive output</param>
+	/// <param name="max_level">one line per this level will be exported</param>
+	void formatStimMetadataAsTableExport(std::ostream& os, int max_level);
 };
 
 enum RecordingModeType {
