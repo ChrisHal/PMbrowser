@@ -173,6 +173,23 @@ std::array<PMparameter, 31> parametersAmpplifierState{ {
 	{false,true,"CalibDate","",PMparameter::String16,344}
 } };
 
+std::array<PMparameter, 14> parametersStimSegment{ {
+	{true, true, "seMark", "", PMparameter::Int32, 0},
+	{ true, true, "seClass", "",  PMparameter::Byte ,4},
+	{ true, true, "seStoreKind", "", PMparameter::Byte, 5},
+	{ true,true,"seVoltageIncMode","",PMparameter::Byte,6},
+	{ true,true,"seDurationIncMode","",PMparameter::Byte,7},
+	{ true,true,"seVoltage","V",PMparameter::LongReal ,8},
+	{ true,true,"seVoltageSource","",PMparameter::Int32,16},
+	{ true,true,"seDeltaVFactor", "",PMparameter::LongReal, 20},
+	{ true,true,"seDeltaVIncrement","V", PMparameter::LongReal, 28},
+	{ true,true,"seDuration","s", PMparameter::LongReal , 36},
+	{ true,true,"seDurationSource", "",PMparameter::Int32, 44},
+	{ true,true,"seDeltaTFactor","", PMparameter::LongReal, 48},
+	{ true,true,"seDeltaTIncrement","s", PMparameter::LongReal, 56},
+	{ true,true,"seScanRate","", PMparameter::LongReal, 72}
+	} };
+
 void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 {
 	try {
@@ -296,7 +313,7 @@ void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) cons
 	}
 }
 
-void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
+void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const
 {
 	ss << name << '=';
 	formatValueOnly(node, ss);
