@@ -61,7 +61,7 @@ static int16_t Checksum(const char* data, int16_t oldcksum, std::size_t numbytes
 	return cksum & 0xffff;
 }
 
-void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
+std::string MakeWaveNote(hkTreeNode& TrRecord)
 {
 	std::stringstream note;
 	formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent()->getParent(), parametersRoot, note);
@@ -69,7 +69,7 @@ void MakeWaveNote(hkTreeNode& TrRecord, std::string& notetxt)
 	formatParamListExportIBW(*TrRecord.getParent()->getParent(), parametersSeries, note);
 	formatParamListExportIBW(*TrRecord.getParent(), parametersSweep, note);
 	formatParamListExportIBW(TrRecord, parametersTrace, note);
-	notetxt = note.str();
+	return note.str();
 }
 
 
@@ -105,9 +105,8 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 		break;
 	}
 
-	std::string note;
-	MakeWaveNote(TrRecord, note);
-
+	std::string note{ MakeWaveNote(TrRecord) };
+	
 	BinHeader5 bh{};
 	// make sure the packing of the structs is as expected:
 	static_assert(sizeof(bh) == 64, "wrong size of bh");
