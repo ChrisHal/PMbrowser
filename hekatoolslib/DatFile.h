@@ -80,6 +80,11 @@ public:
 	double GetTime() const { return Time; }; // return creation time in PatchMaster format (see time_handling.h)
 	bool getIsSwapped() const { return isSwapped; };
 	/// <summary>
+	/// create the header (1st line) containing the metadatafields
+	/// </summary>
+	/// <param name="os">stream to receive result</param>
+	static void metadataCreateTableHeader(std::ostream& os);
+	/// <summary>
 	/// format metadata with set export flag as tab delimited table
 	/// </summary>
 	/// <param name="os">stream to receive output</param>
