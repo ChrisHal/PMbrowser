@@ -300,7 +300,24 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 {
 	ss << name << '=';
 	formatValueOnly(node, ss);
-	ss << " " << unit;
+	ss << ' ';
+	// hack to choose correcly for holding voltage or current
+	if (node.getLevel() == hkTreeNode::LevelTrace && std::string("V|A") == unit)
+	{
+		auto datakind = node.extractValue<uint16_t>(TrDataKind);
+		if (datakind & IsVmon) {
+			ss << 'V';
+		}
+		else if (datakind & IsImon) {
+			ss << 'A';
+		}
+		else {
+			ss << unit;
+		}
+	}
+	else {
+		ss << unit;
+	}
 }
 
 double PMparameter::getRootTime(const hkTreeNode& node) const
