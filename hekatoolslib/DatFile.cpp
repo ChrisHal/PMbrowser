@@ -145,3 +145,33 @@ void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
         if (max_level < hkTreeNode::LevelGroup) break;
     }
 }
+
+double DatFile::getTraceHolding(const hkTreeNode& trace, std::string& unit)
+{
+    assert(trace.getLevel() == hkTreeNode::LevelTrace);
+    double holding = trace.extractLongRealNoThrow(TrTrHolding);
+    int mode = trace.getChar(TrRecordingMode);
+    unit = "V";
+    if (mode == CClamp) {
+        unit = "A";
+    }
+    if (std::isnan(holding)) {
+        // we can also try to get this info from the stim tree (usuful for old files):
+        const auto& sweep_record = *trace.getParent();
+        int stim_index = sweep_record.extractValue<int32_t>(SwStimCount) - 1;
+        const auto& stim_node = GetPgfTree().GetRootNode().Children.at(stim_index);
+        const auto& channel0_record = stim_node.Children.at(0);
+        int linked_channel = channel0_record.extractInt32(chLinkedChannel) - 1;
+        const auto& stimchannel_record = stim_node.Children.at(linked_channel);
+        unit = stimchannel_record.getString(chDacUnit);
+        holding = stimchannel_record.extractLongRealNoThrow(chHolding);
+        if (unit == "A") {
+            holding *= 1e-6; // for some strange reason this is in microA
+        }
+#ifndef NDEBUG
+        unit += "srec";
+#endif // !NDEBUG
+
+    }
+    return holding;
+}

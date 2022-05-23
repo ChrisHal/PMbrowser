@@ -111,30 +111,16 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->textEdit->append(tracename);
 
     // Give holding V / I special treatment, since we want to distingushe CC / VC mode
-    double holding = trace->extractLongRealNoThrow(TrTrHolding);
-    char mode = trace->getChar(TrRecordingMode);
-    QString prefix = "Vhold", yunit = "V";
-    if (mode == CClamp) {
-        yunit = "A";
+    std::string yunit{};
+    double holding = datfile->getTraceHolding(*trace, yunit);
+    QString prefix = "Vhold";
+    if (yunit.at(0)=='A') {
         prefix = "Ihold";
     }
-    if (std::isnan(holding)) {
-        // we can also try to get this info from the stim tree (usuful for old files):
-        const auto& sweep_record = trace->getParent();
-        int stim_index = sweep_record->extractValue<int32_t>(SwStimCount) - 1;
-        const auto& channel0_record = datfile->GetPgfTree().GetRootNode().Children.at(stim_index).Children.at(0);
-        yunit = qs_from_sv(channel0_record.getString(chDacUnit));
-        holding = channel0_record.extractLongRealNoThrow(chHolding);
-        if (yunit == "A") {
-            holding *= 1e-6; // for some strange reason this is in microA
-        }
-#ifndef NDEBUG
-        prefix += " (from stim record)";
-#endif // !NDEBUG
-    }
+
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
-    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
+    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(QString::fromStdString(yunit));
     std::string str;
     formatParamListPrint(*trace, parametersTrace, str);
     info.append("\n");

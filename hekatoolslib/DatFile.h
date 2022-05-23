@@ -90,6 +90,14 @@ public:
 	/// <param name="os">stream to receive output</param>
 	/// <param name="max_level">one line per this level will be exported</param>
 	void formatStimMetadataAsTableExport(std::ostream& os, int max_level);
+
+	/// <summary>
+	/// Gets the V or I holding from trace, stores appropiate unit
+	/// </summary>
+	/// <param name="trace">trace-node</param>
+	/// <param name="unit">receives unit</param>
+	/// <returns>holding value</returns>
+	double getTraceHolding(const hkTreeNode& trace, std::string& unit);
 };
 
 enum RecordingModeType {
@@ -152,6 +160,7 @@ AmAmplifierState = 112;
 /// stim tree
 // cfrom channel record
 constexpr size_t
+	chLinkedChannel = 4, //int32
 	chDacUnit = 40, // String8Type
 	chHolding = 48; // LONGREAL, for CC in micro-ampere!
 
