@@ -128,11 +128,12 @@ TrSealResistance = 168,
 TrCSlow = 176,
 TrGSeries = 184,
 TrRsValue = 192,
+TrLinkDAChannel = 216, // int32
 TrSelfChannel = 288,
 TrInterleaveSize = 292,
 TrInterleaveSkip = 296,
 TrTrHolding = 408,
-SwLabel = 4,
+SwLabel = 4, // for Sweep ...
 SwStimCount = 40,
 SwSweepCount = 44,
 SwTime = 48,
@@ -161,6 +162,10 @@ AmAmplifierState = 112;
 // cfrom channel record
 constexpr size_t
 	chLinkedChannel = 4, //int32
+	chAdcChannel = 20, // (*INT16*)
+	chAdcMode = 22, // (*BYTE*)
+	chDacChannel = 28, // (*INT16*)
+	chDacMode = 30, // (*BYTE*)
 	chDacUnit = 40, // String8Type
 	chHolding = 48; // LONGREAL, for CC in micro-ampere!
 

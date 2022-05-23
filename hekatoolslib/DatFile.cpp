@@ -157,10 +157,12 @@ double DatFile::getTraceHolding(const hkTreeNode& trace, std::string& unit)
     }
     if (std::isnan(holding)) {
         // we can also try to get this info from the stim tree (usuful for old files):
+        auto linkedDAchannel = trace.extractValue<int32_t>(TrLinkDAChannel) - 1;
+        assert(linkedDAchannel >= 0);
         const auto& sweep_record = *trace.getParent();
         int stim_index = sweep_record.extractValue<int32_t>(SwStimCount) - 1;
         const auto& stim_node = GetPgfTree().GetRootNode().Children.at(stim_index);
-        const auto& channel0_record = stim_node.Children.at(0);
+        const auto& channel0_record = stim_node.Children.at(linkedDAchannel);
         int linked_channel = channel0_record.extractInt32(chLinkedChannel) - 1;
         const auto& stimchannel_record = stim_node.Children.at(linked_channel);
         unit = stimchannel_record.getString(chDacUnit);
