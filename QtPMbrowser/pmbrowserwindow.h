@@ -84,6 +84,7 @@ private:
     bool choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
     void exportAllVisibleTraces();
+    void formatStimMetadataAsTableExport(std::ostream& os, int max_level);
     void treeSetHidden(QTreeWidgetItem* item, bool hidden);
     void unhideTreeItems(QTreeWidgetItem* item);
     void filterTree();

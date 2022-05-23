@@ -456,6 +456,60 @@ void PMbrowserWindow::exportAllVisibleTraces()
     }
 }
 
+void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
+{
+    if (max_level > hkTreeNode::LevelTrace) {
+        throw std::runtime_error("max_level exceeds LevelTrace(=4)");
+    }
+    DatFile::metadataCreateTableHeader(os);
+    try {
+        int N = ui->treePulse->topLevelItemCount();
+        for (int i = 0; i < N; ++i) { // level: group
+            const auto tli = ui->treePulse->topLevelItem(i);
+            if (tli->isHidden()) continue;
+            const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
+            auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+            std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+            int N = tli->childCount();
+            for (int i = 0; i < N; ++i) { // level: series
+                const auto se_item = tli->child(i);
+                if (se_item->isHidden()) continue;
+                const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+                std::string se_entry = formatParamListExportTable(series, parametersSeries);
+                int N = se_item->childCount();
+                for (int i = 0; i < N; ++i) { // level: sweep
+                    const auto sw_item = se_item->child(i);
+                    if (sw_item->isHidden()) continue;
+                    const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                    auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                    std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+                    int N = sw_item->childCount();
+                    for (int i = 0; i < N; ++i) { // level: trace
+                        const auto tr_item = sw_item->child(i);
+                        if (tr_item->isHidden()) continue;
+                        const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                        auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                        std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+                        os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+                            << tr_count <<
+                            grp_entry << se_entry << sw_entry << tr_entry << '\n';
+                        if (max_level < hkTreeNode::LevelTrace) break;
+                    }
+                    if (max_level < hkTreeNode::LevelSweep) break;
+                }
+                if(max_level < hkTreeNode::LevelSeries) break;
+            }
+            if (max_level < hkTreeNode::LevelGroup) break;
+        }
+    }
+    catch (std::exception& e) {
+        QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+        QMessageBox::warning(this, QString("Error"), msg);
+    }
+}
+
+
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
@@ -628,7 +682,7 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
             return;
         }
         try {
-            datfile->formatStimMetadataAsTableExport(export_file, selected);
+            this->formatStimMetadataAsTableExport(export_file, selected);
         }
         catch (const std::exception& e) {
             QMessageBox::warning(this, "Error while exporting", e.what());
