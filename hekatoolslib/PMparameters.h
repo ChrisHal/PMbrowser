@@ -160,7 +160,8 @@ template<std::size_t Nrows> std::ostream& getTableHeadersExport(
 	//bool is_first{ true };
 	for (const auto& p : ar) {
 		if (p.exportIBW) {
-			ss << '\t' << p.name << '[' << p.unit << ']';
+			ss << '\t' << p.name;
+			if (*p.unit) { ss << '[' << p.unit << ']'; }
 		}
 	}
 	return ss;
