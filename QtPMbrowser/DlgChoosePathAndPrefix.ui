@@ -58,13 +58,20 @@
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="text">
        <string>prefix</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEditPrefix"/>
+     <widget class="QLineEdit" name="lineEditPrefix">
+      <property name="toolTip">
+       <string>wavenames will be prefixed with this</string>
+      </property>
+     </widget>
     </item>
     <item row="1" column="2">
      <spacer name="horizontalSpacer">
@@ -92,6 +99,9 @@
      <width>281</width>
      <height>17</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>all traces are stored in one file</string>
    </property>
    <property name="text">
     <string>create pxp file</string>
