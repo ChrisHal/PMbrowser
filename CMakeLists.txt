@@ -33,6 +33,7 @@ include(CPack)
 
 
 add_subdirectory(hekatoolslib)
+add_subdirectory(cmdline_tools)
 add_subdirectory("QtPMbrowser")
 if(BUILD_DOCS)
 add_subdirectory("doc")

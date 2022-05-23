@@ -137,6 +137,7 @@
     <addaction name="actionExport_IBW_File"/>
     <addaction name="actionExport_All_Visible_Traces_as_IBW_Files"/>
     <addaction name="actionExport_All_as_IBW"/>
+    <addaction name="actionExport_Metadata_as_Table"/>
     <addaction name="actionSelect_Parameters"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -297,6 +298,11 @@
   <action name="actionCopy">
    <property name="text">
     <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionExport_Metadata_as_Table">
+   <property name="text">
+    <string>Export Metadata as Table</string>
    </property>
   </action>
  </widget>

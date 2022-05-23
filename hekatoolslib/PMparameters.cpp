@@ -104,7 +104,7 @@ std::array<PMparameter, 17> parametersSweep{ {
 
 std::array<PMparameter, 15> parametersSeries{ {
 	{false,false,"SeMark","",PMparameter::Int32,0},
-	{false,false,"SeLabel","",PMparameter::String32,4},
+	{true,false,"SeLabel","",PMparameter::String32,4},
 	{false,false,"SeComment","",PMparameter::String80,36},
 	{false,false,"SeSeriesCount","",PMparameter::Int32,116},
 	{false,false,"SeNumberSweeps","",PMparameter::Int32,120},
@@ -122,7 +122,7 @@ std::array<PMparameter, 15> parametersSeries{ {
 
 std::array<PMparameter, 5> parametersGroup{ {
 	{false, false, "GrMark","",PMparameter::Int32,0},
-	{false, false, "Label","",PMparameter::String32,4},
+	{true, false, "GrLabel","",PMparameter::String32,4},
 	{false,false,"GrText","",PMparameter::String80,36},
 	{false,false,"ExperimentNumber","",PMparameter::Int32,116},
 	{false,false,"GroupCount","",PMparameter::Int32,120}
@@ -173,10 +173,8 @@ std::array<PMparameter, 31> parametersAmpplifierState{ {
 	{false,true,"CalibDate","",PMparameter::String16,344}
 } };
 
-
-void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
+void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 {
-	ss << name << '=';
 	try {
 		switch (data_type) {
 		case Byte:
@@ -202,7 +200,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 				u >>= 1;
 			}
 		}
-			break;
+				  break;
 		case Int32:
 			ss << node.extractInt32(offset);
 			break;
@@ -216,7 +214,7 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			ss << formatPMtimeUTC(node.extractLongReal(offset));
 			break;
 		case InvLongReal:
-			ss << 1.0/node.extractLongReal(offset);
+			ss << 1.0 / node.extractLongReal(offset);
 			break;
 		case StringType:
 			ss << node.getString(offset);
@@ -226,10 +224,10 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 			break;
 		case String16:
 			ss << node.getString<16>(offset);
-		break;
+			break;
 		case String32:
 			ss << node.getString<32>(offset);
-		break;
+			break;
 		case String80:
 			ss << node.getString<80>(offset);
 			break;
@@ -278,15 +276,15 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		case UserParamDesc8: {
 			formatUserParamDesc<8>(node, offset, ss);
 		}
-			break;
+						   break;
 		case UserParamDesc4: {
 			formatUserParamDesc<4>(node, offset, ss);
 		}
-		break;
+						   break;
 		case UserParamDesc2: {
 			formatUserParamDesc<2>(node, offset, ss);
 		}
-		break;
+						   break;
 		default:
 			throw std::runtime_error("unknown data-type");
 			break;
@@ -296,6 +294,12 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 		(void)e;
 		ss << "n/a";
 	}
+}
+
+void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
+{
+	ss << name << '=';
+	formatValueOnly(node, ss);
 	ss << " " << unit;
 }
 

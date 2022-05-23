@@ -22,6 +22,7 @@ set(MY_UI_FILES
 	DlgGraphSettings.ui
 	DlgSelectParameters.ui
 	DlgTreeFilter.ui
+    DlgExportMetadata.ui
 	pmbrowserwindow.ui
 	renderarea.ui
 )
@@ -32,7 +33,8 @@ set(SOURCES
     DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h 
     DlgGraphSettings.cpp DlgGraphSettings.h 
     DlgSelectParameters.cpp DlgSelectParameters.h 
-    DlgTreeFilter.cpp DlgTreeFilter.h 
+    DlgTreeFilter.cpp DlgTreeFilter.h
+    DlgExportMetadata.h DlgExportMetadata.cpp
     main.cpp
     pmbrowserwindow.cpp pmbrowserwindow.h
     renderarea.cpp renderarea.h 

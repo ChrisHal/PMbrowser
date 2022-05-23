@@ -39,9 +39,10 @@
 #include "exportIBW.h"
 #include "hkTree.h"
 #include "helpers.h"
-#include "ui_pmbrowserwindow.h"
+//#include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
-#include "ui_DlgChoosePathAndPrefix.h"
+//#include "ui_DlgChoosePathAndPrefix.h"
+#include "DlgExportMetadata.h"
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
@@ -110,30 +111,16 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->textEdit->append(tracename);
 
     // Give holding V / I special treatment, since we want to distingushe CC / VC mode
-    double holding = trace->extractLongRealNoThrow(TrTrHolding);
-    char mode = trace->getChar(TrRecordingMode);
-    QString prefix = "Vhold", yunit = "V";
-    if (mode == CClamp) {
-        yunit = "A";
+    std::string yunit{};
+    double holding = datfile->getTraceHolding(*trace, yunit);
+    QString prefix = "Vhold";
+    if (yunit.at(0)=='A') {
         prefix = "Ihold";
     }
-    if (std::isnan(holding)) {
-        // we can also try to get this info from the stim tree (usuful for old files):
-        const auto& sweep_record = trace->getParent();
-        int stim_index = sweep_record->extractValue<int32_t>(SwStimCount) - 1;
-        const auto& channel0_record = datfile->GetPgfTree().GetRootNode().Children.at(stim_index).Children.at(0);
-        yunit = qs_from_sv(channel0_record.getString(chDacUnit));
-        holding = channel0_record.extractLongRealNoThrow(chHolding);
-        if (yunit == "A") {
-            holding *= 1e-6; // for some strange reason this is in microA
-        }
-#ifndef NDEBUG
-        prefix += " (from stim record)";
-#endif // !NDEBUG
-    }
+
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
-    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
+    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(QString::fromStdString(yunit));
     std::string str;
     formatParamListPrint(*trace, parametersTrace, str);
     info.append("\n");
@@ -469,6 +456,60 @@ void PMbrowserWindow::exportAllVisibleTraces()
     }
 }
 
+void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
+{
+    if (max_level > hkTreeNode::LevelTrace) {
+        throw std::runtime_error("max_level exceeds LevelTrace(=4)");
+    }
+    DatFile::metadataCreateTableHeader(os);
+    try {
+        int N = ui->treePulse->topLevelItemCount();
+        for (int i = 0; i < N; ++i) { // level: group
+            const auto tli = ui->treePulse->topLevelItem(i);
+            if (tli->isHidden()) continue;
+            const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
+            auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+            std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+            int N = tli->childCount();
+            for (int i = 0; i < N; ++i) { // level: series
+                const auto se_item = tli->child(i);
+                if (se_item->isHidden()) continue;
+                const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+                std::string se_entry = formatParamListExportTable(series, parametersSeries);
+                int N = se_item->childCount();
+                for (int i = 0; i < N; ++i) { // level: sweep
+                    const auto sw_item = se_item->child(i);
+                    if (sw_item->isHidden()) continue;
+                    const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                    auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                    std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+                    int N = sw_item->childCount();
+                    for (int i = 0; i < N; ++i) { // level: trace
+                        const auto tr_item = sw_item->child(i);
+                        if (tr_item->isHidden()) continue;
+                        const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                        auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                        std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+                        os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+                            << tr_count <<
+                            grp_entry << se_entry << sw_entry << tr_entry << '\n';
+                        if (max_level < hkTreeNode::LevelTrace) break;
+                    }
+                    if (max_level < hkTreeNode::LevelSweep) break;
+                }
+                if(max_level < hkTreeNode::LevelSeries) break;
+            }
+            if (max_level < hkTreeNode::LevelGroup) break;
+        }
+    }
+    catch (std::exception& e) {
+        QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+        QMessageBox::warning(this, QString("Error"), msg);
+    }
+}
+
+
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
@@ -611,6 +652,40 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
                 ui->textEdit->append("error -> aborting export");
             }
             ui->textEdit->append("done.");
+        }
+    }
+}
+
+void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
+{
+    if (!datfile) {
+        QMessageBox::information(this, "Info", "open dat file first");
+        return;
+    }
+    DlgExportMetadata dlg;
+    if (dlg.exec()) {
+        auto selected = dlg.getSelection();
+        if (selected < 0)
+        {
+            selected = hkTreeNode::LevelTrace;
+        }
+        else {
+            ++selected; // first item in box is level 1
+        }
+        auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
+            lastexportpath, "tab separated file (*.txt *.csv)");
+        if (export_file_name.length() == 0) return;
+        std::ofstream export_file(export_file_name.toStdString());
+        if (!export_file) {
+            QMessageBox::warning(this, "Error",
+                QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
+            return;
+        }
+        try {
+            this->formatStimMetadataAsTableExport(export_file, selected);
+        }
+        catch (const std::exception& e) {
+            QMessageBox::warning(this, "Error while exporting", e.what());
         }
     }
 }

@@ -24,12 +24,14 @@
 #include <cmath>
 #include <cassert>
 #include <cinttypes>
+#include <cstdint>
 #include "time_handling.h"
 #include "helpers.h"
 #include "DatFile.h"
 #include "machineinfo.h"
+#include "PMparameters.h"
 
-bool DatFile::InitFromStream(std::istream& infile)
+void DatFile::InitFromStream(std::istream& infile)
 {
     if (!infile) {
         throw std::runtime_error("cannot access file");
@@ -91,7 +93,6 @@ bool DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("error processing tree");
         }
     }
-    return true;
 }
 
 std::string DatFile::getFileDate() const
@@ -101,4 +102,78 @@ std::string DatFile::getFileDate() const
 #else
     return formatPMtimeDate(Time);
 #endif //NDEBUG
+}
+
+void DatFile::metadataCreateTableHeader(std::ostream& os)
+{
+    os << "GrpCount\tSerCount\tSwCount\tTrCount";
+    getTableHeadersExport(parametersGroup, os);
+    getTableHeadersExport(parametersSeries, os);
+    getTableHeadersExport(parametersSweep, os);
+    getTableHeadersExport(parametersTrace, os) << '\n';
+}
+
+void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
+{
+    if (max_level > hkTreeNode::LevelTrace) {
+        throw std::runtime_error("max_level exceeds LevelTrace(=4)");
+    }
+    auto& rootnode = GetPulTree().GetRootNode();
+    metadataCreateTableHeader(os);
+    for (const auto& grp : rootnode.Children) {
+        auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+        std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+        for (const auto& series : grp.Children) {
+            auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+            std::string se_entry = formatParamListExportTable(series, parametersSeries);
+            for (const auto& sweep : series.Children) {
+                auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+                for (const auto& trace : sweep.Children) {
+                    auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                    std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+                    os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+                        << tr_count  <<
+                        grp_entry 
+                        << se_entry << sw_entry << tr_entry << '\n';
+                    if (max_level < hkTreeNode::LevelTrace) break;
+                }
+                if (max_level < hkTreeNode::LevelSweep) break;
+            }
+            if (max_level < hkTreeNode::LevelSeries) break;
+        }
+        if (max_level < hkTreeNode::LevelGroup) break;
+    }
+}
+
+double DatFile::getTraceHolding(const hkTreeNode& trace, std::string& unit)
+{
+    assert(trace.getLevel() == hkTreeNode::LevelTrace);
+    double holding = trace.extractLongRealNoThrow(TrTrHolding);
+    int mode = trace.getChar(TrRecordingMode);
+    unit = "V";
+    if (mode == CClamp) {
+        unit = "A";
+    }
+    if (std::isnan(holding)) {
+        // we can also try to get this info from the stim tree (usuful for old files):
+        auto linkedDAchannel = trace.extractValue<int32_t>(TrLinkDAChannel) - 1;
+        assert(linkedDAchannel >= 0);
+        const auto& sweep_record = *trace.getParent();
+        int stim_index = sweep_record.extractValue<int32_t>(SwStimCount) - 1;
+        const auto& stim_node = GetPgfTree().GetRootNode().Children.at(stim_index);
+        const auto& channel0_record = stim_node.Children.at(linkedDAchannel);
+        int linked_channel = channel0_record.extractInt32(chLinkedChannel) - 1;
+        const auto& stimchannel_record = stim_node.Children.at(linked_channel);
+        unit = stimchannel_record.getString(chDacUnit);
+        holding = stimchannel_record.extractLongRealNoThrow(chHolding);
+        if (unit == "A") {
+            holding *= 1e-6; // for some strange reason this is in microA
+        }
+#ifndef NDEBUG
+        unit += "srec";
+#endif // !NDEBUG
+
+    }
+    return holding;
 }

@@ -71,7 +71,7 @@ class DatFile
 public:
 	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
-	bool InitFromStream(std::istream& istream);
+	void InitFromStream(std::istream& istream);
 	std::string getFileDate() const; // return formatted file creation date
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
@@ -79,6 +79,25 @@ public:
 	std::string getVersion() const { return Version; }; // returns name and version of file creator
 	double GetTime() const { return Time; }; // return creation time in PatchMaster format (see time_handling.h)
 	bool getIsSwapped() const { return isSwapped; };
+	/// <summary>
+	/// create the header (1st line) containing the metadatafields
+	/// </summary>
+	/// <param name="os">stream to receive result</param>
+	static void metadataCreateTableHeader(std::ostream& os);
+	/// <summary>
+	/// format metadata with set export flag as tab delimited table
+	/// </summary>
+	/// <param name="os">stream to receive output</param>
+	/// <param name="max_level">one line per this level will be exported</param>
+	void formatStimMetadataAsTableExport(std::ostream& os, int max_level);
+
+	/// <summary>
+	/// Gets the V or I holding from trace, stores appropiate unit
+	/// </summary>
+	/// <param name="trace">trace-node</param>
+	/// <param name="unit">receives unit</param>
+	/// <returns>holding value</returns>
+	double getTraceHolding(const hkTreeNode& trace, std::string& unit);
 };
 
 enum RecordingModeType {
@@ -109,11 +128,12 @@ TrSealResistance = 168,
 TrCSlow = 176,
 TrGSeries = 184,
 TrRsValue = 192,
+TrLinkDAChannel = 216, // int32
 TrSelfChannel = 288,
 TrInterleaveSize = 292,
 TrInterleaveSkip = 296,
 TrTrHolding = 408,
-SwLabel = 4,
+SwLabel = 4, // for Sweep ...
 SwStimCount = 40,
 SwSweepCount = 44,
 SwTime = 48,
@@ -141,6 +161,11 @@ AmAmplifierState = 112;
 /// stim tree
 // cfrom channel record
 constexpr size_t
+	chLinkedChannel = 4, //int32
+	chAdcChannel = 20, // (*INT16*)
+	chAdcMode = 22, // (*BYTE*)
+	chDacChannel = 28, // (*INT16*)
+	chDacMode = 30, // (*BYTE*)
 	chDacUnit = 40, // String8Type
 	chHolding = 48; // LONGREAL, for CC in micro-ampere!
 
