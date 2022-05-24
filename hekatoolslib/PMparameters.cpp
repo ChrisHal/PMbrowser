@@ -302,17 +302,14 @@ void PMparameter::format(const hkTreeNode& node, std::stringstream& ss) const
 	formatValueOnly(node, ss);
 	ss << ' ';
 	// hack to choose correcly for holding voltage or current
-	if (node.getLevel() == hkTreeNode::LevelTrace && std::string("V|A") == unit)
+	if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
 	{
-		auto datakind = node.extractValue<uint16_t>(TrDataKind);
-		if (datakind & IsVmon) {
-			ss << 'V';
-		}
-		else if (datakind & IsImon) {
+		int recording_mode = node.getChar(TrRecordingMode);
+		if (recording_mode == CClamp) {
 			ss << 'A';
 		}
 		else {
-			ss << unit;
+			ss << 'V';
 		}
 	}
 	else {
