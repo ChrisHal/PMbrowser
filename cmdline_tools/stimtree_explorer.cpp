@@ -18,6 +18,7 @@
 */
 
 #include<iostream>
+#include<filesystem>
 #include<fstream>
 #include"DatFile.h"
 #include"PMparameters.h"
@@ -26,13 +27,16 @@
 void do_exploring(const hkTreeNode& root, int index, int ch) {
     //std::array<double, 10> params{};
     //char paramNames[10][32]{};
-    //for (size_t i = 0; i < 10; ++i) {
-    //    std::cout << "p" << i << " " << root.extractLongReal(i * 8 + 48)
-    //     << ", p-name: " << root.getString(128 + i * 32) << "\n";
-    //}
-    //std::cout << '\n';
+    for (size_t i = 0; i < 10; ++i) {
+        std::cout << "p" << (i + 1) << " " << root.extractLongReal(i * 8 + 48)
+         << ", p-name: " << root.getString(128 + i * 32) << "\n";
+    }
+    std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
-    std::cout << "num ch: " << stim_node.Children.size() << '\n';
+    std::cout << "entry name: " << stim_node.getString(stEntryName)
+        << "\nstartSegment: " << stim_node.extractInt32(stDataStartSegment)
+        << ", start time: " << stim_node.extractLongRealNoThrow(stDataStartTime) << '\n'
+        << "num ch: " << stim_node.Children.size() << '\n';
     const auto& ch_node = stim_node.Children.at(ch);
     std::cout << "ch# (from 0):" << ch << "\ndac ch: " << ch_node.extractValue<int16_t>(chDacChannel)
         << " mode: " << static_cast<int>(ch_node.getChar(chDacMode)) << '\n'
@@ -54,26 +58,42 @@ int main(int argc, char** argv) {
     }
     int stim_index{};
     if (argc > 2) {
-        stim_index = std::strtol(argv[2],nullptr,10);
+        stim_index = std::strtol(argv[2], nullptr, 10);
     }
     int ch_index{};
     if (argc > 3) {
         ch_index = std::strtol(argv[3], nullptr, 10);
     }
-    std::ifstream infile(argv[1], std::ios::binary);
+    std::filesystem::path inpath(argv[1]);
+
+    std::ifstream infile(inpath, std::ios::binary);
     if (!infile) {
         std::cerr << "error opening file " << argv[1] << '\n';
         return EXIT_FAILURE;
     }
-    DatFile df;
-    try {
-        df.InitFromStream(infile);
-        auto& stimtree = df.GetPgfTree();
-        do_exploring(stimtree.GetRootNode(), stim_index, ch_index);
-    }catch(const std::exception& e) {
-        std::cerr << "error " << e.what() << " processing file " << argv[1] << '\n';
-        return EXIT_FAILURE;
+    if (inpath.extension() == ".pgf") {
+        std::cout << "pfg file detected\n";
+        try {
+            hkTree stimtree{};
+            stimtree.InitFromStream(infile,0,std::filesystem::file_size(inpath));
+            do_exploring(stimtree.GetRootNode(), stim_index, ch_index);
+        }
+        catch (const std::exception& e) {
+            std::cerr << "error " << e.what() << " processing file " << inpath << '\n';
+            return EXIT_FAILURE;
+        }
     }
-
+    else {
+        DatFile df{};
+        try {
+            df.InitFromStream(infile);
+            auto& stimtree = df.GetPgfTree();
+            do_exploring(stimtree.GetRootNode(), stim_index, ch_index);
+        }
+        catch (const std::exception& e) {
+            std::cerr << "error " << e.what() << " processing file " << inpath << '\n';
+            return EXIT_FAILURE;
+        }
+    }
     return EXIT_SUCCESS;
 }

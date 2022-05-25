@@ -159,7 +159,7 @@ AmAmplifierState = 112;
 
 
 /// stim tree
-// cfrom channel record
+// from channel record
 constexpr size_t
 	chLinkedChannel = 4, //int32
 	chAdcChannel = 20, // (*INT16*)
@@ -167,10 +167,13 @@ constexpr size_t
 	chDacChannel = 28, // (*INT16*)
 	chDacMode = 30, // (*BYTE*)
 	chDacUnit = 40, // String8Type
-	chHolding = 48; // LONGREAL, for CC in micro-ampere!
-
-// offset for Stim-Tree
-constexpr size_t seVoltage = 8;
+	chHolding = 48, // LONGREAL, for CC in micro-ampere!
+// for stim recorde
+	stEntryName = 4, //(*String32Type*)
+	stDataStartSegment = 100, // (*INT32*)
+	stDataStartTime = 104, // LongReal
+// for segment record
+	seVoltage = 8;
 
 // TrDataKind
 constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
