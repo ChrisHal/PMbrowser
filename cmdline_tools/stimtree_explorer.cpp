@@ -30,7 +30,7 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
     //char paramNames[10][32]{};
     for (size_t i = 0; i < 10; ++i) {
         std::cout << "p" << (i + 1) << " " << root.extractLongReal(i * 8 + 48)
-         << ", p-name: " << root.getString(128 + i * 32) << "\n";
+            << ", p-name: " << root.getString(128 + i * 32) << "\n";
     }
     std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
@@ -38,9 +38,9 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
     std::cout << "entry name: " << stim.EntryName << ", file name: " << stim_node.getString(stFileName)
         << "\nstartSegment: " << stim.DataStartSegment
         << ", start time: " << stim.DataStartTime << '\n'
-        << "num ch: " << stim.Channels.size() << '\n';
+        << "num ch: " << stim.Channels.size() << ", actual DAC channels: " << stim.ActualDacChannels << '\n';
     const auto& ch_node = stim.Channels.at(ch);
-    std::cout << "ch# (from 0):"// << ch << "\ndac ch: " << ch_node.DacChannel
+    std::cout << "ch# (from 0):" << ch //<< "\ndac ch: " << ch_node.DacChannel
         << " mode: " << ch_node.DacMode << '\n' << "Linked: " << ch_node.LinkedChannel
         //<< "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
         //<< " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
@@ -49,7 +49,13 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
     for (const auto& segment : ch_node.Segments) {
         std::cout << "\nsegment " << ++count << "\n";
         formatParamListExportIBW(*segment.Node, parametersStimSegment, std::cout);
-        
+
+    }
+    std::cout << "\nContructing trace:\n";
+    auto pts = stim.constructStimTrace();
+
+    for (const auto& p : pts) {
+        std::cout << p.at(0) << '\t' << p.at(1) << '\n';
     }
 }
 
@@ -77,7 +83,7 @@ int main(int argc, char** argv) {
         std::cout << "pfg file detected\n";
         try {
             hkTree stimtree{};
-            stimtree.InitFromStream(infile,0,std::filesystem::file_size(inpath));
+            stimtree.InitFromStream(infile,0,static_cast<int>(std::filesystem::file_size(inpath)));
             do_exploring(stimtree.GetRootNode(), stim_index, ch_index);
         }
         catch (const std::exception& e) {

@@ -25,6 +25,7 @@
 #include <istream>
 #include <ostream>
 #include <vector>
+#include <array>
 #include <string>
 #include <string_view>
 #include <algorithm>
@@ -102,6 +103,7 @@ constexpr size_t
 chLinkedChannel = 4, //int32
 chAdcChannel = 20, // (*INT16*)
 chAdcMode = 22, // (*BYTE*)
+chSetLastSegVmemb = 27, // BOOL (byte)
 chDacChannel = 28, // (*INT16*)
 chDacMode = 30, // (*BYTE*)
 chDacUnit = 40, // String8Type
@@ -118,6 +120,24 @@ seClass = 4, // BYTE
 seVoltage = 8,
 seVoltageSource = 16, // int32
 seDuration = 36; // double
+
+enum class SegmentClass {
+    Constant = 0,
+    Ramp,
+    Continuous,
+    ConstSine,
+    Squarewave,
+    Chirpwave
+};
+
+constexpr std::array<const char*, 6> SegmentClassNames{
+    "Constant",
+    "Ramp",
+    "Continous",
+    "ConstSine",
+    "Squarewave",
+    "ChirpWave"
+};
 
 // TrDataKind
 constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;

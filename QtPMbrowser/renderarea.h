@@ -43,6 +43,7 @@ public:
     ~RenderArea();
     bool noData() { return !yTrace.isValid(); };
     void renderTrace(hkTreeNode* trace, std::istream& infile);
+    void addTrace(DisplayTrace&& dt);
     void clearTrace();
     bool isXYmode() { return xTrace.isValid(); };
     bool isSettingsModified() { return settings_modified; };

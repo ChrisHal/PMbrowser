@@ -24,6 +24,7 @@
 #endif
 #include "DisplayTrace.h"
 #include "renderarea.h"
+#include <vector>
 
 //DisplayTrace::DisplayTrace(double X0, double DeltaX, const QString& xUnit,
 //	const QString& yUnit, const QVector<double>& Data):
@@ -31,9 +32,24 @@
 //{
 //}
 
+DisplayTrace::DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace) : x0{ 0.0 },
+deltax{ 0.0 }, x_unit{"s"}, y_unit{"V"}, data{},
+p_xdata{ std::make_unique<std::vector<double>>(xy_trace.size())}
+{
+	data.resize(xy_trace.size());
+	for (std::size_t i = 0; i < xy_trace.size(); ++i) {
+		const auto& p = xy_trace.at(i);
+		p_xdata->at(i) = p[0];
+		data.at(i) = p[1];
+	}
+}
+
+
+
 void DisplayTrace::reset()
 {
 	data.clear();
+	p_xdata.reset();
 	x_unit.clear();
 	y_unit.clear();
 }
@@ -53,34 +69,44 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 		}
 	}
 	else {
-		//in YT-mode we speed things up by drawing only the
-		//datapoints actually visible
-		auto N = static_cast<int>(data.size());
-		int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
-		int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
-//#ifndef NDEBUG
-//		qDebug() << "first: " << pFirst << ", end: " << pEnd;
-//#endif
-		if (pFirst < pEnd) { // pFirst might even be larger than data.size(), we catch this case also here
-			int step = (pEnd - pFirst) / display->width();
-			if (step > 3) { // speed up drawing if we have a lot of datapoints
-//#ifndef NDEBUG
-//				qDebug() << "step: " << step;
-//#endif // !NDEBUG
-				pEnd -= step;
-				const auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
-				path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
-				path.lineTo(display->scaleToQPF(x0 + pFirst * deltax, data_max));
-				for (int i = step + pFirst; i < pEnd; i += step) {
-					const auto [data_min, data_max] = getDataMinMax(i, i + step);
-					path.lineTo(display->scaleToQPF(x0 + i * deltax, data_min));
-					path.lineTo(display->scaleToQPF(x0 + i * deltax, data_max));
-				}
+		if (has_x_trace()) {
+			assert(data.size() == p_xdata->size());
+			const std::size_t N = data.size();
+			path.moveTo(display->scaleToQPF(p_xdata->at(0), data.at(0)));
+			for (std::size_t i = 1; i < N; ++i) {
+				path.lineTo(display->scaleToQPF(p_xdata->at(i), data.at(i)));
 			}
-			else {
-				path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data[pFirst]));
-				for (int i = 1 + pFirst; i < pEnd; ++i) {
-					path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+		}
+		else {
+			//in YT-mode we speed things up by drawing only the
+			//datapoints actually visible
+			auto N = static_cast<int>(data.size());
+			int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
+			int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
+			//#ifndef NDEBUG
+			//		qDebug() << "first: " << pFirst << ", end: " << pEnd;
+			//#endif
+			if (pFirst < pEnd) { // pFirst might even be larger than data.size(), we catch this case also here
+				int step = (pEnd - pFirst) / display->width();
+				if (step > 3) { // speed up drawing if we have a lot of datapoints
+	//#ifndef NDEBUG
+	//				qDebug() << "step: " << step;
+	//#endif // !NDEBUG
+					pEnd -= step;
+					const auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
+					path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
+					path.lineTo(display->scaleToQPF(x0 + pFirst * deltax, data_max));
+					for (int i = step + pFirst; i < pEnd; i += step) {
+						const auto [data_min, data_max] = getDataMinMax(i, i + step);
+						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_min));
+						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_max));
+					}
+				}
+				else {
+					path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data[pFirst]));
+					for (int i = 1 + pFirst; i < pEnd; ++i) {
+						path.lineTo(display->scaleToQPF(x0 + i * deltax, data[i]));
+					}
 				}
 			}
 		}

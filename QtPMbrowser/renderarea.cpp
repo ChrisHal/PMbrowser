@@ -399,7 +399,12 @@ void RenderArea::autoScale()
         x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
         x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
     }
-    else {
+    else if (yTrace.has_x_trace()) {
+        x_min = *std::min_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+        x_max = *std::max_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+    }
+    else
+    {
         x_min = yTrace.x0;
         x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
     }
@@ -516,6 +521,19 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
     }
+
+void RenderArea::addTrace(DisplayTrace&& dt)
+{
+    if (yTrace.isValid()) {
+        tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
+        while (tracebuffer.size() > numtraces) {
+            delete tracebuffer.dequeue();
+        }
+    }
+    yTrace = std::move(dt);
+    if (do_autoscale_on_load) { autoScale(); }
+    update();
+}
 
 void RenderArea::clearTrace()
 {

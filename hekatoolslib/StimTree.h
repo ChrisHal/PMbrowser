@@ -22,6 +22,7 @@
 #define STIM_TREE_H
 
 #include <vector>
+#include <array>
 #include "hkTree.h"
 
 
@@ -29,7 +30,7 @@ class StimSegmentRecord
 {
 public:
     StimSegmentRecord(const hkTreeNode& node);
-    int Class;
+    SegmentClass Class;
     double Voltage;
     int VoltageSource;
     double Duration;
@@ -53,6 +54,7 @@ public:
     std::string DacUnit;
     double Holding;
     std::vector<StimSegmentRecord> Segments;
+    bool SetLastSegVmemb;
 private:
 
 };
@@ -65,6 +67,18 @@ class StimulationRecord
 {
 public:
 	StimulationRecord(const hkTreeNode& node);
+    bool hasStimChannel() const { return ActualDacChannels != 0; };
+    const ChannelRecord& getStimChannel() const;
+    double getHolding() const;
+
+    /// <summary>
+    /// Contruct the theoretical stimulation trace
+    /// (might need to be calculated bsed on sweep-count)
+    /// </summary>
+    /// <param name="sweep_count">zero-base index of sweep</param>
+    /// <returns>vector containing x/y coordinate pairs</returns>
+    std::vector<std::array<double,2>> constructStimTrace(int sweep_count) const;
+
 	//~StimulationRecord();
     std::string EntryName;
     int DataStartSegment;
@@ -76,6 +90,15 @@ private:
 
 };
 
+class StimRootRecord
+{
+public:
+    StimRootRecord(const hkTreeNode& node);
+    std::vector<StimulationRecord> Stims;
+
+private:
+
+};
 
 
 #endif // !STIM_TREE_H

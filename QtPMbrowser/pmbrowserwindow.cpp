@@ -38,6 +38,7 @@
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
 #include "hkTree.h"
+#include "StimTree.h"
 #include "helpers.h"
 //#include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
@@ -753,10 +754,15 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
-        QAction* actAmpstate = nullptr;
+        QAction *actAmpstate = nullptr, *actDrawStim = nullptr;
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         if (node->getLevel() == hkTreeNode::LevelSeries) {
+            menu.addSeparator();
             actAmpstate = menu.addAction("amplifier state");
+        }
+        if (node->getLevel() == hkTreeNode::LevelSweep) {
+            menu.addSeparator();
+            actDrawStim = menu.addAction("show stimulus");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
@@ -773,6 +779,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (actAmpstate != nullptr && actAmpstate == response) {
             printAmplifierState(node);
+        }
+        else if (actDrawStim != nullptr && actDrawStim == response) {
+            drawStimulus(node);
         }
     }
 }
@@ -918,6 +927,24 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
     }
 
 }
+
+void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
+{
+    assert(sweep->getLevel() == hkTreeNode::LevelSweep);
+    try {
+        int stim_index = sweep->extractInt32(SwStimCount) - 1,
+            sweep_index= sweep->extractInt32(SwSweepCount) - 1;
+        StimRootRecord root(datfile->GetPgfTree().GetRootNode());
+        const auto& stim = root.Stims.at(stim_index);
+        auto stim_trace = stim.constructStimTrace(sweep_index);
+        DisplayTrace dt(stim_trace);
+        ui->renderArea->addTrace(std::move(dt));
+    }
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
+}
+
 
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()
 {
