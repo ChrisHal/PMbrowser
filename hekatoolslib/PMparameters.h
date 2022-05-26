@@ -17,6 +17,9 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef PM_PARAMETERS_H
+#define PM_PARAMETERS_H
+
 #pragma once
 #include <array>
 #include <string>
@@ -200,3 +203,5 @@ template<std::size_t Nrows> std::string formatParamListExportTable(const hkTreeN
 	formatParamListExportTable(n, ar, ss);
 	return ss.str();
 }
+
+#endif // !PM_PARAMETERS_H

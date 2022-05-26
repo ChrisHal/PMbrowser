@@ -21,7 +21,8 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
+#ifndef DATFILE_H
+#define DATFILE_H
 
 // some basic structs to handle HEKA Patchmaster dat-files
 
@@ -156,3 +157,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 			return datascaler * swap_bytes(x); });
 	}
 }
+
+
+#endif // !DATFILE_H

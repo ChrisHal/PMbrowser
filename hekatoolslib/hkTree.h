@@ -17,6 +17,9 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef HK_TREE_H
+#define HK_TREE_H
+
 #pragma once
 
 #include <istream>
@@ -265,3 +268,4 @@ public:
     bool getIsSwapped() { return isSwapped; };
 };
 
+#endif // !HK_TREE_H

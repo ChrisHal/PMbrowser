@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
+#ifndef MACHINEINFO_H
+#define MACHINEINFO_H
 
 #pragma once
 
@@ -31,3 +33,4 @@ inline bool MachineIsLittleEndian()
     return *p == 1;
 }
 
+#endif // !MACHINEINFO_H
