@@ -58,6 +58,7 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 {
 	QPainterPath path;
 	const auto& xdata = display->xTrace.data;
+	bool special_color{ false };
 	if (display->isXYmode()) {
 		if (xdata.size() != data.size()) {
 			// skip incompatible traces for x-y-mode
@@ -76,6 +77,7 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 			for (std::size_t i = 1; i < N; ++i) {
 				path.lineTo(display->scaleToQPF(p_xdata->at(i), data.at(i)));
 			}
+			special_color = true;
 		}
 		else {
 			//in YT-mode we speed things up by drawing only the
@@ -111,7 +113,15 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 			}
 		}
 	}
-	painter.drawPath(path);
+	if (special_color) {
+		auto old_color = painter.pen().color();
+		painter.setPen(QColorConstants::Red);
+		painter.drawPath(path);
+		painter.setPen(old_color);
+	}
+	else {
+		painter.drawPath(path);
+	}
 }
 
 std::tuple<double, double> DisplayTrace::getDataMinMax(int pLeft, int pRight)
