@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     DatFile df;
     try {
         df.InitFromStream(infile);
-        auto& pulsetree = df.GetPulTree();
+//        auto& pulsetree = df.GetPulTree();
         df.formatStimMetadataAsTableExport(std::cout, max_level);
     }catch(const std::exception& e) {
         std::cerr << "error " << e.what() << " processing file " << argv[1] << '\n';
