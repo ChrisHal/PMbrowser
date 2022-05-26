@@ -8,7 +8,7 @@ add_library(hekatoolslib STATIC
            time_handling.cpp time_handling.h
            PMparameters.cpp PMparameters.h
            machineinfo.h
-)
+ "StimTree.h" "StimTree.cpp")
 
 target_include_directories(hekatoolslib
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

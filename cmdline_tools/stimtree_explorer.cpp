@@ -21,6 +21,7 @@
 #include<filesystem>
 #include<fstream>
 #include"DatFile.h"
+#include "StimTree.h"
 #include"PMparameters.h"
 
 
@@ -33,20 +34,21 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
     }
     std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
-    std::cout << "entry name: " << stim_node.getString(stEntryName)
-        << "\nstartSegment: " << stim_node.extractInt32(stDataStartSegment)
-        << ", start time: " << stim_node.extractLongRealNoThrow(stDataStartTime) << '\n'
-        << "num ch: " << stim_node.Children.size() << '\n';
-    const auto& ch_node = stim_node.Children.at(ch);
-    std::cout << "ch# (from 0):" << ch << "\ndac ch: " << ch_node.extractValue<int16_t>(chDacChannel)
-        << " mode: " << static_cast<int>(ch_node.getChar(chDacMode)) << '\n'
-        << "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
-        << " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
-        << "#segments: " << ch_node.Children.size() << "\nexploring:\n";
+    StimulationRecord stim{ stim_node };
+    std::cout << "entry name: " << stim.EntryName << ", file name: " << stim_node.getString(stFileName)
+        << "\nstartSegment: " << stim.DataStartSegment
+        << ", start time: " << stim.DataStartTime << '\n'
+        << "num ch: " << stim.Channels.size() << '\n';
+    const auto& ch_node = stim.Channels.at(ch);
+    std::cout << "ch# (from 0):"// << ch << "\ndac ch: " << ch_node.DacChannel
+        << " mode: " << ch_node.DacMode << '\n' << "Linked: " << ch_node.LinkedChannel
+        //<< "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
+        //<< " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
+        << "\n#segments: " << ch_node.Segments.size() << "\nexploring:\n";
     int count{};
-    for (const auto& segment : ch_node.Children) {
+    for (const auto& segment : ch_node.Segments) {
         std::cout << "\nsegment " << ++count << "\n";
-        formatParamListExportIBW(segment, parametersStimSegment, std::cout);
+        formatParamListExportIBW(*segment.Node, parametersStimSegment, std::cout);
         
     }
 }
