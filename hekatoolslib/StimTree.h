@@ -25,15 +25,21 @@
 #include <array>
 #include "hkTree.h"
 
-
 class StimSegmentRecord
 {
 public:
     StimSegmentRecord(const hkTreeNode& node);
     SegmentClass Class;
-    double Voltage;
+    double Voltage,
+        DeltaVFactor,
+        DeltaVIncrement;
     int VoltageSource;
-    double Duration;
+    IncrementModeType
+        DurationIncMode,
+        VoltageIncMode;
+    double Duration,
+        DeltaTFactor,
+        DeltaTIncrement;
     // for testing:
     const hkTreeNode* Node;
 private:

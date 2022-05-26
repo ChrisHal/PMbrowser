@@ -754,11 +754,13 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
-        QAction *actAmpstate = nullptr, *actDrawStim = nullptr;
+        QAction* actAmpstate = nullptr, * actDrawStim = nullptr,
+            * actDrawSeriesStim = nullptr;
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         if (node->getLevel() == hkTreeNode::LevelSeries) {
             menu.addSeparator();
             actAmpstate = menu.addAction("amplifier state");
+            actDrawSeriesStim = menu.addAction("draw stimuli");
         }
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
@@ -779,6 +781,8 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (actAmpstate != nullptr && actAmpstate == response) {
             printAmplifierState(node);
+        } else if (actDrawSeriesStim != nullptr && response == actDrawSeriesStim) {
+            drawStimuliSeries(node);
         }
         else if (actDrawStim != nullptr && actDrawStim == response) {
             drawStimulus(node);
@@ -945,6 +949,13 @@ void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
     }
 }
 
+void PMbrowserWindow::drawStimuliSeries(const hkTreeNode* series)
+{
+    assert(series->getLevel() == hkTreeNode::LevelSeries);
+    for (const auto& sweep : series->Children) {
+        drawStimulus(&sweep);
+    }
+}
 
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()
 {

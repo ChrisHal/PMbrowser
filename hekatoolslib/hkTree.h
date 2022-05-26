@@ -117,9 +117,16 @@ stActualDacChannels = 160, // int32
 stHasLockIn = 168, // bool (8bit)
 // for segment record
 seClass = 4, // BYTE
+seVoltageIncMode = 6, // (*BYTE*)
+seDurationIncMode = 7, // (*BYTE*)
 seVoltage = 8,
 seVoltageSource = 16, // int32
-seDuration = 36; // double
+seDeltaVFactor = 20, // (*LONGREAL*)
+seDeltaVIncrement = 28, // (*LONGREAL*)
+seDuration = 36, // double
+seDurationSource = 44, // (*INT32*)
+seDeltaTFactor = 48, // (*LONGREAL*)
+seDeltaTIncrement = 56; // (*LONGREAL*)
 
 enum class SegmentClass {
     Constant = 0,
@@ -128,6 +135,19 @@ enum class SegmentClass {
     ConstSine,
     Squarewave,
     Chirpwave
+};
+
+enum class IncrementModeType {
+    ModeInc,
+    ModeDec,
+    ModeIncInterleaved,
+    ModeDecInterleaved,
+    ModeAlternate,
+    ModeLogInc,
+    ModeLogDec,
+    ModeLogIncInterleaved,
+    ModeLogDecInterleaved,
+    ModeLogAlternate
 };
 
 constexpr std::array<const char*, 6> SegmentClassNames{
