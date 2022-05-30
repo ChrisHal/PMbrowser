@@ -25,6 +25,7 @@
 #include "DisplayTrace.h"
 #include "renderarea.h"
 #include <vector>
+#include <qstring_helper.h>
 
 //DisplayTrace::DisplayTrace(double X0, double DeltaX, const QString& xUnit,
 //	const QString& yUnit, const QVector<double>& Data):
@@ -32,8 +33,8 @@
 //{
 //}
 
-DisplayTrace::DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace) : x0{ 0.0 },
-deltax{ 0.0 }, x_unit{"s"}, y_unit{"V"}, data{},
+DisplayTrace::DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace, const std::string_view& DACunit) : x0{ 0.0 },
+deltax{ 0.0 }, x_unit{"s"}, y_unit{ qs_from_sv(DACunit) }, data{},
 p_xdata{ std::make_unique<std::vector<double>>(xy_trace.size())}
 {
 	data.resize(xy_trace.size());
@@ -95,11 +96,11 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 	//				qDebug() << "step: " << step;
 	//#endif // !NDEBUG
 					pEnd -= step;
-					const auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
+					auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
 					path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
 					path.lineTo(display->scaleToQPF(x0 + pFirst * deltax, data_max));
 					for (int i = step + pFirst; i < pEnd; i += step) {
-						const auto [data_min, data_max] = getDataMinMax(i, i + step);
+						auto [data_min, data_max] = getDataMinMax(i, i + step);
 						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_min));
 						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_max));
 					}

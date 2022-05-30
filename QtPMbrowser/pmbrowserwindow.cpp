@@ -471,23 +471,23 @@ void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_
             const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
             auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
             std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
-            int N = tli->childCount();
-            for (int i = 0; i < N; ++i) { // level: series
-                const auto se_item = tli->child(i);
+            int Nse = tli->childCount();
+            for (int j = 0; j < Nse; ++j) { // level: series
+                const auto se_item = tli->child(j);
                 if (se_item->isHidden()) continue;
                 const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
                 auto se_count = series.extractValue<int32_t>(SeSeriesCount);
                 std::string se_entry = formatParamListExportTable(series, parametersSeries);
-                int N = se_item->childCount();
-                for (int i = 0; i < N; ++i) { // level: sweep
-                    const auto sw_item = se_item->child(i);
+                int M = se_item->childCount();
+                for (int k = 0; k < M; ++k) { // level: sweep
+                    const auto sw_item = se_item->child(k);
                     if (sw_item->isHidden()) continue;
                     const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
                     auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
                     std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
-                    int N = sw_item->childCount();
-                    for (int i = 0; i < N; ++i) { // level: trace
-                        const auto tr_item = sw_item->child(i);
+                    int Nsw = sw_item->childCount();
+                    for (int l = 0; l < Nsw; ++l) { // level: trace
+                        const auto tr_item = sw_item->child(l);
                         if (tr_item->isHidden()) continue;
                         const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
                         auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
@@ -941,7 +941,7 @@ void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
         StimRootRecord root(datfile->GetPgfTree().GetRootNode());
         const auto& stim = root.Stims.at(stim_index);
         auto stim_trace = stim.constructStimTrace(sweep_index);
-        DisplayTrace dt(stim_trace);
+        DisplayTrace dt(stim_trace, stim.getStimChannel().DacUnit);
         ui->renderArea->addTrace(std::move(dt));
     }
     catch (const std::exception& e) {

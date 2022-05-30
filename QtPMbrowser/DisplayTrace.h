@@ -33,7 +33,7 @@ public:
     DisplayTrace(DisplayTrace&& dtrace) noexcept : x0{ dtrace.x0 }, deltax{ dtrace.deltax },
         x_unit{ std::move(dtrace.x_unit) }, y_unit{ std::move(dtrace.y_unit) }, data{ std::move(dtrace.data) },
         p_xdata{std::move(dtrace.p_xdata)} {};
-    DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace);
+    DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace, const std::string_view& DACunit);
     DisplayTrace& operator=(const DisplayTrace& dtrace) {
         x0 = dtrace.x0;
         deltax = dtrace.deltax;
@@ -45,7 +45,7 @@ public:
         }
         return *this;
     };
-    DisplayTrace& operator=(DisplayTrace&& dtrace) {
+    DisplayTrace& operator=(DisplayTrace&& dtrace) noexcept {
         x0 = dtrace.x0;
         deltax = dtrace.deltax;
         x_unit = dtrace.x_unit;
