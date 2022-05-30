@@ -52,7 +52,7 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
 
     }
     std::cout << "\nContructing trace:\n";
-    auto pts = stim.constructStimTrace();
+    auto pts = stim.constructStimTrace(0);
 
     for (const auto& p : pts) {
         std::cout << p.at(0) << '\t' << p.at(1) << '\n';
