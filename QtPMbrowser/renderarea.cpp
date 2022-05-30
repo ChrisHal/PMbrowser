@@ -173,17 +173,18 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     if (!noData() && event->buttons() == Qt::NoButton) {
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
-        long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
-        double datay = std::numeric_limits<double>::quiet_NaN();
-        if (dataindex >= 0 && 
-           static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
-            datay = yTrace.data.at(dataindex);
-        }
+
         QString txt;
         if (isXYmode()) {
             txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
+            //long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
+            double datay = yTrace.interp(x); //= std::numeric_limits<double>::quiet_NaN();
+            //if (dataindex >= 0 && 
+            //   static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
+            //    datay = yTrace.data.at(dataindex);
+            //}
             txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
@@ -532,6 +533,7 @@ void RenderArea::addTrace(DisplayTrace&& dt)
     }
     yTrace = std::move(dt);
     if (do_autoscale_on_load) { autoScale(); }
+    setMouseTracking(true);
     update();
 }
 

@@ -59,6 +59,15 @@ public:
 	void render(QPainter& painter, RenderArea* display);
 	bool isValid() const { return !data.empty(); }
     bool has_x_trace() const { return !!p_xdata; }
+    
+    /// <summary>
+    /// interpolate datapoint for given x value
+    /// if x-trace is present, uses linear interpolation
+    /// else uses nearest neibor
+    /// </summary>
+    /// <param name="x">position to interpolate</param>
+    /// <returns>if x is in range, interpolated value, nan else</returns>
+    double interp(double x);
 	QString getXUnit() const { return x_unit; }
 	QString getYUnit() const { return y_unit; }
     std::tuple<double, double> getDataMinMax(int pLeft, int pRight);

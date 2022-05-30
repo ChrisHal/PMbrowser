@@ -130,7 +130,7 @@ std::tuple<double, double> DisplayTrace::getDataMinMax(int pLeft, int pRight)
 	double min_val, max_val;
 	max_val = min_val = data[pLeft];
 
-	// pRight should be adkusted by caller such that
+	// pRight should be adjusted by caller such that
 	// we do not read past end of data vector
 	// pRight = std::min(pRight, data.size());
 	for (int i = pLeft + 1; i < pRight; ++i) {
@@ -139,4 +139,27 @@ std::tuple<double, double> DisplayTrace::getDataMinMax(int pLeft, int pRight)
 		max_val = std::max(max_val, v);
 	}
 	return {min_val, max_val};
+}
+
+double DisplayTrace::interp(double x)
+{
+	double datay = std::numeric_limits<double>::quiet_NaN();
+	if (has_x_trace()) {
+		for (std::size_t i = 0; i < p_xdata->size() - 1; ++i) {
+			if (p_xdata->at(i) <= x && p_xdata->at(i + 1) >= x) {
+				auto x0 = p_xdata->at(i), x1 = p_xdata->at(i + 1),
+					y0 = data.at(i), y1 = data.at(i + 1);
+				datay = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+				break;
+			}
+		}
+	}
+	else {
+		long dataindex = std::lrint((x - x0) / deltax);
+		if (dataindex >= 0 &&
+			static_cast<std::size_t>(dataindex) < data.size()) {
+			datay = data.at(dataindex);
+		}
+	}
+	return datay;
 }
