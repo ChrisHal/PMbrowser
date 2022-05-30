@@ -126,6 +126,13 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 				points.push_back({ curr_t, holding });
 			}
 		}
+		if (stim_ch.DacUnit == "A") {
+			// current is actually stored as nA, not A
+			std::transform(points.begin(), points.end(), points.begin(),
+				[](const std::array<double,2> & p) {
+				return std::array<double, 2>{ p[0],1e-9 * p[1] };
+				});
+		}
 	}
 	else {
 		points.push_back({ curr_t, holding });
