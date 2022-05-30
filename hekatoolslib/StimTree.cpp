@@ -34,6 +34,7 @@ StimulationRecord::StimulationRecord(const hkTreeNode& node)
 	EntryName = node.getString(stEntryName);
 	DataStartSegment = node.extractValue<int32_t>(stDataStartSegment);
 	DataStartTime = node.extractValue<double>(stDataStartTime);
+	NumberSweeps = node.extractValue<int32_t>(stNumberSweeps);
 	ActualDacChannels = node.extractValue<int32_t>(stActualDacChannels);
 	HasLockIn = node.getChar(stHasLockIn);
 	for (const auto& c : node.Children) {
@@ -70,18 +71,19 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 				actV = holding;
 			}
 			else { // assuming, that in "Vhold" mode the in modes have no effect (?)
+				// There might be a misunderstanding how these modes work
 				switch (seg.VoltageIncMode) {
 				case IncrementModeType::ModeInc:
 					actV += sweep_count * seg.DeltaVIncrement;
 					break;
 				case IncrementModeType::ModeDec:
-					actV -= sweep_count * seg.DeltaVIncrement;
+					actV += (NumberSweeps - sweep_count - 1) * seg.DeltaVIncrement;
 					break;
 				case IncrementModeType::ModeLogInc:
 					actV *= std::pow(seg.DeltaVFactor, sweep_count);
 					break;
 				case IncrementModeType::ModeLogDec:
-					actV *= std::pow(seg.DeltaVFactor, -sweep_count);
+					actV *= std::pow(seg.DeltaVFactor, NumberSweeps - sweep_count - 1);
 					break;
 				default:
 					throw std::runtime_error("unsupported voltage inc. mode");
@@ -93,13 +95,13 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 				duration += sweep_count * seg.DeltaTIncrement;
 				break;
 			case IncrementModeType::ModeDec:
-				duration -= sweep_count * seg.DeltaTIncrement;
+				duration += (NumberSweeps - sweep_count - 1) * seg.DeltaTIncrement;
 				break;
 			case IncrementModeType::ModeLogInc:
 				duration *= std::pow(seg.DeltaTFactor, sweep_count);
 				break;
 			case IncrementModeType::ModeLogDec:
-				duration *= std::pow(seg.DeltaTFactor, -sweep_count);
+				duration *= std::pow(seg.DeltaTFactor, NumberSweeps - sweep_count - 1);
 				break;
 			default:
 				throw std::runtime_error("unsupported duration inc. mode");
@@ -130,7 +132,7 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 			// current is actually stored as nA, not A
 			std::transform(points.begin(), points.end(), points.begin(),
 				[](const std::array<double,2> & p) {
-				return std::array<double, 2>{ p[0],1e-9 * p[1] };
+					return std::array<double, 2>{ p[0], 1e-9 * p[1] };
 				});
 		}
 	}

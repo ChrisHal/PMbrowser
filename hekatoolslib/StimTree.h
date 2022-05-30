@@ -89,6 +89,7 @@ public:
     std::string EntryName;
     int DataStartSegment;
     double DataStartTime;
+    int NumberSweeps;
     int ActualDacChannels;
     bool HasLockIn;
     std::vector<ChannelRecord> Channels;

@@ -113,6 +113,7 @@ stEntryName = 4, //(*String32Type*)
 stFileName = 36,
 stDataStartSegment = 100, // (*INT32*)
 stDataStartTime = 104, // LongReal
+stNumberSweeps = 144, // int32
 stActualDacChannels = 160, // int32
 stHasLockIn = 168, // bool (8bit)
 // for segment record
