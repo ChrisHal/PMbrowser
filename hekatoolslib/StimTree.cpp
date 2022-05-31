@@ -19,6 +19,7 @@
 
 #include "StimTree.h"
 #include <cassert>
+#include <cmath> // for std::pow
 
 StimRootRecord::StimRootRecord(const hkTreeNode& node)
 {
