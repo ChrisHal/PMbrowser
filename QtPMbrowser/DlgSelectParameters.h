@@ -58,7 +58,7 @@ private:
 		grid->setColumnStretch(0, 1);
 		grid->setColumnStretch(1, 1);
 		grid->setColumnStretch(2, 2);
-	};
+	}
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
 		std::array<PMparameter, Nrows>& ar)
 	{
@@ -66,7 +66,7 @@ private:
 			ar[i].exportIBW = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget()))->isChecked();
 			ar[i].print = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget()))->isChecked();
 		}
-	};
+	}
 
 	Ui::DlgSelectParameters *ui;
 };
