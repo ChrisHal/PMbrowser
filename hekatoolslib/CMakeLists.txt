@@ -12,3 +12,7 @@ add_library(hekatoolslib STATIC
 
 target_include_directories(hekatoolslib
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+if(MSVC)
+    target_compile_definitions(hekatoolslib PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()

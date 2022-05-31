@@ -30,10 +30,10 @@ include(CPack)
 
 
 if (MSVC)
-    # warning level 4 and all warnings as errors
-    add_compile_options(/W4)
+    # warning level 4 and some
+    add_compile_options(/W4 /sdl)
 else()
-    # lots of warnings and all warnings as errors
+    # lots of warnings
     add_compile_options(-Wall -Wextra -pedantic 
 	#-Werror
 	)

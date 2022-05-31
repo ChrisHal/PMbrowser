@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
-#define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings om Windows
+
 #include <istream>
 #include <algorithm>
 #include <cstring>
