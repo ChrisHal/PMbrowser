@@ -179,12 +179,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
             txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
-            //long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
             double datay = yTrace.interp(x); //= std::numeric_limits<double>::quiet_NaN();
-            //if (dataindex >= 0 && 
-            //   static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
-            //    datay = yTrace.data.at(dataindex);
-            //}
             txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
@@ -201,15 +196,6 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         selStart = pos_curr;
         event->accept();
     }
-    //else if (!isTraceDragging && event->buttons() == Qt::NoButton) {
-    //    if (QGuiApplication::keyboardModifiers() == Qt::ShiftModifier) {
-    //        setCursor(Qt::OpenHandCursor);
-    //    }
-    //    else {
-    //        unsetCursor();
-    //    }
-    //    event->accept();
-    //}
     else {
         event->ignore();
     }

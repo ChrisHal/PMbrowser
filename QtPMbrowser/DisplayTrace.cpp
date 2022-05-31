@@ -86,15 +86,9 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 			auto N = static_cast<int>(data.size());
 			int pFirst = std::max(0, int(std::floor((display->x_min - x0) / deltax)));
 			int pEnd = std::min(int(std::ceil((display->x_max - x0) / deltax)), N);
-			//#ifndef NDEBUG
-			//		qDebug() << "first: " << pFirst << ", end: " << pEnd;
-			//#endif
 			if (pFirst < pEnd) { // pFirst might even be larger than data.size(), we catch this case also here
 				int step = (pEnd - pFirst) / display->width();
 				if (step > 3) { // speed up drawing if we have a lot of datapoints
-	//#ifndef NDEBUG
-	//				qDebug() << "step: " << step;
-	//#endif // !NDEBUG
 					pEnd -= step;
 					auto [data_min, data_max] = getDataMinMax(pFirst, pFirst + step);
 					path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
