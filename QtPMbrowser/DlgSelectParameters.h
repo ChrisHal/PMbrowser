@@ -25,7 +25,7 @@
 #include "PMparameters.h"
 #include "ui_DlgSelectParameters.h"
 
-namespace Ui { class DlgSelectParameters; };
+namespace Ui { class DlgSelectParameters; }
 
 class DlgSelectParameters : public QDialog
 {

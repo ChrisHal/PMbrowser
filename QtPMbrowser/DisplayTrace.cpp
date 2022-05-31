@@ -110,7 +110,8 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 	}
 	if (special_color) {
 		auto old_color = painter.pen().color();
-		painter.setPen(QColorConstants::Red);
+		//painter.setPen(QColorConstants::Red); // since Qt5.14
+		painter.setPen(0xff0000);
 		painter.drawPath(path);
 		painter.setPen(old_color);
 	}
