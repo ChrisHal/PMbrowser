@@ -246,7 +246,7 @@ public:
     double extractLongRealNoThrow(std::size_t offset) const //! instead of throwing an exception, returns NaN if out of range
     {
         return extractValue(offset, std::numeric_limits<double>::quiet_NaN());
-    };
+    }
     char getChar(std::size_t offset) const;
     const std::string_view getString(std::size_t offset) const;
     const UserParamDescr getUserParamDescr(std::size_t offset) const;
@@ -265,7 +265,7 @@ public:
         else {
             return std::string_view(p);
         }
-    };
+    }
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
     int getLevel() const { return level; };

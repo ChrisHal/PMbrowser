@@ -3,7 +3,7 @@
 #include <QDialog>
 #include "ui_DlgExportMetadata.h"
 QT_BEGIN_NAMESPACE
-namespace Ui { class DlgExportMetadata; };
+namespace Ui { class DlgExportMetadata; }
 QT_END_NAMESPACE
 
 class DlgExportMetadata : public QDialog

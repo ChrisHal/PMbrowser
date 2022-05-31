@@ -19,6 +19,7 @@
 
 #pragma once
 #include <vector>
+#include <memory>
 #include <QPainter>
 #include <QPainterPath>
 #include <QString>
