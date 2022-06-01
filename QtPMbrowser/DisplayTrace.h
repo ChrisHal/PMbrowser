@@ -20,6 +20,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <cstddef>
 #include <QPainter>
 #include <QPainterPath>
 #include <QString>
@@ -60,6 +61,27 @@ public:
 	void render(QPainter& painter, RenderArea* display);
 	bool isValid() const { return !data.empty(); }
     bool has_x_trace() const { return !!p_xdata; }
+
+    /// <summary>
+    /// Converts a x-y-trace to an y-only trace (the default)
+    /// of numpoints length by interpolation using
+    /// member function interp(x)
+    /// </summary>
+    /// <param name="numpoints">number of point the resulting trace should have</param>
+    /// <param name="new_x0">starting value for x</param>
+    /// <param name="new_delta">sample intervall</param>
+    void convertToInterpolated(std::size_t numpoints, double new_x0, double new_delta);
+
+    /// <summary>
+    /// Converts a x-y-trace to an y-only trace (the default)
+    /// matching the templ trace using
+    /// member function interp(x)
+    /// </summary>
+    /// <param name="templ">trace the parameters of which are used as template</param>
+    void convertToInterpolated(const DisplayTrace& templ) {
+        assert(templ.isValid() && !templ.has_x_trace());
+        convertToInterpolated(templ.data.size(), templ.x0, templ.deltax);
+    }
     
     /// <summary>
     /// interpolate datapoint for given x value
@@ -77,6 +99,6 @@ public:
 	double x0, deltax;
 	QString x_unit, y_unit;
 	std::vector<double> data;
-    std::unique_ptr<std::vector<double>> p_xdata;
+    std::unique_ptr<std::vector<double> > p_xdata;
 };
 

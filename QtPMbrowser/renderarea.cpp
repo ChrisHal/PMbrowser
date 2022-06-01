@@ -523,6 +523,16 @@ void RenderArea::addTrace(DisplayTrace&& dt)
     update();
 }
 
+void RenderArea::createInterpolatedXtrace(DisplayTrace&& dt_x)
+{
+    if (yTrace.isValid()) {
+        xTrace = std::move(dt_x);
+        xTrace.convertToInterpolated(yTrace);
+        if (do_autoscale_on_load) { autoScale(); }
+        update();
+    }
+}
+
 void RenderArea::clearTrace()
 {
     ndatapoints = 0;

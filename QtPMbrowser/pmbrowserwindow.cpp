@@ -289,7 +289,6 @@ PMbrowserWindow::~PMbrowserWindow()
     delete ui;
 }
 
-
 void PMbrowserWindow::on_actionOpen_triggered()
 {
     QFileDialog dialog(this);
@@ -755,7 +754,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
         QAction* actAmpstate = nullptr, * actDrawStim = nullptr,
-            * actDrawSeriesStim = nullptr;
+            * actUseStimAsX{}, * actDrawSeriesStim = nullptr;
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         if (node->getLevel() == hkTreeNode::LevelSeries) {
             menu.addSeparator();
@@ -765,6 +764,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
             actDrawStim = menu.addAction("show stimulus");
+            actUseStimAsX = menu.addAction("use stim. as x trace");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
@@ -786,6 +786,14 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (actDrawStim != nullptr && actDrawStim == response) {
             drawStimulus(node);
+        }
+        else if (actUseStimAsX && actUseStimAsX == response) {
+            if (ui->renderArea->noData() || ui->renderArea->YtraceHasX()) {
+                QMessageBox::information(this, "Notice", "First, select a data-trace!"); 
+            }
+            else {
+                useStimAsX(node);
+            }
         }
     }
 }
@@ -932,17 +940,35 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 }
 
-void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
+void PMbrowserWindow::create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const
 {
     assert(sweep->getLevel() == hkTreeNode::LevelSweep);
-    try {
         int stim_index = sweep->extractInt32(SwStimCount) - 1,
-            sweep_index= sweep->extractInt32(SwSweepCount) - 1;
-        StimRootRecord root(datfile->GetPgfTree().GetRootNode());
-        const auto& stim = root.Stims.at(stim_index);
-        auto stim_trace = stim.constructStimTrace(sweep_index);
-        DisplayTrace dt(stim_trace, stim.getStimChannel().DacUnit);
+        sweep_index = sweep->extractInt32(SwSweepCount) - 1;
+    StimRootRecord root(datfile->GetPgfTree().GetRootNode());
+    const auto& stim = root.Stims.at(stim_index);
+    auto stim_trace = stim.constructStimTrace(sweep_index);
+    dt = DisplayTrace{ stim_trace, stim.getStimChannel().DacUnit };
+}
+
+void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
+{
+    try {
+        DisplayTrace dt{};
+        create_stim_trace(sweep, dt);
         ui->renderArea->addTrace(std::move(dt));
+    }
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
+}
+
+void PMbrowserWindow::useStimAsX(const hkTreeNode* sweep)
+{
+    try {
+        DisplayTrace dt{};
+        create_stim_trace(sweep, dt);
+        ui->renderArea->createInterpolatedXtrace(std::move(dt));
     }
     catch (const std::exception& e) {
         QMessageBox::warning(this, "Error", e.what());

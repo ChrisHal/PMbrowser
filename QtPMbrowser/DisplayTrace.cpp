@@ -158,3 +158,20 @@ double DisplayTrace::interp(double x)
 	}
 	return datay;
 }
+
+void DisplayTrace::convertToInterpolated(std::size_t numpoints, double new_x0, double new_delta)
+{
+	assert(has_x_trace());
+	if (has_x_trace()) {
+		// double new_delta{ (p_xdata->back() - new_x0) / (numpoints - 1) };
+		std::vector<double> tmp(numpoints);
+		for (std::size_t i = 0; i < numpoints; ++i) {
+			tmp.at(i) = interp(new_x0 + new_delta * i);
+		}
+		x0 = new_x0;
+		deltax = new_delta;
+		data = std::move(tmp);
+		p_xdata = nullptr;
+	}
+	//return *this;
+}

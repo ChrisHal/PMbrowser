@@ -44,8 +44,28 @@ public:
     bool noData() { return !yTrace.isValid(); };
     void renderTrace(hkTreeNode* trace, std::istream& infile);
     void addTrace(DisplayTrace&& dt);
+
+    /// <summary>
+    /// dt_x is a x-y-trace (usually representing a stimulus)
+    /// that is to be used as a template to create a trace
+    /// that is used as the x-trace. This sets the renderares
+    /// to xy-mode.
+    /// Especiually usefull for ramps where the voltage trace
+    /// has not been recorded.
+    /// </summary>
+    /// <param name="dt_x">x-y-trace, usually a stimulus</param>
+    void createInterpolatedXtrace(DisplayTrace&& dt_x);
     void clearTrace();
+
+    /// <summary>
+    /// checks if we display is in x-y-mode,
+    /// i.e. a data-trace is displayed versus a
+    /// x-traces
+    /// </summary>
+    /// <returns>true id in xy-mode</returns>
     bool isXYmode() { return xTrace.isValid(); };
+
+    bool YtraceHasX() { return (yTrace.isValid() && yTrace.has_x_trace()); };
     bool isSettingsModified() { return settings_modified; };
     bool isAutoscaleEnabled() { return do_autoscale_on_load; };
     void saveSettings();
