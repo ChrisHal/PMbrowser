@@ -39,7 +39,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
+      
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
