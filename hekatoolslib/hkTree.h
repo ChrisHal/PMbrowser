@@ -138,6 +138,15 @@ enum class SegmentClass {
     Chirpwave
 };
 
+constexpr std::array<const char*, 6> SegmentClassNames{
+    "Constant",
+    "Ramp",
+    "Continous",
+    "ConstSine",
+    "Squarewave",
+    "ChirpWave"
+};
+
 enum class IncrementModeType {
     ModeInc,
     ModeDec,
@@ -151,13 +160,17 @@ enum class IncrementModeType {
     ModeLogAlternate
 };
 
-constexpr std::array<const char*, 6> SegmentClassNames{
-    "Constant",
-    "Ramp",
-    "Continous",
-    "ConstSine",
-    "Squarewave",
-    "ChirpWave"
+constexpr std::array<const char *, 10> IncrementModeNames {
+    "ModeInc",
+    "ModeDec",
+    "ModeIncInterleaved",
+    "ModeDecInterleaved",
+    "ModeAlternate",
+    "ModeLogInc",
+    "ModeLogDec",
+    "ModeLogIncInterleaved",
+    "ModeLogDecInterleaved",
+    "ModeLogAlternate"
 };
 
 // TrDataKind

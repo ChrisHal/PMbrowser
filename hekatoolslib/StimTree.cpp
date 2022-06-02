@@ -87,7 +87,8 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 					actV *= std::pow(seg.DeltaVFactor, NumberSweeps - sweep_count - 1);
 					break;
 				default:
-					throw std::runtime_error("unsupported voltage inc. mode");
+					throw std::runtime_error(std::string("unsupported voltage inc. mode ") +
+						IncrementModeNames.at(static_cast<int>(seg.VoltageIncMode)));
 				}
 			}
 			double duration{ seg.Duration };
@@ -105,7 +106,8 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 				duration *= std::pow(seg.DeltaTFactor, NumberSweeps - sweep_count - 1);
 				break;
 			default:
-				throw std::runtime_error("unsupported duration inc. mode");
+				throw std::runtime_error(std::string("unsupported duration inc. mode ") +
+					IncrementModeNames.at(static_cast<int>(seg.DurationIncMode)));
 			}
 			if (seg.Class == SegmentClass::Constant ||
 				seg.Class == SegmentClass::Continuous) {
