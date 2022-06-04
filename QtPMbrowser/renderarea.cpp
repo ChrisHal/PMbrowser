@@ -173,17 +173,13 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     if (!noData() && event->buttons() == Qt::NoButton) {
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
-        long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
-        double datay = std::numeric_limits<double>::quiet_NaN();
-        if (dataindex >= 0 && 
-           static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
-            datay = yTrace.data.at(dataindex);
-        }
+
         QString txt;
         if (isXYmode()) {
             txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
+            double datay = yTrace.interp(x); //= std::numeric_limits<double>::quiet_NaN();
             txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
@@ -200,15 +196,6 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         selStart = pos_curr;
         event->accept();
     }
-    //else if (!isTraceDragging && event->buttons() == Qt::NoButton) {
-    //    if (QGuiApplication::keyboardModifiers() == Qt::ShiftModifier) {
-    //        setCursor(Qt::OpenHandCursor);
-    //    }
-    //    else {
-    //        unsetCursor();
-    //    }
-    //    event->accept();
-    //}
     else {
         event->ignore();
     }
@@ -399,7 +386,12 @@ void RenderArea::autoScale()
         x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
         x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
     }
-    else {
+    else if (yTrace.has_x_trace()) {
+        x_min = *std::min_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+        x_max = *std::max_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+    }
+    else
+    {
         x_min = yTrace.x0;
         x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
     }
@@ -516,6 +508,30 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
     }
+
+void RenderArea::addTrace(DisplayTrace&& dt)
+{
+    if (yTrace.isValid()) {
+        tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
+        while (tracebuffer.size() > numtraces) {
+            delete tracebuffer.dequeue();
+        }
+    }
+    yTrace = std::move(dt);
+    if (do_autoscale_on_load) { autoScale(); }
+    setMouseTracking(true);
+    update();
+}
+
+void RenderArea::createInterpolatedXtrace(DisplayTrace&& dt_x)
+{
+    if (yTrace.isValid()) {
+        xTrace = std::move(dt_x);
+        xTrace.convertToInterpolated(yTrace);
+        if (do_autoscale_on_load) { autoScale(); }
+        update();
+    }
+}
 
 void RenderArea::clearTrace()
 {

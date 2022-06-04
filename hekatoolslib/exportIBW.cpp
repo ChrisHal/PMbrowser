@@ -19,7 +19,6 @@
 
 // Routines to export traces as Igor Binary Waves (ibw)
 
-#define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
 #include <istream>
 #include <iostream>
 #include <fstream>

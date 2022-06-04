@@ -17,6 +17,9 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef PM_PARAMETERS_H
+#define PM_PARAMETERS_H
+
 #pragma once
 #include <array>
 #include <string>
@@ -62,7 +65,7 @@ struct PMparameter {
 	const size_t offset;
 
 	void format(const hkTreeNode& node, std::string& s) const;
-	void format(const hkTreeNode& node, std::stringstream& ss) const;
+	void format(const hkTreeNode& node, std::ostream& ss) const;
 	void formatValueOnly(const hkTreeNode& node, std::ostream& ss) const;
 
 	/// <summary>
@@ -98,6 +101,8 @@ extern std::array<PMparameter, 31>parametersAmpplifierState;
 extern const std::array<const char*, 7>RecordingModeNames;
 extern const std::array<const char*, 4> AmpModeNames;
 
+extern std::array<PMparameter, 14> parametersStimSegment;
+
 /// <summary>
 /// Format parameters stored in node n using
 /// all parameters defined in array ar
@@ -130,7 +135,7 @@ template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
 }
 
 template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
-	const std::array<PMparameter, Nrows>& ar, std::stringstream& ss)
+	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
 {
 	for (const PMparameter& p : ar) {
 		if (p.exportIBW) {
@@ -198,3 +203,5 @@ template<std::size_t Nrows> std::string formatParamListExportTable(const hkTreeN
 	formatParamListExportTable(n, ar, ss);
 	return ss.str();
 }
+
+#endif // !PM_PARAMETERS_H

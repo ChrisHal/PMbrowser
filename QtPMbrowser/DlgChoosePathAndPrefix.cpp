@@ -64,12 +64,12 @@ void DlgChoosePathAndPrefix::choosePath()
 
 void DlgChoosePathAndPrefix::stateExportPXPchanged(int state) {
 	if (!state) { ui->checkBox_create_datafolders->setChecked(false); }
-};
+}
 
 
 void DlgChoosePathAndPrefix::stateCreateFoldersChanged(int state) {
 	if (state) { ui->checkBox_pxp_export->setChecked(true); }
-};
+}
 
 
 void DlgChoosePathAndPrefix::accept()

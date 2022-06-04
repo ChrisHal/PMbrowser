@@ -17,6 +17,9 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef TIME_HANDLING_H
+#define TIME_HANDLING_H
+
 #pragma once
 
 /// <summary>
@@ -33,3 +36,5 @@ std::string formatPMtimeDate(double t); // date only
 /// <param name="t">time found in .dat file</param>
 /// <returns>std::string containing formatted date and UTC time</returns>
 std::string formatPMtimeUTC(double t); // UTC date/time
+
+#endif // !TIME_HANDLING_H
