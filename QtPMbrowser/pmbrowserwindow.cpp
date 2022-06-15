@@ -692,13 +692,15 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
 
 void PMbrowserWindow::on_actionAbout_triggered()
 {
-    QString txt = myAppName +  ", Version " + appVersion +
-                                "\n\n" + COPYRIGHT_NOTICE +
-                                "\n\nAn open source tool to handle PatchMaster Files.\n"
-                                "PatchMaster is a trademark of Heka GmbH\n\n"
-                                "Build using Qt Library version " + QT_VERSION_STR +
-                                "\n\nLicense: GNU General Public License Version 3 (GPLv3)";
+    QString txt = "<b>" + myAppName + "</b>, Version " + appVersion +
+                                "<br>" + COPYRIGHT_NOTICE +
+                                "<p>An open source tool to handle PatchMaster Files.<br>"
+                                "For help and further info see <a href="+ PROJECT_HOMEPAGE +">project homepage</a>.</p>"
+                                "<p>PatchMaster is a trademark of Heka GmbH</p>"
+                                "<p>Build using Qt Library version " + QT_VERSION_STR +
+                                "</p><p>License: GNU General Public License Version 3 (GPLv3)</p>";
     QMessageBox msg;
+    msg.setTextFormat(Qt::RichText);
     msg.setWindowTitle("About");
     msg.setText(txt);
     msg.exec();
