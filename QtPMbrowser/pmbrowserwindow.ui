@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>674</width>
-    <height>680</height>
+    <width>666</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="sizeIncrement">
@@ -124,20 +124,26 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>674</width>
-     <height>21</height>
+     <width>666</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export...</string>
+     </property>
+     <addaction name="actionExport_All_Visible_Traces_as_IBW_Files"/>
+     <addaction name="actionExport_IBW_File"/>
+     <addaction name="actionExport_Metadata_as_Table"/>
+    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionClose"/>
-    <addaction name="actionExport_IBW_File"/>
-    <addaction name="actionExport_All_Visible_Traces_as_IBW_Files"/>
+    <addaction name="menuExport"/>
     <addaction name="actionExport_All_as_IBW"/>
-    <addaction name="actionExport_Metadata_as_Table"/>
     <addaction name="actionSelect_Parameters"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -203,7 +209,7 @@
     <string>Clear Text</string>
    </property>
   </action>
-  <action name="actionExport_IBW_File">
+  <action name="actionExport_IBW_File2">
    <property name="text">
     <string>Export Subtree for Igor...</string>
    </property>
@@ -224,6 +230,9 @@
   <action name="actionExport_All_as_IBW">
    <property name="text">
     <string>Export All Traces as IBW Files...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionAuto_Scale">
@@ -247,7 +256,7 @@
     <string>Show All</string>
    </property>
   </action>
-  <action name="actionExport_All_Visible_Traces_as_IBW_Files">
+  <action name="actionExport_All_Visible_Traces_as_IBW_Files2">
    <property name="text">
     <string>Export All Visible Traces for Igor...</string>
    </property>
@@ -300,9 +309,24 @@
     <string>Copy</string>
    </property>
   </action>
-  <action name="actionExport_Metadata_as_Table">
+  <action name="actionExport_Metadata_as_Table2">
    <property name="text">
     <string>Export Metadata as Table</string>
+   </property>
+  </action>
+  <action name="actionExport_IBW_File">
+   <property name="text">
+    <string>selected with children</string>
+   </property>
+  </action>
+  <action name="actionExport_All_Visible_Traces_as_IBW_Files">
+   <property name="text">
+    <string>all visible traces</string>
+   </property>
+  </action>
+  <action name="actionExport_Metadata_as_Table">
+   <property name="text">
+    <string>metadata as table</string>
    </property>
   </action>
  </widget>
