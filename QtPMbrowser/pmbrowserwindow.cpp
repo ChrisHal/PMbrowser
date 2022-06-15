@@ -427,6 +427,10 @@ void PMbrowserWindow::exportAllVisibleTraces()
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
             if (filename.length() == 0) return;
+            QFileInfo export_path_info(filename);
+            lastexportpath = export_path_info.absolutePath() + "/";
+            QSettings settings;
+            settings.setValue("pmbrowserwindow/lastexportpath", lastexportpath);
             outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
