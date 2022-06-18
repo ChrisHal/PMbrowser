@@ -85,8 +85,8 @@ private:
     void drawStimuliSeries(const hkTreeNode* sweep);
     void create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const;
     bool assertDatFileOpen();
-    void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream *outfile, bool create_datafolders);
-    bool choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders);
+    void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream *outfile, bool create_datafolders, int folder_level);
+    bool choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders, int & last_folder_level);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
     void exportAllVisibleTraces();
     void formatStimMetadataAsTableExport(std::ostream& os, int max_level);

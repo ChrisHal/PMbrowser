@@ -327,7 +327,7 @@ bool PMbrowserWindow::assertDatFileOpen()
     return true;
 }
 
-void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders)
+void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders, int folder_level)
 {
     if (item->isHidden()) { return; } // export only visible items
     int N = item->childCount();
@@ -335,8 +335,8 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         bool new_datafolder{ false };
         if (create_datafolders && poutfile!=nullptr) {
             auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            new_datafolder = (poutfile != nullptr) && (node->getLevel() == hkTreeNode::LevelGroup ||
-                node->getLevel() == hkTreeNode::LevelSeries);
+            new_datafolder = (poutfile != nullptr) && (node->getLevel() >= hkTreeNode::LevelGroup &&
+                node->getLevel() <= folder_level);
         }
         if (new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
@@ -346,7 +346,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
             poutfile->write(buf, 32);
         }
         for (int i = 0; i < N; ++i) {
-            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders);
+            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders, folder_level);
         }
         if (new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderEndRecord,0,0 };
@@ -396,7 +396,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
     }
 }
 
-bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders)
+bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders, int & last_folder_level)
 {
     if (!QDir(lastexportpath).exists()) {
         lastexportpath.clear();
@@ -415,6 +415,7 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
         }
         pxp_export = dlg.pxp_export;
         create_datafolders = dlg.create_datafolders;
+        last_folder_level = dlg.level_last_folder + hkTreeNode::LevelGroup; // combo box starts with Group
         lastexportpath = path;
 
         QSettings settings;
@@ -435,9 +436,10 @@ void PMbrowserWindow::exportAllVisibleTraces()
     }
     
     QString path, prefix;
-    bool pxp_export, create_datafolders;
+    bool pxp_export{}, create_datafolders{};
+    int folder_level{};
     std::ofstream outfile;
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
@@ -458,10 +460,10 @@ void PMbrowserWindow::exportAllVisibleTraces()
             int N = ui->treePulse->topLevelItemCount();
             for (int i = 0; i < N; ++i) {
                 if (pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders);
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders, folder_level);
                 }
                 else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false);
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false, 0);
                 }
             }
             if (pxp_export && create_datafolders) {
@@ -533,9 +535,10 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
     bool pxp_export, create_datafolders;
+    int folder_level{};
     std::ofstream outfile;
 
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
@@ -550,10 +553,10 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
         }
         try {
             if (pxp_export) {
-                exportSubTree(root, path, prefix, &outfile, create_datafolders);
+                exportSubTree(root, path, prefix, &outfile, create_datafolders, folder_level);
             }
             else {
-                exportSubTree(root, path, prefix, nullptr, false);
+                exportSubTree(root, path, prefix, nullptr, false, 0);
             }
             if (pxp_export&&create_datafolders) {
                 WriteIgorProcedureRecord(outfile);
@@ -630,11 +633,11 @@ void PMbrowserWindow::filterTree()
 
 void PMbrowserWindow::on_actionExport_IBW_File_triggered()
 {
-    auto item = ui->treePulse->currentItem();
     if (!assertDatFileOpen()) {
         return;
     }
-    else if(!item){
+    auto item = ui->treePulse->currentItem();
+    if(!item){
         QMessageBox msg;
         msg.setText("no item selected");
         msg.exec();
@@ -654,7 +657,8 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     else {
         QString path, prefix;
         bool pxp_export, create_datafolders;
-        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+        int folder_level{};
+        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
             if (pxp_export) {
                 QMessageBox::warning(this, "Error", "pxp export for\nthis option\nnot yet implimented");
                 return;
