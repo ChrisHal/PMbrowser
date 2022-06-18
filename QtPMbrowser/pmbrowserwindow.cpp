@@ -316,6 +316,17 @@ void PMbrowserWindow::on_actionClear_Text_triggered()
     ui->textEdit->clear();
 }
 
+bool PMbrowserWindow::assertDatFileOpen()
+{
+    if (!datfile) {
+        QMessageBox msg;
+        msg.setText("Frist, open a file!");
+        msg.exec();
+        return false;
+    }
+    return true;
+}
+
 void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders)
 {
     if (item->isHidden()) { return; } // export only visible items
@@ -419,6 +430,10 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
 
 void PMbrowserWindow::exportAllVisibleTraces()
 {
+    if (!assertDatFileOpen()) {
+        return;
+    }
+    
     QString path, prefix;
     bool pxp_export, create_datafolders;
     std::ofstream outfile;
@@ -616,10 +631,8 @@ void PMbrowserWindow::filterTree()
 void PMbrowserWindow::on_actionExport_IBW_File_triggered()
 {
     auto item = ui->treePulse->currentItem();
-    if (!datfile) {
-        QMessageBox msg;
-        msg.setText("no file");
-        msg.exec();
+    if (!assertDatFileOpen()) {
+        return;
     }
     else if(!item){
         QMessageBox msg;
@@ -662,8 +675,7 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
 
 void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
 {
-    if (!datfile) {
-        QMessageBox::information(this, "Info", "open dat file first");
+    if (!assertDatFileOpen()) {
         return;
     }
     DlgExportMetadata dlg;

@@ -84,6 +84,7 @@ private:
     void useStimAsX(const hkTreeNode* sweep);
     void drawStimuliSeries(const hkTreeNode* sweep);
     void create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const;
+    bool assertDatFileOpen();
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream *outfile, bool create_datafolders);
     bool choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders);
     void exportSubTreeAsIBW(QTreeWidgetItem* root);
