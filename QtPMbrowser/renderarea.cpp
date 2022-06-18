@@ -321,10 +321,10 @@ void RenderArea::leaveEvent(QEvent* event)
 
 void RenderArea::resizeEvent(QResizeEvent* event)
 {
-    auto s = event->size();
     btnWipe.move(0, 0);
     auto h = btnAutoScale.height();
     btnAutoScale.move(0, h);
+    QWidget::resizeEvent(event);
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
