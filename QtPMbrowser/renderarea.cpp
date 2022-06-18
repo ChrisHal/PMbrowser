@@ -36,8 +36,13 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
+constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 75;
+
 RenderArea::RenderArea(QWidget* parent) :
-    QWidget(parent), ndatapoints{}, 
+    QWidget(parent),
+    btnWipe{"wipe", this},
+    btnAutoScale{"auto", this},
+    ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
@@ -49,6 +54,13 @@ RenderArea::RenderArea(QWidget* parent) :
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setFocusPolicy(Qt::WheelFocus);
+
+    QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
+    QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
+
+    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnAutoScale.setGeometry(0, BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
+
     //ui->setupUi(this);
 }
 
@@ -307,6 +319,14 @@ void RenderArea::leaveEvent(QEvent* event)
     event->accept();
 }
 
+void RenderArea::resizeEvent(QResizeEvent* event)
+{
+    auto s = event->size();
+    btnWipe.move(0, 0);
+    auto h = btnAutoScale.height();
+    btnAutoScale.move(0, h);
+}
+
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
     if (noData()) {
@@ -382,6 +402,7 @@ void RenderArea::wheelEvent(QWheelEvent* event)
 
 void RenderArea::autoScale()
 {
+    if (noData()) return;
     if (isXYmode()) {
         x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
         x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());

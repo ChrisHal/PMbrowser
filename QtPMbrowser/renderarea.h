@@ -25,6 +25,7 @@
 #include <QQueue>
 #include <QPointF>
 #include <QPixmap>
+#include <QPushButton>
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
@@ -92,6 +93,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
@@ -101,6 +103,9 @@ private:
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
+
+    QPushButton btnWipe, btnAutoScale;
+
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
