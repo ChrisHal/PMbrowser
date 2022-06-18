@@ -125,7 +125,7 @@
      <x>0</x>
      <y>0</y>
      <width>666</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -207,11 +207,6 @@
   <action name="actionClear_Text">
    <property name="text">
     <string>Clear Text</string>
-   </property>
-  </action>
-  <action name="actionExport_IBW_File2">
-   <property name="text">
-    <string>Export Subtree for Igor...</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -322,6 +317,12 @@
   <action name="actionExport_All_Visible_Traces_as_IBW_Files">
    <property name="text">
     <string>all visible traces</string>
+   </property>
+   <property name="toolTip">
+    <string>export all visible traces</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
   <action name="actionExport_Metadata_as_Table">
