@@ -591,7 +591,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py) / double(height()) * (y_max - y_min);
+    y = y_max - double(py - BUTTON_HEIGHT) / double(height() - BUTTON_HEIGHT) * (y_max - y_min);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)
