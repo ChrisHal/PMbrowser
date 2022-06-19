@@ -36,12 +36,13 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
-constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 75;
+constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 50;
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
     btnWipe{"wipe", this},
     btnAutoScale{"auto", this},
+    btnVertShrink{"v.shrink", this},
     ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
@@ -57,9 +58,11 @@ RenderArea::RenderArea(QWidget* parent) :
 
     QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
+    QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
 
     btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
-    btnAutoScale.setGeometry(0, BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
 
     //ui->setupUi(this);
 }
@@ -95,7 +98,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    const QRect rectangle = QRect(0, 0, width(), height());
+    const QRect rectangle = QRect(0, BUTTON_HEIGHT, width(), height() - BUTTON_HEIGHT);
     if(noData()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
@@ -237,11 +240,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         event->accept();
     }
     else if (response == actShrinkV) {
-        double nymin = 1.5 * y_min - 0.5 * y_max,
-            nymax = 1.5 * y_max - 0.5 * y_min;
-        y_min = nymin;
-        y_max = nymax;
-        update();
+        verticalShrink();
         event->accept();
     }
     else if (response == actAutoScale) {
@@ -418,6 +417,15 @@ void RenderArea::autoScale()
     }
     y_min = *std::min_element(yTrace.data.cbegin(), yTrace.data.cend());
     y_max = *std::max_element(yTrace.data.cbegin(), yTrace.data.cend());
+    update();
+}
+
+void RenderArea::verticalShrink()
+{
+    double nymin = 1.5 * y_min - 0.5 * y_max,
+        nymax = 1.5 * y_max - 0.5 * y_min;
+    y_min = nymin;
+    y_max = nymax;
     update();
 }
 
