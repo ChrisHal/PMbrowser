@@ -93,7 +93,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
-    void resizeEvent(QResizeEvent* event) override;
+    //void resizeEvent(QResizeEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
