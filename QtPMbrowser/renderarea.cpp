@@ -36,7 +36,7 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
-constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 50;
+constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 55;
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
