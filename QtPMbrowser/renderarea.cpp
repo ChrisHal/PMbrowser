@@ -43,6 +43,7 @@ RenderArea::RenderArea(QWidget* parent) :
     btnWipe{"wipe", this},
     btnAutoScale{"auto", this},
     btnVertShrink{"v.shrink", this},
+    btnHrzShrink{"h.shrink", this},
     ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
@@ -59,10 +60,12 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
     QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
+    QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
 
     btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
 
     //ui->setupUi(this);
 }
@@ -426,6 +429,15 @@ void RenderArea::verticalShrink()
         nymax = 1.5 * y_max - 0.5 * y_min;
     y_min = nymin;
     y_max = nymax;
+    update();
+}
+
+void RenderArea::horizontalShrink()
+{
+    double nxmin = 1.5 * x_min - 0.5 * x_max,
+        nxmax = 1.5 * x_max - 0.5 * x_min;
+    x_min = nxmin;
+    x_max = nxmax;
     update();
 }
 

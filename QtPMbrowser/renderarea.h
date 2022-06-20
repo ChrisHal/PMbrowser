@@ -76,6 +76,7 @@ public slots:
     void showSettingsDialog();
     void autoScale();
     void verticalShrink();
+    void horizontalShrink();
     void toggleDoAutoscale(bool checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
@@ -105,7 +106,7 @@ private:
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
 
-    QPushButton btnWipe, btnAutoScale, btnVertShrink;
+    QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
 
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
