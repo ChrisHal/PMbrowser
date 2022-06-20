@@ -224,11 +224,17 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
     auto actShrinkV = menu.addAction("vertical shrink");
+    auto actShrinkH = menu.addAction("horizontal shrink");
     auto actAutoScale = menu.addAction("autoscale");
     auto actCopy = menu.addAction("copy");
     menu.addSeparator();
     // auto actWipeBK = menu.addAction("wipe background traces");
     auto actASOL = menu.addAction("autoscale on load");
+
+    QObject::connect(actShrinkH, &QAction::triggered, this, &RenderArea::horizontalShrink);
+    QObject::connect(actShrinkV, &QAction::triggered, this, &RenderArea::verticalShrink);
+    QObject::connect(actAutoScale, &QAction::triggered, this, &RenderArea::autoScale);
+
     actASOL->setCheckable(true);
     actASOL->setChecked(do_autoscale_on_load);
     QAction* actToggleBK = menu.addAction("show background traces");
@@ -240,16 +246,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
         zoomIn(x, y, 0.5);
-        event->accept();
     }
-    else if (response == actShrinkV) {
-        verticalShrink();
-        event->accept();
-    }
-    else if (response == actAutoScale) {
-        autoScale();
-        event->accept();
-        }
     else if (response == actASOL) {
         do_autoscale_on_load = !do_autoscale_on_load;
         // settings_modified = true;
@@ -257,11 +254,10 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
         update();
-        event->accept();
     } else if (response == actCopy) {
         copyToClipboard();
-        event->accept();
     }
+    event->accept();
 }
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
