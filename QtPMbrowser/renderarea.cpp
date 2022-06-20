@@ -36,8 +36,15 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
+constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 55;
+
 RenderArea::RenderArea(QWidget* parent) :
-    QWidget(parent), ndatapoints{}, 
+    QWidget(parent),
+    btnWipe{"wipe", this},
+    btnAutoScale{"auto", this},
+    btnVertShrink{"v.shrink", this},
+    btnHrzShrink{"h.shrink", this},
+    ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
@@ -49,6 +56,17 @@ RenderArea::RenderArea(QWidget* parent) :
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setFocusPolicy(Qt::WheelFocus);
+
+    QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
+    QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
+    QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
+    QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
+
+    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+
     //ui->setupUi(this);
 }
 
@@ -83,7 +101,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    const QRect rectangle = QRect(0, 0, width(), height());
+    const QRect rectangle = QRect(0, BUTTON_HEIGHT, width(), height() - BUTTON_HEIGHT);
     if(noData()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
@@ -206,11 +224,17 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
     auto actShrinkV = menu.addAction("vertical shrink");
+    auto actShrinkH = menu.addAction("horizontal shrink");
     auto actAutoScale = menu.addAction("autoscale");
     auto actCopy = menu.addAction("copy");
     menu.addSeparator();
     // auto actWipeBK = menu.addAction("wipe background traces");
     auto actASOL = menu.addAction("autoscale on load");
+
+    QObject::connect(actShrinkH, &QAction::triggered, this, &RenderArea::horizontalShrink);
+    QObject::connect(actShrinkV, &QAction::triggered, this, &RenderArea::verticalShrink);
+    QObject::connect(actAutoScale, &QAction::triggered, this, &RenderArea::autoScale);
+
     actASOL->setCheckable(true);
     actASOL->setChecked(do_autoscale_on_load);
     QAction* actToggleBK = menu.addAction("show background traces");
@@ -222,20 +246,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
         zoomIn(x, y, 0.5);
-        event->accept();
     }
-    else if (response == actShrinkV) {
-        double nymin = 1.5 * y_min - 0.5 * y_max,
-            nymax = 1.5 * y_max - 0.5 * y_min;
-        y_min = nymin;
-        y_max = nymax;
-        update();
-        event->accept();
-    }
-    else if (response == actAutoScale) {
-        autoScale();
-        event->accept();
-        }
     else if (response == actASOL) {
         do_autoscale_on_load = !do_autoscale_on_load;
         // settings_modified = true;
@@ -243,11 +254,10 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
         update();
-        event->accept();
     } else if (response == actCopy) {
         copyToClipboard();
-        event->accept();
     }
+    event->accept();
 }
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
@@ -306,6 +316,14 @@ void RenderArea::leaveEvent(QEvent* event)
     clearFocus();
     event->accept();
 }
+
+//void RenderArea::resizeEvent(QResizeEvent* event)
+//{
+//    btnWipe.move(0, 0);
+//    auto h = btnAutoScale.height();
+//    btnAutoScale.move(0, h);
+//    QWidget::resizeEvent(event);
+//}
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -382,6 +400,7 @@ void RenderArea::wheelEvent(QWheelEvent* event)
 
 void RenderArea::autoScale()
 {
+    if (noData()) return;
     if (isXYmode()) {
         x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
         x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
@@ -397,6 +416,24 @@ void RenderArea::autoScale()
     }
     y_min = *std::min_element(yTrace.data.cbegin(), yTrace.data.cend());
     y_max = *std::max_element(yTrace.data.cbegin(), yTrace.data.cend());
+    update();
+}
+
+void RenderArea::verticalShrink()
+{
+    double nymin = 1.5 * y_min - 0.5 * y_max,
+        nymax = 1.5 * y_max - 0.5 * y_min;
+    y_min = nymin;
+    y_max = nymax;
+    update();
+}
+
+void RenderArea::horizontalShrink()
+{
+    double nxmin = 1.5 * x_min - 0.5 * x_max,
+        nxmax = 1.5 * x_max - 0.5 * x_min;
+    x_min = nxmin;
+    x_max = nxmax;
     update();
 }
 
@@ -547,10 +584,10 @@ void RenderArea::clearTrace()
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 {
-    double h = height() - 1, w = width() - 1;
+    double h = height() - 1 - BUTTON_HEIGHT, w = width() - 1;
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
-    a_y = h*y_1/(y_1-y_0);
+    a_y = h*y_1/(y_1-y_0) + BUTTON_HEIGHT;
     b_y = -h/(y_1-y_0);
 }
 
@@ -562,7 +599,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py) / double(height()) * (y_max - y_min);
+    y = y_max - double(py - BUTTON_HEIGHT) / double(height() - BUTTON_HEIGHT) * (y_max - y_min);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)
