@@ -26,6 +26,8 @@
 #include <QPointF>
 #include <QPixmap>
 #include <QPushButton>
+#include <QStyle>
+#include <QStyleFactory>
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
@@ -106,6 +108,7 @@ private:
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
 
+    std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
 
     size_t ndatapoints;

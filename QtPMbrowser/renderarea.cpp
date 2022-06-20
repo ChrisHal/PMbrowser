@@ -62,12 +62,17 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
     QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
 
-    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
-    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
-    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
-    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    auto btnstyle = p_btnstyle.get();
 
-    //ui->setupUi(this);
+    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnWipe.setStyle(btnstyle);
+    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnAutoScale.setStyle(btnstyle);
+    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnVertShrink.setStyle(btnstyle);
+    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnHrzShrink.setStyle(btnstyle);
+
 }
 
 RenderArea::~RenderArea()
