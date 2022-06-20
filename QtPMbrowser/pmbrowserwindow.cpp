@@ -29,7 +29,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QRegularExpression>
-#include <QStandardPAths>
+#include <QStandardPaths>
 #include <string>
 #include <fstream>
 #include <iostream>
