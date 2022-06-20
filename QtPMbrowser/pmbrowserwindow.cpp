@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QRegularExpression>
+#include <QStandardPAths>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -291,19 +292,30 @@ PMbrowserWindow::~PMbrowserWindow()
 
 void PMbrowserWindow::on_actionOpen_triggered()
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setNameFilter("DAT-file (*.dat)");
-    dialog.setViewMode(QFileDialog::Detail);
-    if(QDir(lastloadpath).exists()) {
-        dialog.setDirectory(lastloadpath);
+    QString loaddir = lastloadpath;
+    if (!QDir(loaddir).exists()) {
+        loaddir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
     }
-    else {
-        dialog.setDirectory("./");
+    QString filename = QFileDialog::getOpenFileName(this,
+        "Open DAT File",
+        loaddir,
+        "DAT-file (*.dat)");
+    if (!filename.isEmpty()) {
+        loadFile(filename);
     }
-    if (dialog.exec()) {
-        loadFile(dialog.selectedFiles().at(0));
-    }
+    //QFileDialog dialog(this);
+    //dialog.setFileMode(QFileDialog::ExistingFile);
+    //dialog.setNameFilter("DAT-file (*.dat)");
+    //dialog.setViewMode(QFileDialog::Detail);
+    //if(QDir(lastloadpath).exists()) {
+    //    dialog.setDirectory(lastloadpath);
+    //}
+    //else {
+    //    dialog.setDirectory("./");
+    //}
+    //if (dialog.exec()) {
+    //    loadFile(dialog.selectedFiles().at(0));
+    //}
 }
 
 void PMbrowserWindow::on_actionClose_triggered()
