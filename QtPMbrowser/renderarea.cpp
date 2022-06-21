@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QDebug>
 #include <QSettings>
+#include <QSizePolicy>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -36,7 +37,6 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
-constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 55;
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
@@ -44,7 +44,7 @@ RenderArea::RenderArea(QWidget* parent) :
     btnAutoScale{"auto", this},
     btnVertShrink{"v.shrink", this},
     btnHrzShrink{"h.shrink", this},
-    chkAutoScale{"scale on load", this},
+    chkAutoScale{"autoscale on load", this},
     ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
@@ -66,19 +66,31 @@ RenderArea::RenderArea(QWidget* parent) :
 
 
     auto btnstyle = p_btnstyle.get();
+    my_layout = new QGridLayout;
+    this->setLayout(my_layout);
+    my_layout->addWidget(&btnWipe, 0, 0);
+    my_layout->addWidget(&btnAutoScale, 0, 1);
+    my_layout->addWidget(&btnVertShrink, 0, 2);
+    my_layout->addWidget(&btnHrzShrink, 0, 3);
+    my_layout->addWidget(&chkAutoScale, 1, 0, 1, 4);
+    my_layout->addItem(new QSpacerItem(0, 0), 2, 0, 1, 4);
+    my_layout->addItem(new QSpacerItem(0, 0), 0, 4, 3, 1);
+    my_layout->setRowStretch(2, 1);
+    my_layout->setColumnStretch(4, 1);
+    my_layout->setContentsMargins(0, 0, 0, 0);
+    my_layout->setSpacing(1);
 
-    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    //btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnWipe.setStyle(btnstyle);
-    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    //btnAutoScale.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnAutoScale.setStyle(btnstyle);
-    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    //btnVertShrink.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnVertShrink.setStyle(btnstyle);
-    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    //btnHrzShrink.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnHrzShrink.setStyle(btnstyle);
-    chkAutoScale.setChecked(do_autoscale_on_load);
-    chkAutoScale.setGeometry(4 * BUTTON_WIDTH, 0, chkAutoScale.sizeHint().width(), BUTTON_HEIGHT);
+    //chkAutoScale.setChecked(do_autoscale_on_load);
+    //chkAutoScale.setGeometry(0, 0, chkAutoScale.sizeHint().width(), BUTTON_HEIGHT);
     chkAutoScale.setStyle(btnstyle);
-
 
 }
 
@@ -113,7 +125,8 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    const QRect rectangle = QRect(0, BUTTON_HEIGHT, width(), height() - BUTTON_HEIGHT);
+    button_row_height = my_layout->cellRect(0, 0).height() + 1;
+    const QRect rectangle = QRect(0, button_row_height, width(), height() - button_row_height);
     if(noData()) {
     painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
     } else {
@@ -601,10 +614,10 @@ void RenderArea::clearTrace()
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 {
-    double h = height() - 1 - BUTTON_HEIGHT, w = width() - 1;
+    double h = height() - 1 - button_row_height, w = width() - 1;
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
-    a_y = h*y_1/(y_1-y_0) + BUTTON_HEIGHT;
+    a_y = h*y_1/(y_1-y_0) + button_row_height;
     b_y = -h/(y_1-y_0);
 }
 
@@ -616,7 +629,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py - BUTTON_HEIGHT) / double(height() - BUTTON_HEIGHT) * (y_max - y_min);
+    y = y_max - double(py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)

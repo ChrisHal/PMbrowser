@@ -29,6 +29,7 @@
 #include <QCheckBox>
 #include <QStyle>
 #include <QStyleFactory>
+#include <QGridLayout>
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
@@ -113,6 +114,8 @@ private:
     std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
     QCheckBox chkAutoScale;
+    QGridLayout* my_layout{};
+    int button_row_height{};
 
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
