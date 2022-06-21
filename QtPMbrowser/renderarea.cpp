@@ -81,9 +81,13 @@ RenderArea::RenderArea(QWidget* parent) :
     my_layout->setSpacing(1);
 
     btnWipe.setStyle(btnstyle);
+    btnWipe.setToolTip("clear display");
     btnAutoScale.setStyle(btnstyle);
+    btnAutoScale.setToolTip("auto scale");
     btnVertShrink.setStyle(btnstyle);
+    btnVertShrink.setToolTip("expand y-axis range");
     btnHrzShrink.setStyle(btnstyle);
+    btnHrzShrink.setToolTip("expand x-axis range");
     chkAutoScale.setChecked(do_autoscale_on_load);
     chkAutoScale.setStyle(btnstyle);
 
