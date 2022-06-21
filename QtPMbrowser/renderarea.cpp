@@ -249,7 +249,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
 
     actASOL->setCheckable(true);
     actASOL->setChecked(do_autoscale_on_load);
-    QAction* actToggleBK = menu.addAction("show background traces");
+    QAction* actToggleBK = menu.addAction("overlay traces");
     actToggleBK->setCheckable(true);
     actToggleBK->setChecked(!background_traces_hidden);
     
