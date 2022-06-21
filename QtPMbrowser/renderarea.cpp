@@ -120,11 +120,12 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    button_row_height = my_layout->cellRect(0, 0).height() + 1;
     const QRect rectangle = QRect(0, button_row_height, width(), height() - button_row_height);
-    if(noData()) {
-    painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
-    } else {
+    if (noData()) {
+        button_row_height = my_layout->cellRect(0, 0).height() + 1;
+        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter, "no data to display");
+    }
+    else {
         if (isSelecting) {
             assert(tempPixMap != nullptr);
             painter.drawPixmap(rect(), *tempPixMap);
