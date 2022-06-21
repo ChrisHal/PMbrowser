@@ -26,6 +26,7 @@
 #include <QPointF>
 #include <QPixmap>
 #include <QPushButton>
+#include <QCheckBox>
 #include <QStyle>
 #include <QStyleFactory>
 #include <istream>
@@ -80,6 +81,7 @@ public slots:
     void verticalShrink();
     void horizontalShrink();
     void toggleDoAutoscale(bool checked);
+    void toggleDoAutoscale2(int checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
     void setXYmode();
@@ -110,6 +112,7 @@ private:
 
     std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
+    QCheckBox chkAutoScale;
 
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?

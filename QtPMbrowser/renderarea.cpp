@@ -44,6 +44,7 @@ RenderArea::RenderArea(QWidget* parent) :
     btnAutoScale{"auto", this},
     btnVertShrink{"v.shrink", this},
     btnHrzShrink{"h.shrink", this},
+    chkAutoScale{"scale on load", this},
     ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
@@ -61,6 +62,8 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
     QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
     QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
+    QObject::connect(&chkAutoScale, &QCheckBox::stateChanged, this, &RenderArea::toggleDoAutoscale2);
+
 
     auto btnstyle = p_btnstyle.get();
 
@@ -72,6 +75,10 @@ RenderArea::RenderArea(QWidget* parent) :
     btnVertShrink.setStyle(btnstyle);
     btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnHrzShrink.setStyle(btnstyle);
+    chkAutoScale.setChecked(do_autoscale_on_load);
+    chkAutoScale.setGeometry(4 * BUTTON_WIDTH, 0, chkAutoScale.sizeHint().width(), BUTTON_HEIGHT);
+    chkAutoScale.setStyle(btnstyle);
+
 
 }
 
@@ -253,8 +260,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         zoomIn(x, y, 0.5);
     }
     else if (response == actASOL) {
-        do_autoscale_on_load = !do_autoscale_on_load;
-        // settings_modified = true;
+        toggleDoAutoscale(!do_autoscale_on_load);
     }
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
@@ -442,9 +448,15 @@ void RenderArea::horizontalShrink()
     update();
 }
 
-void RenderArea::toggleDoAutoscale(bool checked)
+void RenderArea::toggleDoAutoscale(bool new_state)
 {
-    do_autoscale_on_load = checked;
+    do_autoscale_on_load = new_state;
+    chkAutoScale.setChecked(new_state);
+}
+
+void RenderArea::toggleDoAutoscale2(int checked)
+{
+    do_autoscale_on_load = checked != Qt::CheckState::Unchecked;
 }
 
 void RenderArea::wipeBuffer()
@@ -627,7 +639,8 @@ void RenderArea::loadSettings()
 {
     QSettings s;
     s.beginGroup("renderarea");
-    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();;
+    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    chkAutoScale.setChecked(do_autoscale_on_load);
     numtraces = s.value("numtraces", numtraces).toInt();
     s.endGroup();
 }
