@@ -80,16 +80,11 @@ RenderArea::RenderArea(QWidget* parent) :
     my_layout->setContentsMargins(0, 0, 0, 0);
     my_layout->setSpacing(1);
 
-    //btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnWipe.setStyle(btnstyle);
-    //btnAutoScale.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnAutoScale.setStyle(btnstyle);
-    //btnVertShrink.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnVertShrink.setStyle(btnstyle);
-    //btnHrzShrink.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnHrzShrink.setStyle(btnstyle);
-    //chkAutoScale.setChecked(do_autoscale_on_load);
-    //chkAutoScale.setGeometry(0, 0, chkAutoScale.sizeHint().width(), BUTTON_HEIGHT);
+    chkAutoScale.setChecked(do_autoscale_on_load);
     chkAutoScale.setStyle(btnstyle);
 
 }
