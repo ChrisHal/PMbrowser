@@ -25,6 +25,7 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication::setStyle("fusion");
     QApplication a(argc, argv);
     QCoreApplication::setOrganizationName("CRHalaszovichMD");
     QCoreApplication::setOrganizationDomain("halaszovich.de");
