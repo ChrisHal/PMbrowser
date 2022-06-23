@@ -83,6 +83,7 @@ public slots:
     void horizontalShrink();
     void toggleDoAutoscale(bool checked);
     void toggleDoAutoscale2(int checked);
+    void toggleOverlay(int checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
     void setXYmode();
@@ -113,7 +114,7 @@ private:
 
     std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
-    QCheckBox chkAutoScale;
+    QCheckBox chkAutoScale, chkOverlay;
     QGridLayout* my_layout{};
     int button_row_height{};
 
