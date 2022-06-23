@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QDebug>
 #include <QSettings>
+#include <QSizePolicy>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -36,7 +37,6 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
-constexpr auto BUTTON_HEIGHT = 23, BUTTON_WIDTH = 55;
 
 RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
@@ -44,6 +44,8 @@ RenderArea::RenderArea(QWidget* parent) :
     btnAutoScale{"auto", this},
     btnVertShrink{"v.shrink", this},
     btnHrzShrink{"h.shrink", this},
+    chkAutoScale{"autoscale on load", this},
+    chkOverlay{"overlay", this},
     ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
@@ -61,17 +63,39 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
     QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
     QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
+    QObject::connect(&chkAutoScale, &QCheckBox::stateChanged, this, &RenderArea::toggleDoAutoscale2);
+    QObject::connect(&chkOverlay, &QCheckBox::stateChanged, this, &RenderArea::toggleOverlay);
+
 
     auto btnstyle = p_btnstyle.get();
+    my_layout = new QGridLayout;
+    this->setLayout(my_layout);
+    my_layout->addWidget(&btnWipe, 0, 0);
+    my_layout->addWidget(&btnAutoScale, 0, 1);
+    my_layout->addWidget(&btnVertShrink, 0, 2);
+    my_layout->addWidget(&btnHrzShrink, 0, 3);
+    my_layout->addWidget(&chkAutoScale, 1, 0, 1, 4);
+    my_layout->addWidget(&chkOverlay, 2, 0, 1, 4);
+    my_layout->addItem(new QSpacerItem(0, 0), 3, 0, 1, 4); // spacer at bottom
+    my_layout->addItem(new QSpacerItem(0, 0), 0, 4, 4, 1); // spacer at rhs
+    my_layout->setRowStretch(3, 1);
+    my_layout->setColumnStretch(4, 1);
+    my_layout->setContentsMargins(0, 0, 0, 0);
+    my_layout->setSpacing(1);
 
-    btnWipe.setGeometry(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
     btnWipe.setStyle(btnstyle);
-    btnAutoScale.setGeometry(BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnWipe.setToolTip("clear display");
     btnAutoScale.setStyle(btnstyle);
-    btnVertShrink.setGeometry(2 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnAutoScale.setToolTip("auto scale");
     btnVertShrink.setStyle(btnstyle);
-    btnHrzShrink.setGeometry(3 * BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    btnVertShrink.setToolTip("expand y-axis range");
     btnHrzShrink.setStyle(btnstyle);
+    btnHrzShrink.setToolTip("expand x-axis range");
+    chkAutoScale.setChecked(do_autoscale_on_load);
+    chkAutoScale.setStyle(btnstyle);
+    chkOverlay.setChecked(!background_traces_hidden);
+    chkOverlay.setStyle(btnstyle);
+    chkOverlay.setToolTip("overlay traces");
 
 }
 
@@ -106,10 +130,12 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    const QRect rectangle = QRect(0, BUTTON_HEIGHT, width(), height() - BUTTON_HEIGHT);
-    if(noData()) {
-    painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
-    } else {
+    const QRect rectangle = QRect(0, button_row_height, width(), height() - button_row_height);
+    if (noData()) {
+        button_row_height = my_layout->cellRect(0, 0).height() + 1;
+        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter, "no data to display");
+    }
+    else {
         if (isSelecting) {
             assert(tempPixMap != nullptr);
             painter.drawPixmap(rect(), *tempPixMap);
@@ -242,7 +268,7 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
 
     actASOL->setCheckable(true);
     actASOL->setChecked(do_autoscale_on_load);
-    QAction* actToggleBK = menu.addAction("show background traces");
+    QAction* actToggleBK = menu.addAction("overlay traces");
     actToggleBK->setCheckable(true);
     actToggleBK->setChecked(!background_traces_hidden);
     
@@ -253,11 +279,11 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         zoomIn(x, y, 0.5);
     }
     else if (response == actASOL) {
-        do_autoscale_on_load = !do_autoscale_on_load;
-        // settings_modified = true;
+        toggleDoAutoscale(!do_autoscale_on_load);
     }
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
+        chkOverlay.setChecked(!background_traces_hidden);
         update();
     } else if (response == actCopy) {
         copyToClipboard();
@@ -442,9 +468,21 @@ void RenderArea::horizontalShrink()
     update();
 }
 
-void RenderArea::toggleDoAutoscale(bool checked)
+void RenderArea::toggleDoAutoscale(bool new_state)
 {
-    do_autoscale_on_load = checked;
+    do_autoscale_on_load = new_state;
+    chkAutoScale.setChecked(new_state);
+}
+
+void RenderArea::toggleDoAutoscale2(int checked)
+{
+    do_autoscale_on_load = checked != Qt::CheckState::Unchecked;
+}
+
+void RenderArea::toggleOverlay(int state)
+{
+    background_traces_hidden = state == Qt::CheckState::Unchecked;
+    update();
 }
 
 void RenderArea::wipeBuffer()
@@ -589,10 +627,10 @@ void RenderArea::clearTrace()
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 {
-    double h = height() - 1 - BUTTON_HEIGHT, w = width() - 1;
+    double h = height() - 1 - button_row_height, w = width() - 1;
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
-    a_y = h*y_1/(y_1-y_0) + BUTTON_HEIGHT;
+    a_y = h*y_1/(y_1-y_0) + button_row_height;
     b_y = -h/(y_1-y_0);
 }
 
@@ -604,7 +642,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py - BUTTON_HEIGHT) / double(height() - BUTTON_HEIGHT) * (y_max - y_min);
+    y = y_max - double(py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)
@@ -627,7 +665,10 @@ void RenderArea::loadSettings()
 {
     QSettings s;
     s.beginGroup("renderarea");
-    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();;
+    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    background_traces_hidden = !s.value("overlay", 1).toInt();
+    chkAutoScale.setChecked(do_autoscale_on_load);
+    chkOverlay.setChecked(!background_traces_hidden);
     numtraces = s.value("numtraces", numtraces).toInt();
     s.endGroup();
 }
@@ -637,6 +678,7 @@ void RenderArea::saveSettings()
     QSettings s;
     s.beginGroup("renderarea");
     s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("overlay", int(!background_traces_hidden));
     s.setValue("numtraces", numtraces);
     s.endGroup();
 }

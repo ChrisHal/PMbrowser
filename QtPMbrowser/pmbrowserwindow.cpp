@@ -41,9 +41,7 @@
 #include "hkTree.h"
 #include "StimTree.h"
 #include "helpers.h"
-//#include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
-//#include "ui_DlgChoosePathAndPrefix.h"
 #include "DlgExportMetadata.h"
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
@@ -280,6 +278,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionCopy, &QAction::triggered, ui->renderArea, &RenderArea::copyToClipboard);
     QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip("Show the Qt library's About box");
+    QObject::connect(ui->pushButtonTreeFilter, &QPushButton::clicked, this, &PMbrowserWindow::on_actionFilter_triggered);
+    QObject::connect(ui->pushButtonShowAll, &QPushButton::clicked, this, &PMbrowserWindow::on_actionRemove_Filter_triggered);
 
     loadSettings();
     ui->renderArea->loadSettings();
@@ -1058,14 +1058,6 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
             }
         }
     }
-}
-
-void PMbrowserWindow::resizeEvent(QResizeEvent* event)
-{
-   auto s = event->size();
-   ui->widget->resize(s);
-   ui->splitterH->setGeometry(5, 5, s.width() - 10, s.height() - 30);
-   QMainWindow::resizeEvent(event);
 }
 
 void PMbrowserWindow::closeEvent(QCloseEvent* event)
