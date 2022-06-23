@@ -22,6 +22,8 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QLabel>
+#include <QPalette>
+#include <QGridLayout>
 #include "PMparameters.h"
 #include "ui_DlgSelectParameters.h"
 
@@ -43,22 +45,20 @@ private:
 		for (int i = 0; i < int(ar.size()); ++i) {
 			auto chk1 = new QCheckBox("export");
 			chk1->setChecked(ar[i].exportIBW);
-			//chk1->setFixedSize(50, 20);
 			auto chk2 = new QCheckBox("print");
 			chk2->setChecked(ar[i].print);
-			//chk2->setFixedSize(50, 20);
 			auto lb = new QLabel(ar[i].name);
-			//lb->setFixedSize(100, 20);
 			grid->addWidget(chk1, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
 			grid->addWidget(chk2, i, 1, Qt::AlignLeft | Qt::AlignVCenter);
 			grid->addWidget(lb, i, 2, Qt::AlignLeft | Qt::AlignVCenter);
-			//grid->setRowStretch(i,0);
-			//grid->setRowMinimumHeight(i, 40);
 		}
-		grid->setColumnStretch(0, 1);
-		grid->setColumnStretch(1, 1);
-		grid->setColumnStretch(2, 2);
+		grid->addItem(new QSpacerItem(0, 0), static_cast<int>(ar.size()), 0, 1, 3);
+		grid->setRowStretch(static_cast<int>(ar.size()), 1);
+		grid->setColumnStretch(0, 0);
+		grid->setColumnStretch(1, 0);
+		grid->setColumnStretch(2, 1);
 	}
+
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
 		std::array<PMparameter, Nrows>& ar)
 	{
@@ -67,6 +67,12 @@ private:
 			ar[i].print = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget()))->isChecked();
 		}
 	}
+
+	QGridLayout *gridLayoutGrp{ new QGridLayout },
+		*gridLayoutSer{ new QGridLayout },
+		*gridLayoutSwp{ new QGridLayout },
+		*gridLayoutTr{ new QGridLayout };
+	QWidget areaGrp{}, areaSer{}, areaSwp{}, areaTr{};
 
 	Ui::DlgSelectParameters *ui;
 };
