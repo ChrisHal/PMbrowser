@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
         std::cout << "pfg file detected\n";
         try {
             hkTree stimtree{};
-            stimtree.InitFromStream(infile,0,static_cast<int>(std::filesystem::file_size(inpath)));
+            stimtree.InitFromStream(".pgf", infile, 0, static_cast<int>(std::filesystem::file_size(inpath)));
             do_exploring(stimtree.GetRootNode(), stim_index, ch_index);
         }
         catch (const std::exception& e) {
