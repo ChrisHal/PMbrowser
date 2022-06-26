@@ -787,6 +787,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
+        auto actSetAsTime0 = menu.addAction("set as time reference");
         QAction* actAmpstate = nullptr, * actDrawStim = nullptr,
             * actUseStimAsX{}, * actDrawSeriesStim = nullptr;
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
@@ -812,6 +813,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (response == actPrintAllP) {
             printAllParameters(item);
+        }
+        else if (response == actSetAsTime0) {
+            node->setAsTime0();
         }
         else if (actAmpstate != nullptr && actAmpstate == response) {
             printAmplifierState(node);
