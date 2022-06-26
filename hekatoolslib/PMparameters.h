@@ -52,7 +52,7 @@ struct PMparameter {
 		LongReal8,	// array of 8 double
 		LongReal16,  // 8 double
 		RecordingMode,
-		RootRelativeTime,
+		RelativeTime,
 		AmpModeName,
 		UserParamDesc4, // 4x UserParamDesc
 		UserParamDesc2,

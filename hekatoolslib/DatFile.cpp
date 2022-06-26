@@ -79,15 +79,16 @@ void DatFile::InitFromStream(std::istream& infile)
         }
         else if (std::strcmp(item.Extension, ExtPul) == 0) {
             // process pulse tree
-            res = PulTree.InitFromStream(infile, item.Start, item.Length);
+            res = PulTree.InitFromStream(ExtPul, infile, item.Start, item.Length);
+            PulTree.GetRootNode().setAsTime0();
         }
         else if (std::strcmp(item.Extension, ExtPgf) == 0) {
             // process pgf tree
-            res = PgfTree.InitFromStream(infile, item.Start, item.Length);
+            res = PgfTree.InitFromStream(ExtPgf, infile, item.Start, item.Length);
         }
         else if (std::strcmp(item.Extension, ExtAmp) == 0) {
             // process amp tree
-            res = AmpTree.InitFromStream(infile, item.Start, item.Length);
+            res = AmpTree.InitFromStream(ExtAmp, infile, item.Start, item.Length);
         }
         if (!res) {
             throw std::runtime_error("error processing tree");
