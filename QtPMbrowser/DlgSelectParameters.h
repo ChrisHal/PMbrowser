@@ -39,24 +39,30 @@ public:
 	void storeParams();
 
 private:
+	static constexpr int chkbox_width = 40;
 	template<std::size_t Nrows> void populateGrid(QGridLayout* grid,
 		const std::array<PMparameter, Nrows>& ar)
 	{
 		for (int i = 0; i < int(ar.size()); ++i) {
-			auto chk1 = new QCheckBox("export");
+			auto chk1 = new QCheckBox();// ("export");
 			chk1->setChecked(ar[i].exportIBW);
-			auto chk2 = new QCheckBox("print");
+			chk1->setMinimumWidth(chkbox_width);
+			chk1->setMaximumWidth(chkbox_width);
+			auto chk2 = new QCheckBox();// ("print");
 			chk2->setChecked(ar[i].print);
+			chk2->setMinimumWidth(chkbox_width);
+			chk2->setMaximumWidth(chkbox_width);
 			auto lb = new QLabel(ar[i].name);
-			grid->addWidget(chk1, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
-			grid->addWidget(chk2, i, 1, Qt::AlignLeft | Qt::AlignVCenter);
-			grid->addWidget(lb, i, 2, Qt::AlignLeft | Qt::AlignVCenter);
+			grid->addWidget(chk1, i, 0);// , Qt::AlignLeft | Qt::AlignVCenter);
+			grid->addWidget(chk2, i, 1);// , Qt::AlignLeft | Qt::AlignVCenter);
+			grid->addWidget(lb, i, 2);// , Qt::AlignLeft | Qt::AlignVCenter);
 		}
 		grid->addItem(new QSpacerItem(0, 0), static_cast<int>(ar.size()), 0, 1, 3);
 		grid->setRowStretch(static_cast<int>(ar.size()), 1);
 		grid->setColumnStretch(0, 0);
 		grid->setColumnStretch(1, 0);
 		grid->setColumnStretch(2, 1);
+		grid->setHorizontalSpacing(1);
 	}
 
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,

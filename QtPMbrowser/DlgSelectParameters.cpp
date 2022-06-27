@@ -18,8 +18,6 @@
 */
 
 #include "DlgSelectParameters.h"
-//#include "ui_DlgSelectParameters.h"
-//#include "PMparameters.h"
 
 DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	: QDialog(parent)

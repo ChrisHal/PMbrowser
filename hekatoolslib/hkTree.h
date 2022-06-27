@@ -192,6 +192,7 @@ struct UserParamDescr {
 };
 std::ostream& operator<<(std::ostream& os, const UserParamDescr&);
 
+class hkTree;
 
 /// <summary>
 /// A node in the tree (pul., pgf, amp, etc. tree)
@@ -282,7 +283,17 @@ public:
     hkTreeNode* getParent() const { return Parent; };
     bool getIsSwapped() const { return isSwapped; };
     int getLevel() const { return level; };
+    double getTime0() const;
+    
+    /// <summary>
+    /// use time recorded in node as time reference for rel. times
+    /// </summary>
+    void setAsTime0();
 
+private:
+    hkTree* tree{};
+
+public:
     hkTreeNode* Parent;
     bool isSwapped;
     std::unique_ptr<char[]> Data;
@@ -296,30 +307,38 @@ class hkTree
 {
     std::vector<int32_t> LevelSizes;
     hkTreeNode RootNode;
+    std::string ID;
+    double time0{};
     bool isSwapped;
     void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
 public:
     hkTree() : LevelSizes{}, RootNode{}, isSwapped{ false } {};
+    std::string getID() {
+        return ID;
+    };
 
     /// <summary>
     /// Initialize tree from istream
     /// </summary>
+    /// <param name="id">id (pgf, pul, ...) of tree</param>
     /// <param name="infile">input stream (usually a filestream)</param>
     /// <param name="offset">offset of start of tree in infile stream</param>
     /// <param name="len">length in bytes of tree data in file (this data contains the total of the tree)</param>
     /// <returns>true on success</returns>
-    bool InitFromStream(std::istream& infile, int offset, int len);
+    bool InitFromStream(const std::string_view& id, std::istream& infile, int offset, int len);
 
     /// <summary>
     /// Initialize tree from data buffered in memory
     /// </summary>
+    /// <param name="id">id (pgf, pul, ...) of tree</param>
     /// <param name="buffer">pointer to data stored in memory</param>
     /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
     /// <returns>true on success</returns>
-    bool InitFromBuffer(char* buffer, std::size_t len);
+    bool InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len);
     hkTreeNode& GetRootNode() { return RootNode; };
     std::size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
     bool getIsSwapped() { return isSwapped; };
+    friend hkTreeNode;
 };
 
 #endif // !HK_TREE_H

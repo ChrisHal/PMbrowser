@@ -87,7 +87,7 @@ std::array<PMparameter, 17> parametersSweep{ {
 	{false,false,"SwLabel","",PMparameter::String32,4},
 	{false,false,"Stim Count","",PMparameter::Int32,40},
 	{true,true,"Sweep Time raw","s",PMparameter::LongReal,48},
-	{true,true,"Rel. Sweep Time","s",PMparameter::RootRelativeTime,48},
+	{true,true,"Rel. Sweep Time","s",PMparameter::RelativeTime,48},
 	{true,true,"Sweep Time","",PMparameter::DateTime,48},
 	{true,true,"Timer Time","s",PMparameter::LongReal,56},
 	{false,false,"User param. 1,2","",PMparameter::LongReal2,64},
@@ -110,7 +110,7 @@ std::array<PMparameter, 15> parametersSeries{ {
 	{false,false,"SeNumberSweeps","",PMparameter::Int32,120},
 	{false,false,"SeMethodTag","",PMparameter::Int32,132},
 	{true,false,"SeTime_raw","s",PMparameter::LongReal,136},
-	{true,true,"Rel. SeTime","s",PMparameter::RootRelativeTime,136},
+	{true,true,"Rel. SeTime","s",PMparameter::RelativeTime,136},
 	{true,false,"SeTime","",PMparameter::DateTime,136},
 	{false,false,"SeMethodName","",PMparameter::String32,312},
 	{false,false,"SeUsername","",PMparameter::String80,872},
@@ -282,9 +282,9 @@ void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) cons
 		case RecordingMode:
 			ss << RecordingModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 			break;
-		case RootRelativeTime:
+		case RelativeTime:
 			ss << std::fixed << std::setprecision(3) <<
-				(node.extractLongReal(offset) - getRootTime(node))
+				(node.extractLongReal(offset) - node.getTime0())
 				<< std::defaultfloat << std::setprecision(6);
 			break;
 		case AmpModeName:
@@ -332,17 +332,6 @@ void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const
 	else {
 		ss << unit;
 	}
-}
-
-double PMparameter::getRootTime(const hkTreeNode& node) const
-{
-	// finde root note:
-	auto p = node.getParent();
-	assert(p != nullptr);
-	while (p->getLevel() > hkTreeNode::LevelRoot) {
-		p = p->getParent();
-	}
-	return p->extractLongRealNoThrow(RoStartTime);
 }
 
 void PMparameter::format(const hkTreeNode& node, std::string& s) const
