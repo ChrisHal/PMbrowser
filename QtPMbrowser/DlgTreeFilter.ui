@@ -35,13 +35,20 @@
      <x>10</x>
      <y>10</y>
      <width>211</width>
-     <height>61</height>
+     <height>71</height>
     </rect>
    </property>
    <property name="text">
-    <string>Enter filter as Perl-style
-regular expression.
-&quot;.*&quot; selects all.</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter filter as Perl-style&lt;br/&gt;&lt;a href=&quot;https://perldoc.perl.org/perlre&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;regular expression&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&amp;quot;.*&amp;quot; selects all.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
