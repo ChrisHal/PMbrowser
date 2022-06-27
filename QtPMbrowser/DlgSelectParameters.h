@@ -62,6 +62,7 @@ private:
 		grid->setColumnStretch(0, 0);
 		grid->setColumnStretch(1, 0);
 		grid->setColumnStretch(2, 1);
+		grid->setHorizontalSpacing(1);
 	}
 
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,

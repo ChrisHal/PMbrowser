@@ -17,7 +17,7 @@
    <item row="4" column="0" colspan="3">
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>'export': export parameter to wave-note and table, 'print': print parameter to text area</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;export:&lt;/span&gt; export parameter to wave-note and table, &lt;span style=&quot; font-weight:600;&quot;&gt;print:&lt;/span&gt; print parameter to text area&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -31,8 +31,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>260</width>
-        <height>491</height>
+        <width>261</width>
+        <height>509</height>
        </rect>
       </property>
      </widget>
@@ -48,8 +48,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>260</width>
-        <height>491</height>
+        <width>262</width>
+        <height>509</height>
        </rect>
       </property>
      </widget>
@@ -75,18 +75,11 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>260</width>
-        <height>491</height>
+        <width>261</width>
+        <height>509</height>
        </rect>
       </property>
      </widget>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Group&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
     </widget>
    </item>
    <item row="3" column="2">
@@ -99,59 +92,19 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>259</width>
-        <height>491</height>
+        <width>262</width>
+        <height>509</height>
        </rect>
       </property>
      </widget>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Series&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <item row="1" column="0" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="horizontalSpacing">
+      <number>1</number>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Sweep&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Trace&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayoutGrp" stretch="0,0,1">
-     <item>
-      <widget class="QLabel" name="label_8">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>export</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
+     <item row="1" column="1">
       <widget class="QLabel" name="label_7">
        <property name="minimumSize">
         <size>
@@ -173,7 +126,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="2">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>parameter name</string>
@@ -183,11 +136,43 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>export</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Group&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item row="2" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayoutSer" stretch="0,0,1">
-     <item>
+   <item row="1" column="1" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="horizontalSpacing">
+      <number>1</number>
+     </property>
+     <item row="1" column="0">
       <widget class="QLabel" name="label_11">
        <property name="minimumSize">
         <size>
@@ -209,7 +194,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="1">
       <widget class="QLabel" name="label_10">
        <property name="minimumSize">
         <size>
@@ -231,7 +216,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="2">
       <widget class="QLabel" name="label_9">
        <property name="text">
         <string>parameter name</string>
@@ -241,11 +226,21 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Series&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item row="2" column="2">
-    <layout class="QHBoxLayout" name="horizontalLayoutSwp" stretch="0,0,1">
-     <item>
+   <item row="1" column="2" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,0,1">
+     <property name="horizontalSpacing">
+      <number>1</number>
+     </property>
+     <item row="1" column="0">
       <widget class="QLabel" name="label_14">
        <property name="minimumSize">
         <size>
@@ -261,7 +256,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="1">
       <widget class="QLabel" name="label_13">
        <property name="minimumSize">
         <size>
@@ -277,7 +272,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="2">
       <widget class="QLabel" name="label_12">
        <property name="text">
         <string>parameter name</string>
@@ -287,11 +282,21 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Sweep&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item row="2" column="3">
-    <layout class="QHBoxLayout" name="horizontalLayoutTr" stretch="0,0,1">
-     <item>
+   <item row="1" column="3" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,1">
+     <property name="horizontalSpacing">
+      <number>1</number>
+     </property>
+     <item row="1" column="0">
       <widget class="QLabel" name="label_17">
        <property name="minimumSize">
         <size>
@@ -307,7 +312,17 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>parameter name</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QLabel" name="label_16">
        <property name="minimumSize">
         <size>
@@ -323,13 +338,10 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="label_15">
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>parameter name</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Trace&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
