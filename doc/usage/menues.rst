@@ -53,8 +53,12 @@ that pertain to exports to packed experiment files (also see :ref:`igor-export-i
 metadata as table
 +++++++++++++++++
 
-Export :index:`metadata <export; metadata>` as tab-delimited table. Parameters marked for export (see :ref:`select-params-dlg-label` ) 
-will be included in export. You can choose per which level of the pulse tree a table row should be 
+Export :index:`metadata <export; metadata>` as tab-delimited table.
+Parameters marked for export (see :ref:`select-params-dlg-label` ) 
+will be included in export. Additionally to these parameters, the first four columns of the table will contain
+the group, series, sweep, and trace counts.
+
+You can choose per which level of the pulse tree a table row should be 
 produced.
 
 Select Parameters
@@ -115,6 +119,8 @@ into the graph. Also avaible from the context menue of the :ref:`grapharea-label
 Enter *YX mode*. The currently selected trace will be used a *X* reference for 
 subsequent drawing operations. This is especially usefull if you are 
 working with ramp stimuli.
+
+.. _YT-mode:
 
 'YT mode'
 ---------
@@ -205,7 +211,9 @@ as metadata tables (checkbox *'export'*, cf. section :ref:`igor-export-infos-lab
 All paramters that might be of relevance should be available. If you miss something, please post a *feature request* 
 on PMbrowser's `issues page <https://github.com/ChrisHal/PMbrowser/issues>`_. 
 
-Times can represented as relative times (*Rel. time*). The time reference for calculation of the relative times
+.. _relative-time-info-label:
+
+Times can represented as :index:`relative times` (*Rel. time*). The time reference for calculation of the relative times
 can be set using the context menu of the **tree-view**. By default, the reference time is the start time of the
 :file:`dat`-file.
 

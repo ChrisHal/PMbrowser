@@ -55,6 +55,8 @@ h.shrink
 
 Horizontally shrinks display (i.e. increases x-axis range twofold).
 
+.. _overlay-feature-label:
+
 
 Checkbox *autoscale on load*
 ++++++++++++++++++++++++++++
