@@ -21,7 +21,8 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
+#ifndef DATFILE_H
+#define DATFILE_H
 
 // some basic structs to handle HEKA Patchmaster dat-files
 
@@ -29,6 +30,7 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <type_traits>
 #include <cassert>
 #include "machineinfo.h"
 #include "hkTree.h"
@@ -70,7 +72,7 @@ class DatFile
 public:
 	DatFile() : offsetDat{ 0 }, lenDat{ 0 }, Version{}, Time{ 0.0 }, isSwapped{ false }, PulTree{},
 		PgfTree{}, AmpTree{} {};
-	bool InitFromStream(std::istream& istream);
+	void InitFromStream(std::istream& istream);
 	std::string getFileDate() const; // return formatted file creation date
 	hkTree& GetPulTree() { return PulTree; };
 	hkTree& GetPgfTree() { return PgfTree; };
@@ -78,72 +80,26 @@ public:
 	std::string getVersion() const { return Version; }; // returns name and version of file creator
 	double GetTime() const { return Time; }; // return creation time in PatchMaster format (see time_handling.h)
 	bool getIsSwapped() const { return isSwapped; };
+	/// <summary>
+	/// create the header (1st line) containing the metadatafields
+	/// </summary>
+	/// <param name="os">stream to receive result</param>
+	static void metadataCreateTableHeader(std::ostream& os);
+	/// <summary>
+	/// format metadata with set export flag as tab delimited table
+	/// </summary>
+	/// <param name="os">stream to receive output</param>
+	/// <param name="max_level">one line per this level will be exported</param>
+	void formatStimMetadataAsTableExport(std::ostream& os, int max_level);
+
+	/// <summary>
+	/// Gets the V or I holding from trace, stores appropiate unit
+	/// </summary>
+	/// <param name="trace">trace-node</param>
+	/// <param name="unit">receives unit</param>
+	/// <returns>holding value</returns>
+	double getTraceHolding(const hkTreeNode& trace, std::string& unit);
 };
-
-enum RecordingModeType {
-	InOut=0,
-	OnCell=1,
-	OutOut=2,
-	WholeCell=3,
-	CClamp=4,
-	VClamp=5,
-	NoMode=6
-};
-
-// offsets into data record fields that we are interested in
-constexpr size_t stExtTrigger = 164, // in Stimulation record
-TrLabel = 4,
-TrTraceCount = 36,  // in Trace Record
-TrData = 40,
-TrDataPoints = 44,
-TrDataKind = 64,
-TrRecordingMode = 68,
-TrDataFormat = 70,
-TrDataScaler = 72,
-TrYUnit = 96,
-TrXInterval = 104,
-TrXStart = 112,
-TrXUnit = 120,
-TrSealResistance = 168,
-TrCSlow = 176,
-TrGSeries = 184,
-TrRsValue = 192,
-TrSelfChannel = 288,
-TrInterleaveSize = 292,
-TrInterleaveSkip = 296,
-TrTrHolding = 408,
-SwLabel = 4,
-SwStimCount = 40,
-SwSweepCount = 44,
-SwTime = 48,
-SwTimer = 56,
-SeLabel = 4, //(*String32Type*)
-SeSeriesCount = 116,
-SeAmplStateFlag = 124, // flag > 0 => load local oldAmpState, otherwise load from .amp File
-SeAmplStateRef = 128, // ref  = 0 => use local oldAmpState. Caution: This is a 1-based offset!
-SeTime = 136,
-SeOldAmpState = 472,
-GrLabel = 4,
-GrGroupCount = 120,
-RoVersionName = 8, // root record
-RoStartTime = 520,
-// now from Amp records:
-RoAmplifierName = 40,
-RoAmplifier = 72, // CHAR
-RoADBoard = 73, // CHAR
-// For AmplStateRecord:
-AmplifierStateSize = 400,
-AmStateCount = 4,
-AmAmplifierState = 112;
-
-// offset for Stim-Tree
-constexpr size_t seVoltage = 8;
-
-// TrDataKind
-constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
-
-// TrDataFormatType
-constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
 
 // some routine to read trace data
 
@@ -159,6 +115,7 @@ constexpr char DFT_int16 = 0, DFT_int32 = 1, DFT_float = 2, DFT_double = 3;
 template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, std::size_t trdatapoints, 
 	double* target)
 {
+	static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
 	assert(trdatapoints == TrRecord.extractInt32(TrDataPoints));
 	int32_t trdata = TrRecord.extractInt32(TrData);
 	datafile.seekg(trdata);
@@ -200,3 +157,6 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 			return datascaler * swap_bytes(x); });
 	}
 }
+
+
+#endif // !DATFILE_H

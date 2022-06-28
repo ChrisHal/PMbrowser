@@ -18,6 +18,10 @@
 */
 
 // file headers for WaveMetrics(tm) IgorPro ibw format
+
+#ifndef IGOR_IBW_H
+#define IGOR_IBW_H
+
 #pragma once
 #include <cstdint>
 
@@ -90,3 +94,4 @@ struct WaveHeader5 {
 	float wData[1];						// The start of the array of data. Must be 64 bit aligned.
 };
 
+#endif // !IGOR_IBW_H

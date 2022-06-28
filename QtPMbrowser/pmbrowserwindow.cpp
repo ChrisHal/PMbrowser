@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -38,18 +39,19 @@
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
 #include "hkTree.h"
+#include "StimTree.h"
 #include "helpers.h"
-#include "ui_pmbrowserwindow.h"
 #include "DlgChoosePathAndPrefix.h"
-#include "ui_DlgChoosePathAndPrefix.h"
+#include "DlgExportMetadata.h"
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
 #include "qstring_helper.h"
+#include "Config.h"
 
 
 const QString myAppName("PM browser");
-const QString appVersion("2.0");
+const QString appVersion(VERSION);
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
@@ -109,16 +111,16 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->textEdit->append(tracename);
 
     // Give holding V / I special treatment, since we want to distingushe CC / VC mode
-    double holding = trace->extractLongRealNoThrow(TrTrHolding);
-    char mode = trace->getChar(TrRecordingMode);
-    QString prefix = "Vhold", yunit = "V";
-    if (mode == CClamp) {
-        yunit = "A";
+    std::string yunit{};
+    double holding = datfile->getTraceHolding(*trace, yunit);
+    QString prefix = "Vhold";
+    if (yunit.at(0)=='A') {
         prefix = "Ihold";
     }
+
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
-    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(yunit);
+    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(QString::fromStdString(yunit));
     std::string str;
     formatParamListPrint(*trace, parametersTrace, str);
     info.append("\n");
@@ -246,7 +248,6 @@ void PMbrowserWindow::loadFile(QString filename)
         ui->textEdit->append(txt);
         ui->textEdit->append(QString::fromUtf8("file date: ")
             + QString::fromStdString(datfile->getFileDate()));
-
     }
 }
 
@@ -277,6 +278,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionCopy, &QAction::triggered, ui->renderArea, &RenderArea::copyToClipboard);
     QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip("Show the Qt library's About box");
+    QObject::connect(ui->pushButtonTreeFilter, &QPushButton::clicked, this, &PMbrowserWindow::on_actionFilter_triggered);
+    QObject::connect(ui->pushButtonShowAll, &QPushButton::clicked, this, &PMbrowserWindow::on_actionRemove_Filter_triggered);
 
     loadSettings();
     ui->renderArea->loadSettings();
@@ -287,22 +290,32 @@ PMbrowserWindow::~PMbrowserWindow()
     delete ui;
 }
 
-
 void PMbrowserWindow::on_actionOpen_triggered()
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setNameFilter("DAT-file (*.dat)");
-    dialog.setViewMode(QFileDialog::Detail);
-    if(QDir(lastloadpath).exists()) {
-        dialog.setDirectory(lastloadpath);
+    QString loaddir = lastloadpath;
+    if (!QDir(loaddir).exists()) {
+        loaddir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
     }
-    else {
-        dialog.setDirectory("./");
+    QString filename = QFileDialog::getOpenFileName(this,
+        "Open DAT File",
+        loaddir,
+        "DAT-file (*.dat)");
+    if (!filename.isEmpty()) {
+        loadFile(filename);
     }
-    if (dialog.exec()) {
-        loadFile(dialog.selectedFiles().at(0));
-    }
+    //QFileDialog dialog(this);
+    //dialog.setFileMode(QFileDialog::ExistingFile);
+    //dialog.setNameFilter("DAT-file (*.dat)");
+    //dialog.setViewMode(QFileDialog::Detail);
+    //if(QDir(lastloadpath).exists()) {
+    //    dialog.setDirectory(lastloadpath);
+    //}
+    //else {
+    //    dialog.setDirectory("./");
+    //}
+    //if (dialog.exec()) {
+    //    loadFile(dialog.selectedFiles().at(0));
+    //}
 }
 
 void PMbrowserWindow::on_actionClose_triggered()
@@ -315,7 +328,18 @@ void PMbrowserWindow::on_actionClear_Text_triggered()
     ui->textEdit->clear();
 }
 
-void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders)
+bool PMbrowserWindow::assertDatFileOpen()
+{
+    if (!datfile) {
+        QMessageBox msg;
+        msg.setText("Frist, open a file!");
+        msg.exec();
+        return false;
+    }
+    return true;
+}
+
+void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders, int folder_level)
 {
     if (item->isHidden()) { return; } // export only visible items
     int N = item->childCount();
@@ -323,8 +347,8 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         bool new_datafolder{ false };
         if (create_datafolders && poutfile!=nullptr) {
             auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            new_datafolder = (poutfile != nullptr) && (node->getLevel() == hkTreeNode::LevelGroup ||
-                node->getLevel() == hkTreeNode::LevelSeries);
+            new_datafolder = (poutfile != nullptr) && (node->getLevel() >= hkTreeNode::LevelGroup &&
+                node->getLevel() <= folder_level);
         }
         if (new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
@@ -334,7 +358,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
             poutfile->write(buf, 32);
         }
         for (int i = 0; i < N; ++i) {
-            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders);
+            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders, folder_level);
         }
         if (new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderEndRecord,0,0 };
@@ -384,7 +408,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
     }
 }
 
-bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders)
+bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders, int & last_folder_level)
 {
     if (!QDir(lastexportpath).exists()) {
         lastexportpath.clear();
@@ -403,6 +427,7 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
         }
         pxp_export = dlg.pxp_export;
         create_datafolders = dlg.create_datafolders;
+        last_folder_level = dlg.level_last_folder + hkTreeNode::LevelGroup; // combo box starts with Group
         lastexportpath = path;
 
         QSettings settings;
@@ -418,14 +443,23 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
 
 void PMbrowserWindow::exportAllVisibleTraces()
 {
+    if (!assertDatFileOpen()) {
+        return;
+    }
+    
     QString path, prefix;
-    bool pxp_export, create_datafolders;
+    bool pxp_export{}, create_datafolders{};
+    int folder_level{};
     std::ofstream outfile;
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
             if (filename.length() == 0) return;
+            QFileInfo export_path_info(filename);
+            lastexportpath = export_path_info.absolutePath() + "/";
+            QSettings settings;
+            settings.setValue("pmbrowserwindow/lastexportpath", lastexportpath);
             outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
@@ -438,10 +472,10 @@ void PMbrowserWindow::exportAllVisibleTraces()
             int N = ui->treePulse->topLevelItemCount();
             for (int i = 0; i < N; ++i) {
                 if (pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders);
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders, folder_level);
                 }
                 else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false);
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false, 0);
                 }
             }
             if (pxp_export && create_datafolders) {
@@ -455,13 +489,68 @@ void PMbrowserWindow::exportAllVisibleTraces()
     }
 }
 
+void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
+{
+    if (max_level > hkTreeNode::LevelTrace) {
+        throw std::runtime_error("max_level exceeds LevelTrace(=4)");
+    }
+    DatFile::metadataCreateTableHeader(os);
+    try {
+        int N = ui->treePulse->topLevelItemCount();
+        for (int i = 0; i < N; ++i) { // level: group
+            const auto tli = ui->treePulse->topLevelItem(i);
+            if (tli->isHidden()) continue;
+            const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
+            auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+            std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
+            int Nse = tli->childCount();
+            for (int j = 0; j < Nse; ++j) { // level: series
+                const auto se_item = tli->child(j);
+                if (se_item->isHidden()) continue;
+                const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+                std::string se_entry = formatParamListExportTable(series, parametersSeries);
+                int M = se_item->childCount();
+                for (int k = 0; k < M; ++k) { // level: sweep
+                    const auto sw_item = se_item->child(k);
+                    if (sw_item->isHidden()) continue;
+                    const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                    auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                    std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
+                    int Nsw = sw_item->childCount();
+                    for (int l = 0; l < Nsw; ++l) { // level: trace
+                        const auto tr_item = sw_item->child(l);
+                        if (tr_item->isHidden()) continue;
+                        const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
+                        auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                        std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
+                        os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
+                            << tr_count <<
+                            grp_entry << se_entry << sw_entry << tr_entry << '\n';
+                        if (max_level < hkTreeNode::LevelTrace) break;
+                    }
+                    if (max_level < hkTreeNode::LevelSweep) break;
+                }
+                if(max_level < hkTreeNode::LevelSeries) break;
+            }
+            if (max_level < hkTreeNode::LevelGroup) break;
+        }
+    }
+    catch (std::exception& e) {
+        QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));
+        QMessageBox::warning(this, QString("Error"), msg);
+    }
+}
+
+
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
     bool pxp_export, create_datafolders;
+    int folder_level{};
     std::ofstream outfile;
 
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
@@ -476,10 +565,10 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
         }
         try {
             if (pxp_export) {
-                exportSubTree(root, path, prefix, &outfile, create_datafolders);
+                exportSubTree(root, path, prefix, &outfile, create_datafolders, folder_level);
             }
             else {
-                exportSubTree(root, path, prefix, nullptr, false);
+                exportSubTree(root, path, prefix, nullptr, false, 0);
             }
             if (pxp_export&&create_datafolders) {
                 WriteIgorProcedureRecord(outfile);
@@ -556,13 +645,11 @@ void PMbrowserWindow::filterTree()
 
 void PMbrowserWindow::on_actionExport_IBW_File_triggered()
 {
-    auto item = ui->treePulse->currentItem();
-    if (!datfile) {
-        QMessageBox msg;
-        msg.setText("no file");
-        msg.exec();
+    if (!assertDatFileOpen()) {
+        return;
     }
-    else if(!item){
+    auto item = ui->treePulse->currentItem();
+    if(!item){
         QMessageBox msg;
         msg.setText("no item selected");
         msg.exec();
@@ -582,7 +669,8 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     else {
         QString path, prefix;
         bool pxp_export, create_datafolders;
-        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders)) {
+        int folder_level{};
+        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
             if (pxp_export) {
                 QMessageBox::warning(this, "Error", "pxp export for\nthis option\nnot yet implimented");
                 return;
@@ -601,15 +689,50 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     }
 }
 
+void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
+{
+    if (!assertDatFileOpen()) {
+        return;
+    }
+    DlgExportMetadata dlg;
+    if (dlg.exec()) {
+        auto selected = dlg.getSelection();
+        if (selected < 0)
+        {
+            selected = hkTreeNode::LevelTrace;
+        }
+        else {
+            ++selected; // first item in box is level 1
+        }
+        auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
+            lastexportpath, "tab separated file (*.txt *.csv)");
+        if (export_file_name.length() == 0) return;
+        std::ofstream export_file(export_file_name.toStdString());
+        if (!export_file) {
+            QMessageBox::warning(this, "Error",
+                QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
+            return;
+        }
+        try {
+            this->formatStimMetadataAsTableExport(export_file, selected);
+        }
+        catch (const std::exception& e) {
+            QMessageBox::warning(this, "Error while exporting", e.what());
+        }
+    }
+}
+
 void PMbrowserWindow::on_actionAbout_triggered()
 {
-    QString txt = myAppName +  ", Version " + appVersion +
-                                "\n\n© Copyright 2020 - 2022 Christian R. Halaszovich"
-                                "\n\nAn open source tool to handle PatchMaster Files.\n"
-                                "PatchMaster is a trademark of Heka GmbH\n\n"
-                                "Build using Qt Library version " + QT_VERSION_STR +
-                                "\n\nLicense: GNU General Public License Version 3 (GPLv3)";
+    QString txt = "<b>" + myAppName + "</b>, Version " + appVersion +
+                                "<br>" + COPYRIGHT_NOTICE +
+                                "<p>An open source tool to handle PatchMaster Files.<br>"
+                                "For help and further info see <a href="+ PROJECT_HOMEPAGE +">project homepage</a>.</p>"
+                                "<p>PatchMaster is a trademark of Heka GmbH</p>"
+                                "<p>Build using Qt Library version " + QT_VERSION_STR +
+                                "</p><p>License: GNU General Public License Version 3 (GPLv3)</p>";
     QMessageBox msg;
+    msg.setTextFormat(Qt::RichText);
     msg.setWindowTitle("About");
     msg.setText(txt);
     msg.exec();
@@ -664,10 +787,19 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actHide = menu.addAction("hide subtree");
         auto actShow = menu.addAction("show all children");
         auto actPrintAllP = menu.addAction("print all parameters");
-        QAction* actAmpstate = nullptr;
+        auto actSetAsTime0 = menu.addAction("set as time reference");
+        QAction* actAmpstate = nullptr, * actDrawStim = nullptr,
+            * actUseStimAsX{}, * actDrawSeriesStim = nullptr;
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         if (node->getLevel() == hkTreeNode::LevelSeries) {
+            menu.addSeparator();
             actAmpstate = menu.addAction("amplifier state");
+            actDrawSeriesStim = menu.addAction("draw stimuli");
+        }
+        if (node->getLevel() == hkTreeNode::LevelSweep) {
+            menu.addSeparator();
+            actDrawStim = menu.addAction("show stimulus");
+            actUseStimAsX = menu.addAction("use stim. as x trace");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
         if (response == actExport) {
@@ -682,8 +814,24 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         else if (response == actPrintAllP) {
             printAllParameters(item);
         }
+        else if (response == actSetAsTime0) {
+            node->setAsTime0();
+        }
         else if (actAmpstate != nullptr && actAmpstate == response) {
             printAmplifierState(node);
+        } else if (actDrawSeriesStim != nullptr && response == actDrawSeriesStim) {
+            drawStimuliSeries(node);
+        }
+        else if (actDrawStim != nullptr && actDrawStim == response) {
+            drawStimulus(node);
+        }
+        else if (actUseStimAsX && actUseStimAsX == response) {
+            if (ui->renderArea->noData() || ui->renderArea->YtraceHasX()) {
+                QMessageBox::information(this, "Notice", "First, select a data-trace!"); 
+            }
+            else {
+                useStimAsX(node);
+            }
         }
     }
 }
@@ -830,6 +978,49 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 }
 
+void PMbrowserWindow::create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const
+{
+    assert(sweep->getLevel() == hkTreeNode::LevelSweep);
+        int stim_index = sweep->extractInt32(SwStimCount) - 1,
+        sweep_index = sweep->extractInt32(SwSweepCount) - 1;
+    StimRootRecord root(datfile->GetPgfTree().GetRootNode());
+    const auto& stim = root.Stims.at(stim_index);
+    auto stim_trace = stim.constructStimTrace(sweep_index);
+    dt = DisplayTrace{ stim_trace, stim.getStimChannel().DacUnit };
+}
+
+void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
+{
+    try {
+        DisplayTrace dt{};
+        create_stim_trace(sweep, dt);
+        ui->renderArea->addTrace(std::move(dt));
+    }
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
+}
+
+void PMbrowserWindow::useStimAsX(const hkTreeNode* sweep)
+{
+    try {
+        DisplayTrace dt{};
+        create_stim_trace(sweep, dt);
+        ui->renderArea->createInterpolatedXtrace(std::move(dt));
+    }
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
+}
+
+void PMbrowserWindow::drawStimuliSeries(const hkTreeNode* series)
+{
+    assert(series->getLevel() == hkTreeNode::LevelSeries);
+    for (const auto& sweep : series->Children) {
+        drawStimulus(&sweep);
+    }
+}
+
 void PMbrowserWindow::on_actionPrint_All_Params_triggered()
 {
     auto item = ui->treePulse->currentItem();
@@ -871,13 +1062,6 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
             }
         }
     }
-}
-
-void PMbrowserWindow::resizeEvent(QResizeEvent* event)
-{
-   auto s = event->size();
-   ui->widget->resize(s);
-   ui->splitterH->setGeometry(5, 5, s.width() - 10, s.height() - 30);
 }
 
 void PMbrowserWindow::closeEvent(QCloseEvent* event)

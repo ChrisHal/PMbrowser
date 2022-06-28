@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>170</height>
+    <height>223</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>130</y>
+     <y>180</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -58,13 +58,20 @@
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="text">
        <string>prefix</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEditPrefix"/>
+     <widget class="QLineEdit" name="lineEditPrefix">
+      <property name="toolTip">
+       <string>wavenames will be prefixed with this</string>
+      </property>
+     </widget>
     </item>
     <item row="1" column="2">
      <spacer name="horizontalSpacer">
@@ -89,9 +96,12 @@
     <rect>
      <x>20</x>
      <y>80</y>
-     <width>111</width>
+     <width>281</width>
      <height>17</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>all traces are stored in one file</string>
    </property>
    <property name="text">
     <string>create pxp file</string>
@@ -102,12 +112,45 @@
     <rect>
      <x>30</x>
      <y>100</y>
-     <width>281</width>
+     <width>321</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
     <string>create folder structure (only for pxp files)</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxLevel">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>120</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Group</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Series</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>120</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>last folder level:</string>
    </property>
   </widget>
  </widget>

@@ -19,5 +19,5 @@ Additionally, a macro will be included to create graphs for the individual serie
 is accessible from the *Macro* menue (entry *Display Waves*) within :program:`IgorPro`.
 
 You may want to restrict the traces you export using the :ref:`filter-dlg-label`
-before invoking :ref:`export-all-visible-traces-label`
+before invoking :ref:`Export -> all visible traces <export-all-visible-traces-label>`
 from the *File* menue.

@@ -25,6 +25,36 @@
 #include "hkTree.h"
 #include "helpers.h"
 
+void hkTreeNode::setAsTime0() {
+	assert(tree->getID() == ExtPul);
+	switch (level) {
+	case LevelRoot:
+		tree->time0 = extractValue(RoStartTime, 0.0);
+		break;
+	case LevelGroup:
+		// resort to root time
+		tree->time0 = Parent->extractValue(RoStartTime, 0.0);
+		break;
+	case LevelSeries:
+		tree->time0 = extractValue(SeTime, 0.0);
+		break;
+	case LevelSweep:
+		tree->time0 = extractValue(SwTime, 0.0);
+		break;
+	case LevelTrace:
+		// resort to sweep time
+		tree->time0 = Parent->extractValue(SwTime, 0.0);
+		break;
+	default:
+		throw std::runtime_error("unexpected tree level");
+	}
+};
+
+double hkTreeNode::getTime0() const
+{
+	return tree->time0;
+}
+
 /// <summary>
 /// header of tree as stored in file
 /// </summary>
@@ -36,6 +66,7 @@ struct TreeRoot {
 
 void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
 {
+	node.tree = this;
 	auto size = LevelSizes.at(level);
 	node.level = level;
 	node.len = size;
@@ -54,7 +85,7 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	}
 }
 
-bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
+bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, int len)
 {
 	assert(!!infile);
 	auto buffer = std::make_unique<char[]>(len);
@@ -63,13 +94,14 @@ bool hkTree::InitFromStream(std::istream& infile, int offset, int len)
 		infile.clear();
 		return false;
 	}
-	bool res = this->InitFromBuffer(buffer.get(), len);
+	bool res = this->InitFromBuffer(id, buffer.get(), len);
 	return res;
 }
 
-bool hkTree::InitFromBuffer(char* buffer, std::size_t len)
+bool hkTree::InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len)
 {
-    TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
+	ID = id;
+	TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
 	isSwapped = false;
 	if (root->Magic == SwappedMagicNumber) {
 		isSwapped = true;

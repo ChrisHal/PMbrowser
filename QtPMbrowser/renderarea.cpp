@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QDebug>
 #include <QSettings>
+#include <QSizePolicy>
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
@@ -36,8 +37,16 @@
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
+
 RenderArea::RenderArea(QWidget* parent) :
-    QWidget(parent), ndatapoints{}, 
+    QWidget(parent),
+    btnWipe{"wipe", this},
+    btnAutoScale{"auto", this},
+    btnVertShrink{"v.shrink", this},
+    btnHrzShrink{"h.shrink", this},
+    chkAutoScale{"autoscale on load", this},
+    chkOverlay{"overlay", this},
+    ndatapoints{}, 
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
@@ -49,7 +58,45 @@ RenderArea::RenderArea(QWidget* parent) :
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setFocusPolicy(Qt::WheelFocus);
-    //ui->setupUi(this);
+
+    QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
+    QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
+    QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
+    QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
+    QObject::connect(&chkAutoScale, &QCheckBox::stateChanged, this, &RenderArea::toggleDoAutoscale2);
+    QObject::connect(&chkOverlay, &QCheckBox::stateChanged, this, &RenderArea::toggleOverlay);
+
+
+    auto btnstyle = p_btnstyle.get();
+    my_layout = new QGridLayout;
+    this->setLayout(my_layout);
+    my_layout->addWidget(&btnWipe, 0, 0);
+    my_layout->addWidget(&btnAutoScale, 0, 1);
+    my_layout->addWidget(&btnVertShrink, 0, 2);
+    my_layout->addWidget(&btnHrzShrink, 0, 3);
+    my_layout->addWidget(&chkAutoScale, 1, 0, 1, 4);
+    my_layout->addWidget(&chkOverlay, 2, 0, 1, 4);
+    my_layout->addItem(new QSpacerItem(0, 0), 3, 0, 1, 4); // spacer at bottom
+    my_layout->addItem(new QSpacerItem(0, 0), 0, 4, 4, 1); // spacer at rhs
+    my_layout->setRowStretch(3, 1);
+    my_layout->setColumnStretch(4, 1);
+    my_layout->setContentsMargins(0, 0, 0, 0);
+    my_layout->setSpacing(1);
+
+    btnWipe.setStyle(btnstyle);
+    btnWipe.setToolTip("clear display");
+    btnAutoScale.setStyle(btnstyle);
+    btnAutoScale.setToolTip("auto scale");
+    btnVertShrink.setStyle(btnstyle);
+    btnVertShrink.setToolTip("expand y-axis range");
+    btnHrzShrink.setStyle(btnstyle);
+    btnHrzShrink.setToolTip("expand x-axis range");
+    chkAutoScale.setChecked(do_autoscale_on_load);
+    chkAutoScale.setStyle(btnstyle);
+    chkOverlay.setChecked(!background_traces_hidden);
+    chkOverlay.setStyle(btnstyle);
+    chkOverlay.setToolTip("overlay traces");
+
 }
 
 RenderArea::~RenderArea()
@@ -83,10 +130,12 @@ void RenderArea::paintEvent(QPaintEvent* event)
     font.setPixelSize(24);
     painter.setFont(font);
     //painter.drawPath(path);
-    const QRect rectangle = QRect(0, 0, width(), height());
-    if(noData()) {
-    painter.drawText(rectangle,Qt::AlignHCenter|Qt::AlignVCenter,"no data to display");
-    } else {
+    const QRect rectangle = QRect(0, button_row_height, width(), height() - button_row_height);
+    if (noData()) {
+        button_row_height = my_layout->cellRect(0, 0).height() + 1;
+        painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter, "no data to display");
+    }
+    else {
         if (isSelecting) {
             assert(tempPixMap != nullptr);
             painter.drawPixmap(rect(), *tempPixMap);
@@ -173,17 +222,13 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
     if (!noData() && event->buttons() == Qt::NoButton) {
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
-        long dataindex = std::lrint((x - yTrace.x0) / yTrace.deltax);
-        double datay = std::numeric_limits<double>::quiet_NaN();
-        if (dataindex >= 0 && 
-           static_cast<std::size_t>(dataindex) < yTrace.data.size()) {
-            datay = yTrace.data.at(dataindex);
-        }
+
         QString txt;
         if (isXYmode()) {
             txt = QString("(%1%2/%3%4)").arg(x).arg(xTrace.getYUnit()).arg(y).arg(yTrace.getYUnit());
         }
         else {
+            double datay = yTrace.interp(x); //= std::numeric_limits<double>::quiet_NaN();
             txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
         QToolTip::showText(event->globalPos(), txt, this, rect());
@@ -200,15 +245,6 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
         selStart = pos_curr;
         event->accept();
     }
-    //else if (!isTraceDragging && event->buttons() == Qt::NoButton) {
-    //    if (QGuiApplication::keyboardModifiers() == Qt::ShiftModifier) {
-    //        setCursor(Qt::OpenHandCursor);
-    //    }
-    //    else {
-    //        unsetCursor();
-    //    }
-    //    event->accept();
-    //}
     else {
         event->ignore();
     }
@@ -219,14 +255,20 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
     QMenu menu(this);
     auto actZoomOut = menu.addAction("zoom out");
     auto actShrinkV = menu.addAction("vertical shrink");
+    auto actShrinkH = menu.addAction("horizontal shrink");
     auto actAutoScale = menu.addAction("autoscale");
     auto actCopy = menu.addAction("copy");
     menu.addSeparator();
     // auto actWipeBK = menu.addAction("wipe background traces");
     auto actASOL = menu.addAction("autoscale on load");
+
+    QObject::connect(actShrinkH, &QAction::triggered, this, &RenderArea::horizontalShrink);
+    QObject::connect(actShrinkV, &QAction::triggered, this, &RenderArea::verticalShrink);
+    QObject::connect(actAutoScale, &QAction::triggered, this, &RenderArea::autoScale);
+
     actASOL->setCheckable(true);
     actASOL->setChecked(do_autoscale_on_load);
-    QAction* actToggleBK = menu.addAction("show background traces");
+    QAction* actToggleBK = menu.addAction("overlay traces");
     actToggleBK->setCheckable(true);
     actToggleBK->setChecked(!background_traces_hidden);
     
@@ -235,32 +277,18 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
         double x, y;
         scaleFromPixToXY(event->x(), event->y(), x, y);
         zoomIn(x, y, 0.5);
-        event->accept();
     }
-    else if (response == actShrinkV) {
-        double nymin = 1.5 * y_min - 0.5 * y_max,
-            nymax = 1.5 * y_max - 0.5 * y_min;
-        y_min = nymin;
-        y_max = nymax;
-        update();
-        event->accept();
-    }
-    else if (response == actAutoScale) {
-        autoScale();
-        event->accept();
-        }
     else if (response == actASOL) {
-        do_autoscale_on_load = !do_autoscale_on_load;
-        // settings_modified = true;
+        toggleDoAutoscale(!do_autoscale_on_load);
     }
     else if (response == actToggleBK) {
         background_traces_hidden = !background_traces_hidden;
+        chkOverlay.setChecked(!background_traces_hidden);
         update();
-        event->accept();
     } else if (response == actCopy) {
         copyToClipboard();
-        event->accept();
     }
+    event->accept();
 }
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
@@ -319,6 +347,14 @@ void RenderArea::leaveEvent(QEvent* event)
     clearFocus();
     event->accept();
 }
+
+//void RenderArea::resizeEvent(QResizeEvent* event)
+//{
+//    btnWipe.move(0, 0);
+//    auto h = btnAutoScale.height();
+//    btnAutoScale.move(0, h);
+//    QWidget::resizeEvent(event);
+//}
 
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -395,11 +431,17 @@ void RenderArea::wheelEvent(QWheelEvent* event)
 
 void RenderArea::autoScale()
 {
+    if (noData()) return;
     if (isXYmode()) {
         x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
         x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
     }
-    else {
+    else if (yTrace.has_x_trace()) {
+        x_min = *std::min_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+        x_max = *std::max_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+    }
+    else
+    {
         x_min = yTrace.x0;
         x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
     }
@@ -408,9 +450,39 @@ void RenderArea::autoScale()
     update();
 }
 
-void RenderArea::toggleDoAutoscale(bool checked)
+void RenderArea::verticalShrink()
 {
-    do_autoscale_on_load = checked;
+    double nymin = 1.5 * y_min - 0.5 * y_max,
+        nymax = 1.5 * y_max - 0.5 * y_min;
+    y_min = nymin;
+    y_max = nymax;
+    update();
+}
+
+void RenderArea::horizontalShrink()
+{
+    double nxmin = 1.5 * x_min - 0.5 * x_max,
+        nxmax = 1.5 * x_max - 0.5 * x_min;
+    x_min = nxmin;
+    x_max = nxmax;
+    update();
+}
+
+void RenderArea::toggleDoAutoscale(bool new_state)
+{
+    do_autoscale_on_load = new_state;
+    chkAutoScale.setChecked(new_state);
+}
+
+void RenderArea::toggleDoAutoscale2(int checked)
+{
+    do_autoscale_on_load = checked != Qt::CheckState::Unchecked;
+}
+
+void RenderArea::toggleOverlay(int state)
+{
+    background_traces_hidden = state == Qt::CheckState::Unchecked;
+    update();
 }
 
 void RenderArea::wipeBuffer()
@@ -517,6 +589,30 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     setMouseTracking(true);
     }
 
+void RenderArea::addTrace(DisplayTrace&& dt)
+{
+    if (yTrace.isValid()) {
+        tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
+        while (tracebuffer.size() > numtraces) {
+            delete tracebuffer.dequeue();
+        }
+    }
+    yTrace = std::move(dt);
+    if (do_autoscale_on_load) { autoScale(); }
+    setMouseTracking(true);
+    update();
+}
+
+void RenderArea::createInterpolatedXtrace(DisplayTrace&& dt_x)
+{
+    if (yTrace.isValid()) {
+        xTrace = std::move(dt_x);
+        xTrace.convertToInterpolated(yTrace);
+        if (do_autoscale_on_load) { autoScale(); }
+        update();
+    }
+}
+
 void RenderArea::clearTrace()
 {
     ndatapoints = 0;
@@ -531,10 +627,10 @@ void RenderArea::clearTrace()
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
 {
-    double h = height() - 1, w = width() - 1;
+    double h = height() - 1 - button_row_height, w = width() - 1;
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
-    a_y = h*y_1/(y_1-y_0);
+    a_y = h*y_1/(y_1-y_0) + button_row_height;
     b_y = -h/(y_1-y_0);
 }
 
@@ -546,7 +642,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py) / double(height()) * (y_max - y_min);
+    y = y_max - double(py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)
@@ -569,7 +665,10 @@ void RenderArea::loadSettings()
 {
     QSettings s;
     s.beginGroup("renderarea");
-    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();;
+    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    background_traces_hidden = !s.value("overlay", 1).toInt();
+    chkAutoScale.setChecked(do_autoscale_on_load);
+    chkOverlay.setChecked(!background_traces_hidden);
     numtraces = s.value("numtraces", numtraces).toInt();
     s.endGroup();
 }
@@ -579,6 +678,7 @@ void RenderArea::saveSettings()
     QSettings s;
     s.beginGroup("renderarea");
     s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("overlay", int(!background_traces_hidden));
     s.setValue("numtraces", numtraces);
     s.endGroup();
 }

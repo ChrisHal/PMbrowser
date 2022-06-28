@@ -22,8 +22,8 @@
 #include <QSettings>
 #include "DlgChoosePathAndPrefix.h"
 
-DlgChoosePathAndPrefix::DlgChoosePathAndPrefix(QWidget* parent, const QString& Path) : QDialog(parent), path(Path), prefix{},
-pxp_export{}, create_datafolders{}, ui(new Ui::DlgChoosePathAndPrefix)
+DlgChoosePathAndPrefix::DlgChoosePathAndPrefix(QWidget* parent, const QString& Path) : QDialog(parent), path(Path),
+ui(new Ui::DlgChoosePathAndPrefix)
 {
 	ui->setupUi(this);
 
@@ -39,7 +39,9 @@ pxp_export{}, create_datafolders{}, ui(new Ui::DlgChoosePathAndPrefix)
 	ui->checkBox_create_datafolders->setChecked(
 		settings.value("DlgChoosePathAndPrefix/create_folders", 0).toBool()
 	);
-
+	ui->comboBoxLevel->setCurrentIndex(
+		settings.value("DlgChoosePathAndPrefix/last_export_level", 1).toInt()
+	);
 	QObject::connect(ui->pushButtonChoosePath, SIGNAL(clicked()), this, SLOT(choosePath()));
 	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::stateChanged,
 		this, &DlgChoosePathAndPrefix::stateExportPXPchanged);
@@ -64,12 +66,12 @@ void DlgChoosePathAndPrefix::choosePath()
 
 void DlgChoosePathAndPrefix::stateExportPXPchanged(int state) {
 	if (!state) { ui->checkBox_create_datafolders->setChecked(false); }
-};
+}
 
 
 void DlgChoosePathAndPrefix::stateCreateFoldersChanged(int state) {
 	if (state) { ui->checkBox_pxp_export->setChecked(true); }
-};
+}
 
 
 void DlgChoosePathAndPrefix::accept()
@@ -78,12 +80,13 @@ void DlgChoosePathAndPrefix::accept()
 	prefix = ui->lineEditPrefix->text();
 	pxp_export = ui->checkBox_pxp_export->isChecked();
 	create_datafolders = ui->checkBox_create_datafolders->isChecked();
+	level_last_folder = ui->comboBoxLevel->currentIndex();
 
 	QSettings settings;
 
 	settings.setValue("DlgChoosePathAndPrefix/prefix", prefix);
 	settings.setValue("DlgChoosePathAndPrefix/pxp_export", pxp_export);
 	settings.setValue("DlgChoosePathAndPrefix/create_folders", create_datafolders);
-
+	settings.setValue("DlgChoosePathAndPrefix/last_export_level", level_last_folder);
 	QDialog::accept();
 }

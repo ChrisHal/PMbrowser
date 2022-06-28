@@ -17,6 +17,10 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef HELPERS_H
+#define HELPERS_H
+
+
 /** \file
  * various helper functions, e.g. for byte-swapping
  */
@@ -53,3 +57,5 @@ struct hkTreeNode;
 /// <param name="count">count of trace (starting from 1)</param>
 /// <returns>string containing canonical trace-name</returns>
 std::string formTraceName(const hkTreeNode& tr, int count);
+
+#endif // !HELPERS_H

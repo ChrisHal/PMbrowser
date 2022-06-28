@@ -25,6 +25,11 @@
 #include <QQueue>
 #include <QPointF>
 #include <QPixmap>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QStyle>
+#include <QStyleFactory>
+#include <QGridLayout>
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
@@ -43,8 +48,29 @@ public:
     ~RenderArea();
     bool noData() { return !yTrace.isValid(); };
     void renderTrace(hkTreeNode* trace, std::istream& infile);
+    void addTrace(DisplayTrace&& dt);
+
+    /// <summary>
+    /// dt_x is a x-y-trace (usually representing a stimulus)
+    /// that is to be used as a template to create a trace
+    /// that is used as the x-trace. This sets the renderares
+    /// to xy-mode.
+    /// Especiually usefull for ramps where the voltage trace
+    /// has not been recorded.
+    /// </summary>
+    /// <param name="dt_x">x-y-trace, usually a stimulus</param>
+    void createInterpolatedXtrace(DisplayTrace&& dt_x);
     void clearTrace();
+
+    /// <summary>
+    /// checks if we display is in x-y-mode,
+    /// i.e. a data-trace is displayed versus a
+    /// x-traces
+    /// </summary>
+    /// <returns>true id in xy-mode</returns>
     bool isXYmode() { return xTrace.isValid(); };
+
+    bool YtraceHasX() { return (yTrace.isValid() && yTrace.has_x_trace()); };
     bool isSettingsModified() { return settings_modified; };
     bool isAutoscaleEnabled() { return do_autoscale_on_load; };
     void saveSettings();
@@ -53,7 +79,11 @@ public:
 public slots:
     void showSettingsDialog();
     void autoScale();
+    void verticalShrink();
+    void horizontalShrink();
     void toggleDoAutoscale(bool checked);
+    void toggleDoAutoscale2(int checked);
+    void toggleOverlay(int checked);
     void wipeAll() { clearTrace(); };
     void wipeBuffer();
     void setXYmode();
@@ -71,6 +101,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    //void resizeEvent(QResizeEvent* event) override;
 
 private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
@@ -80,6 +111,13 @@ private:
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
+
+    std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
+    QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
+    QCheckBox chkAutoScale, chkOverlay;
+    QGridLayout* my_layout{};
+    int button_row_height{};
+
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;

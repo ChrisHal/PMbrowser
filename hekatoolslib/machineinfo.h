@@ -16,20 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
+#ifndef MACHINEINFO_H
+#define MACHINEINFO_H
 
 #pragma once
 
 /// <summary>
-/// Convert time as found in .dat file, only return date part
-/// (ignore time)
+/// check endianess of machine
+/// (will be optimized to a constant by compiler)
 /// </summary>
-/// <param name="t">time found in .dat file</param>
-/// <returns>std::string containing formatted date</returns>
-std::string formatPMtimeDate(double t); // date only
+/// <returns>true if machine is little-endian</returns>
+inline bool MachineIsLittleEndian()
+{
+    unsigned t = 1;
+    auto p = reinterpret_cast<char*>(&t);
+    return *p == 1;
+}
 
-/// <summary>
-/// Convert time as found in .dat file to date and UTC time
-/// </summary>
-/// <param name="t">time found in .dat file</param>
-/// <returns>std::string containing formatted date and UTC time</returns>
-std::string formatPMtimeUTC(double t); // UTC date/time
+#endif // !MACHINEINFO_H

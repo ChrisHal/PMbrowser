@@ -17,17 +17,24 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef TIME_HANDLING_H
+#define TIME_HANDLING_H
+
 #pragma once
 
 /// <summary>
-/// check endianess of machine
-/// (will be optimized to a constant by compiler)
+/// Convert time as found in .dat file, only return date part
+/// (ignore time)
 /// </summary>
-/// <returns>true if machine is little-endian</returns>
-inline bool MachineIsLittleEndian()
-{
-    unsigned t = 1;
-    auto p = reinterpret_cast<char*>(&t);
-    return *p == 1;
-}
+/// <param name="t">time found in .dat file</param>
+/// <returns>std::string containing formatted date</returns>
+std::string formatPMtimeDate(double t); // date only
 
+/// <summary>
+/// Convert time as found in .dat file to date and UTC time
+/// </summary>
+/// <param name="t">time found in .dat file</param>
+/// <returns>std::string containing formatted date and UTC time</returns>
+std::string formatPMtimeUTC(double t); // UTC date/time
+
+#endif // !TIME_HANDLING_H

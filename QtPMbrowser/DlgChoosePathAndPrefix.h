@@ -35,8 +35,9 @@ public:
 	DlgChoosePathAndPrefix(QWidget* parent, const QString& Path);
 	~DlgChoosePathAndPrefix();
     void accept() override;
-	QString path, prefix;
-    bool pxp_export, create_datafolders;
+	QString path, prefix{};
+    bool pxp_export{}, create_datafolders{};
+    int level_last_folder{};
 
 private slots:
 	void choosePath();

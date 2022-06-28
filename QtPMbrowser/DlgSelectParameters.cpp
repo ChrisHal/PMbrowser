@@ -18,8 +18,6 @@
 */
 
 #include "DlgSelectParameters.h"
-//#include "ui_DlgSelectParameters.h"
-//#include "PMparameters.h"
 
 DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	: QDialog(parent)
@@ -27,35 +25,43 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
 	//gridGrp.setParent(ui->scrollAreaGrp);
-	//ui->scrollAreaGrp->setWidget(gridGrp.widget());
+	areaGrp.setLayout(gridLayoutGrp);
+	areaGrp.setBackgroundRole(QPalette::Base);
+	ui->scrollAreaGrp->setWidget(&areaGrp);
 	
 	//gridSer.setParent(ui->scrollAreaSer);
-	//ui->scrollAreaSer->setWidget(gridSer.widget());
+	areaSer.setLayout(gridLayoutSer);
+	areaSer.setBackgroundRole(QPalette::Base);
+	ui->scrollAreaSer->setWidget(&areaSer);
 	//gridSwp.setParent(ui->scrollAreaSwp);
-	//ui->scrollAreaSwp->setWidget(gridSwp.widget());
+	areaSwp.setLayout(gridLayoutSwp);
+	areaSwp.setBackgroundRole(QPalette::Base);
+	ui->scrollAreaSwp->setWidget(&areaSwp);
 	//gridTr.setParent(ui->scrollAreaTr);
-	//ui->scrollAreaTr->setWidget(gridTr.widget());
-	populateGrid(ui->gridLayoutGrp, parametersGroup);
-	populateGrid(ui->gridLayoutSer, parametersSeries);
-	populateGrid(ui->gridLayoutSwp, parametersSweep);
-	populateGrid(ui->gridLayoutTr, parametersTrace);
+	areaTr.setLayout(gridLayoutTr);
+	areaTr.setBackgroundRole(QPalette::Base);
+	ui->scrollAreaTr->setWidget(&areaTr);
+	populateGrid(gridLayoutGrp, parametersGroup);
+	populateGrid(gridLayoutSer, parametersSeries);
+	populateGrid(gridLayoutSwp, parametersSweep);
+	populateGrid(gridLayoutTr, parametersTrace);
 }
 
 DlgSelectParameters::~DlgSelectParameters()
 {
-	while (auto t = ui->gridLayoutGrp->takeAt(0)) {
+	while (auto t = gridLayoutGrp->takeAt(0)) {
 		delete t->widget();
 		delete t;
 	}
-	while (auto t = ui->gridLayoutSer->takeAt(0)) {
+	while (auto t = gridLayoutSer->takeAt(0)) {
 		delete t->widget();
 		delete t;
 	}
-	while (auto t = ui->gridLayoutSwp->takeAt(0)) {
+	while (auto t = gridLayoutSwp->takeAt(0)) {
 		delete t->widget();
 		delete t;
 	}
-	while (auto t = ui->gridLayoutTr->takeAt(0)) {
+	while (auto t = gridLayoutTr->takeAt(0)) {
 		delete t->widget();
 		delete t;
 	}
@@ -64,8 +70,8 @@ DlgSelectParameters::~DlgSelectParameters()
 
 void DlgSelectParameters::storeParams()
 {
-	readFromGrid(ui->gridLayoutGrp, parametersGroup);
-	readFromGrid(ui->gridLayoutSer, parametersSeries);
-	readFromGrid(ui->gridLayoutSwp, parametersSweep);
-	readFromGrid(ui->gridLayoutTr, parametersTrace);
+	readFromGrid(gridLayoutGrp, parametersGroup);
+	readFromGrid(gridLayoutSer, parametersSeries);
+	readFromGrid(gridLayoutSwp, parametersSweep);
+	readFromGrid(gridLayoutTr, parametersTrace);
 }

@@ -17,6 +17,9 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef EXPORT_IBW_H
+#define EXPORT_IBW_H
+
 #pragma once
 struct PackedFileRecordHeader {
     uint16_t recordType; 	/* Record type plus superceded flag. */
@@ -51,3 +54,5 @@ void WriteIgorPlatformRecord(std::ostream& outfile);
 void WriteIgorProcedureRecord(std::ostream& outfile);
 void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
 void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, const std::string& wavename);
+
+#endif // !EXPORT_IBW_H

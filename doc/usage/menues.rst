@@ -1,8 +1,8 @@
 Usage
 #####
 
-The Menues
-==========
+The Menus
+=========
 
 "File"
 ******
@@ -11,7 +11,7 @@ The Menues
 ------
 
 Select a :program:`PATCHMASTER` or :program:`PATCHMASTER NEXT` :file:`.dat` file. (Alternatively,
-you can open a file by dragging it onto the :program:`PMbrowser` window. Non-bundled files, which consist
+you can open a file by :index:`dragging <drag-and-drop>` it onto the :program:`PMbrowser` window. Non-bundled files, which consist
 of a collection of various files, usually :file:`.pul` and :file:`.pgf` and possibly others
 are also present.)
 
@@ -20,41 +20,48 @@ are also present.)
 
 Close currently open file.
 
-'Export Subtree for Igor'
--------------------------
+'Export...' Submenu
+-------------------
 
-All traces, that are children of the node currently selected in the **tree-view** are selected for export
-as either individual :file:`.ibw`-files or as one packaged experiment file (extension :file:`.pxp`)
-which can be read by
-:program:`IgorPro`.
+Here you find options to export traces to :program:`IgorPro` and metadata as a table.
 
-The export dialog will appear, which allows you to select paths and filenames as well as several options
-that pertain to exports to packed experiment files (see :ref:`export-dlg-label` and
-:ref:`igor-export-infos-label` for additional information on exports).
-
-This function also available from the context menue of the **tree-view**.
 
 .. _export-all-visible-traces-label:
 
-'Export All Visible Traces for Igor'
-------------------------------------
+all visible traces
+++++++++++++++++++
 
-Similar to `'Export Subtree for Igor'`_, but all traces that are currently visible (i.e. not hidden)
-in the **tree-view** are selected for export. Traces can be hidden either by *filtering* (see
-:ref:`filter-menue-label` and :ref:`filter-dlg-label`) or by using the context menue of the **tree-view**.
+	All traces that are currently visible (i.e. not hidden)
+	in the **tree-view** are selected for export. Traces can be hidden either by *filtering* (see
+	:ref:`filter-menue-label` and :ref:`filter-dlg-label`) or by using the context menue of the **tree-view**.
+	
+	This function also available from the context menue of the **tree-view**.
 
-'Export All Traces as IBW Files'
---------------------------------
+.. _export-children:
 
-Similar to `'Export All Visible Traces for Igor'`_, but all (hidden and visible) traces will be
-exported as individual :file:`.ibw`-files. Export to a packed experiment file is not support by
-this option.
+selected with children
+++++++++++++++++++++++
 
-'Select Parameters'
--------------------
+	All traces, that are children of the node currently selected in the **tree-view** are selected for export
+	as either individual :file:`.ibw`-files or as one packaged experiment file (extension :file:`.pxp`)
+	which can be read by
+	:program:`IgorPro`.
+
+The :ref:`export dialog <export-dlg-label>` will appear, which allows you to select paths and filenames as well as several options
+that pertain to exports to packed experiment files (also see :ref:`igor-export-infos-label` for additional information on exports).
+
+metadata as table
++++++++++++++++++
+
+Export :index:`metadata <export; metadata>` as tab-delimited table. Parameters marked for export (see :ref:`select-params-dlg-label` ) 
+will be included in export. You can choose per which level of the pulse tree a table row should be 
+produced.
+
+Select Parameters
+-----------------
 
 Opens the :ref:`select-params-dlg-label`. There you can select which parameters from the PatchMaster-file
-will be either *printed* to the **text-area** or *exported* in *wave-notes*.
+will be either *printed* to the **text-area** or *exported* as *wave-notes* and *tables*.
 
 
 "Edit"
@@ -94,7 +101,7 @@ selected **tree-view** item (trace or node) and its parents to the **text-area**
 'Auto Scale'
 ------------
 
-Set scaling of graph axes to extents of most recently loaded trace.
+Set :index:`scaling <auto-scale>` of graph axes to extents of most recently loaded trace.
 
 'Do Autoscale on Load'
 ----------------------
@@ -117,7 +124,7 @@ Enter *YT mode*, which is the default mode. *Time* will be used as the abscissa 
 'Wipe All'
 ----------
 
-Clear the :ref:`grapharea-label`.
+:index:`Clear <clear display>` the :ref:`grapharea-label`.
 
 'Wipe Background Traces'
 ------------------------
@@ -167,14 +174,17 @@ Checkbox *'create pxp file'*: All waves will be exported into a single packaged 
 After clicking *'OK'*, a file dialog will show up that allows you to select a filename for the file to be created.
 
 Checkbox *'create folder structure'*: If you export as a :file:`pxp` file, select this to create datafolders within
-the :file:`pxp` file that match the tree structure.
+the :file:`pxp` file that match the tree structure. You can choose if the grouping level for traces should be
+*group* or *series*.
 
 .. _filter-dlg-label:
 
 'Tree-Filter' Dialog
 ********************
 
-This dialog allows you to hide nodes and traces of the data-tree that you are not interested in.
+This dialog allows you to hide nodes and traces of the data-tree that you are not interested in. It can be accessed from the *Tree* menu
+or via the *Filter...* button.
+ 
 The filtering is based on *perl* style `regular expressions <https://perldoc.perl.org/perlre>`_. Only elements that match the given expression
 will remain visible, all other elements will be hidden.
 
@@ -187,12 +197,18 @@ See section :ref:`new-user-filtering-label` from the :ref:`new-user-tour-label` 
 'Select Parameters' Dialog
 **************************
 
-For each of the four tree levels *Group*, *Series*, *Sweep*, and * Trace* you can select which parameters
+For each of the four tree levels *Group*, *Series*, *Sweep*, and *Trace* you can select which parameters
 will be printed into the **text area** when a node is selected in the **tree-view** (checkbox *'print'*)
-and / or added to the *wave-note* of exported traces (checkbox *'export'*, cf. section :ref:`igor-export-infos-label`).
+and / or added to the *wave-note* of exported traces and exported 
+as metadata tables (checkbox *'export'*, cf. section :ref:`igor-export-infos-label`).
 
 All paramters that might be of relevance should be available. If you miss something, please post a *feature request* 
 on PMbrowser's `issues page <https://github.com/ChrisHal/PMbrowser/issues>`_. 
+
+Times can represented as relative times (*Rel. time*). The time reference for calculation of the relative times
+can be set using the context menu of the **tree-view**. By default, the reference time is the start time of the
+:file:`dat`-file.
+
 
 
 .. _ranges-dlg-label:
@@ -200,4 +216,5 @@ on PMbrowser's `issues page <https://github.com/ChrisHal/PMbrowser/issues>`_.
 'Setting and Ranges' Dialog
 ***************************
 
-
+Here you can configure the display area: axis ranges, *autoscale on load* and the number of overlay traces to
+be kept in the internal display buffer.
