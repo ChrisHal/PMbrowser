@@ -23,3 +23,6 @@ doc/_build/
 doc/doxy_html/
 QtPMbrowser/release/
 QtPMbrowser/QtPMbrowser.pro.user.e316ca4
+.DS_Store
+out
+QtPMbrowser/.qmake.stash
