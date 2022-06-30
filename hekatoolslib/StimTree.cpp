@@ -62,7 +62,8 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 	if (hasStimChannel()) {
 		const auto& stim_ch = getStimChannel();
 		const auto& first_seg = stim_ch.Segments.front();
-		if ((first_seg.Class == SegmentClass::Constant || first_seg.Class == SegmentClass::Continuous)
+		if ((first_seg.Class == SegmentClass::Ramp) ||
+			(first_seg.Class == SegmentClass::Constant || first_seg.Class == SegmentClass::Continuous)
 			&& first_seg.VoltageSource != 1 && first_seg.Voltage != holding) {
 			points.push_back({ curr_t, holding });
 		}
