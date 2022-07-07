@@ -48,7 +48,7 @@ void hkTreeNode::setAsTime0() {
 	default:
 		throw std::runtime_error("unexpected tree level");
 	}
-};
+}
 
 double hkTreeNode::getTime0() const
 {
