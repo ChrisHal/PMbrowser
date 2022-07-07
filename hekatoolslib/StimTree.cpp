@@ -56,14 +56,15 @@ double StimulationRecord::getHolding() const
 
 std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int sweep_count) const
 {
-	std::vector< std::array<double, 2>> points;
+	std::vector<std::array<double, 2>> points;
 	double curr_t{ 0.0 };
 	auto holding = getHolding();
 	if (hasStimChannel()) {
 		const auto& stim_ch = getStimChannel();
 		const auto& first_seg = stim_ch.Segments.front();
-		if ((first_seg.Class == SegmentClass::Constant || first_seg.Class == SegmentClass::Continuous)
-			&& first_seg.VoltageSource != 1 && first_seg.Voltage != holding) {
+		if ((first_seg.Class == SegmentClass::Ramp) ||
+			((first_seg.Class == SegmentClass::Constant || first_seg.Class == SegmentClass::Continuous)
+			&& first_seg.VoltageSource != 1 && first_seg.Voltage != holding)) {
 			points.push_back({ curr_t, holding });
 		}
 		for (const auto& seg : stim_ch.Segments) {

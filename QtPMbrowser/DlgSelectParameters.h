@@ -69,8 +69,8 @@ private:
 		std::array<PMparameter, Nrows>& ar)
 	{
 		for (int i = 0; i < int(ar.size()); ++i) {
-			ar[i].exportIBW = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget()))->isChecked();
-			ar[i].print = (dynamic_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget()))->isChecked();
+			ar[i].exportIBW = (qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget()))->isChecked();
+			ar[i].print = (qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget()))->isChecked();
 		}
 	}
 

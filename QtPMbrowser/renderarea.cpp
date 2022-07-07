@@ -428,25 +428,49 @@ void RenderArea::wheelEvent(QWheelEvent* event)
     event->accept();
 }
 
+/// <summary>
+/// find min and max value while igoring NaNs
+/// </summary>
+/// <param name="first">const iterator of start of range</param>
+/// <param name="last">const itereator one past last element</param>
+/// <param name="min_val">ret: min val. of range, NaN if only NaNs are found</param>
+/// <param name="max_val">ret: max val. of range, NaN if only NaNs are found</param>
+static void find_min_max(std::vector<double>::const_iterator first,
+    std::vector<double>::const_iterator last,
+    double& min_val, double& max_val)
+{
+    min_val = max_val = *first;
+    auto p = first;
+    for (; p != last; ++p) {
+        if (!std::isnan(*p)) {
+            min_val = max_val = *p;
+            break;
+        }
+    }
+    for (; p != last; ++p) {
+        auto val = *p;
+        if (!std::isnan(val)) {
+            min_val = std::min(min_val, val);
+            max_val = std::max(max_val, val);
+        }
+    }
+}
 
 void RenderArea::autoScale()
 {
     if (noData()) return;
     if (isXYmode()) {
-        x_min = *std::min_element(xTrace.data.cbegin(), xTrace.data.cend());
-        x_max = *std::max_element(xTrace.data.cbegin(), xTrace.data.cend());
+        find_min_max(xTrace.data.cbegin(), xTrace.data.cend(), x_min, x_max);
     }
     else if (yTrace.has_x_trace()) {
-        x_min = *std::min_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
-        x_max = *std::max_element(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend());
+        find_min_max(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend(), x_min, x_max);
     }
     else
     {
         x_min = yTrace.x0;
         x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
     }
-    y_min = *std::min_element(yTrace.data.cbegin(), yTrace.data.cend());
-    y_max = *std::max_element(yTrace.data.cbegin(), yTrace.data.cend());
+    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), y_min, y_max);
     update();
 }
 
