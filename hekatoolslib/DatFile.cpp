@@ -30,6 +30,7 @@
 #include "DatFile.h"
 #include "machineinfo.h"
 #include "PMparameters.h"
+#include <iomanip>
 
 void DatFile::InitFromStream(std::istream& infile)
 {
@@ -119,6 +120,7 @@ void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
     if (max_level > hkTreeNode::LevelTrace) {
         throw std::runtime_error("max_level exceeds LevelTrace(=4)");
     }
+    os << std::setprecision(10);
     auto& rootnode = GetPulTree().GetRootNode();
     metadataCreateTableHeader(os);
     for (const auto& grp : rootnode.Children) {
