@@ -221,7 +221,11 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
 {
     if (!noData() && event->buttons() == Qt::NoButton) {
         double x, y;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         scaleFromPixToXY(event->x(), event->y(), x, y);
+#else
+        scaleFromPixToXY(event->position(), x, y);
+#endif
 
         QString txt;
         if (isXYmode()) {
@@ -231,7 +235,11 @@ void RenderArea::mouseMoveEvent(QMouseEvent* event)
             double datay = yTrace.interp(x); //= std::numeric_limits<double>::quiet_NaN();
             txt = QString("(%1%2/%3%4)\ndata: %5%6").arg(x).arg(yTrace.getXUnit()).arg(y).arg(yTrace.getYUnit()).arg(datay).arg(yTrace.getYUnit());
         }
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         QToolTip::showText(event->globalPos(), txt, this, rect());
+#else
+        QToolTip::showText(event->globalPosition().toPoint(), txt, this, rect());
+#endif
         event->accept();
     }
     else if (isSelecting && event->buttons() == Qt::MouseButton::LeftButton) {
@@ -327,7 +335,11 @@ void RenderArea::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void RenderArea::enterEvent(QEvent* event)
+#else
+void RenderArea::enterEvent(QEnterEvent* event)
+#endif
 {
     setFocus();
     if (!noData() && !isTraceDragging && !isSelecting) {
@@ -365,12 +377,21 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 
     if (isSelecting && event->button() == Qt::MouseButton::LeftButton) {
         double x, y;
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         scaleFromPixToXY(event->x(), event->y(), x, y);
+#else
+        scaleFromPixToXY(event->position(), x, y);
+#endif
         isSelecting = false;
         delete tempPixMap; tempPixMap = nullptr;
         unsetCursor();
         // only zoom if there is a meanigful selection:
-        if (event->x() != selStart.x() && event->y() != selStart.y()) {
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
+        QPoint pe = event->pos();
+#else
+        QPoint pe = event->position().toPoint();
+#endif
+        if (pe.x() != selStart.x() && pe.y() != selStart.y()) {
             double xs, ys;
             scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
             x_min = std::min(x, xs);
@@ -667,6 +688,12 @@ void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
 {
     x = x_min + double(px) / double(width()) * (x_max - x_min);
     y = y_max - double(py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
+}
+
+void RenderArea::scaleFromPixToXY(const QPointF& p, double& x, double& y)
+{
+    QPoint t = p.toPoint();
+    scaleFromPixToXY(t.x(), t.y(), x, y);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)

@@ -20,6 +20,7 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
+#include <QtGlobal>
 #include <QWidget>
 #include <QVector>
 #include <QQueue>
@@ -99,7 +100,11 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     void enterEvent(QEvent* event) override;
+#else
+    void enterEvent(QEnterEvent* event) override;
+#endif
     void leaveEvent(QEvent* event) override;
     //void resizeEvent(QResizeEvent* event) override;
 
@@ -107,6 +112,7 @@ private:
     void setScaling(double x_0, double x_1, double y_0, double y_1);
     QPointF scaleToQPF(double x, double y);
     void scaleFromPixToXY(int px, int py, double& x, double& y);
+    void scaleFromPixToXY(const QPointF& p, double& x, double& y);
     void shiftByPixel(QPoint shift);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
