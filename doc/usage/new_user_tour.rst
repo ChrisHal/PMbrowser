@@ -23,7 +23,7 @@ The Application Window (overview)
 	:align: center
 	:alt: tour step 1
 
-The application window is divided into three sections, the *tree view*, the *graph area*, and the *text area* (see screenshot).
+The application window is divided into three sections, the *tree view*, the *graph area*, and the *text area* (see screenshot [#]_).
 
 * The **tree view** represents the tree structure stored in the `dat`-file. *Groups* (or *experiments*, the file format treats both the same),
   *series* and *sweeps* are represented as nodes, *traces* from the final leaves of the tree. Elements for which a label is stored in the file
@@ -38,7 +38,7 @@ The application window is divided into three sections, the *tree view*, the *gra
   
 * In the **text area** mainly metadata will be printed according to the element being selected in the *tree view*.
 
-  The menuitem ``File`` --> ``Select Parameters...`` calls up a dialog which lets you choose for each
+  The menuitem ``File`` --> ``Select Parameters...`` calls up the :ref:`select-params-dlg-label` which lets you choose for each
   level (*group*, *series*, *sweep* and *trace*) which metadata items :program:`PMbrowser` shall print.
  
  .. image:: Screenshot_tour_dlg_params.png
@@ -119,3 +119,5 @@ In Igor's *Macros* menu you will find the item *Display Waves*. Select this to a
 
 **Metadata** will be included in the *wavenotes* of the imported waves. ``File`` --> ``Select Parameters...`` in :program:`PMbrowser`
 will bring forth a dialog that let's you choose which metadata-items to *export* in the wavenotes.
+
+.. [#] screenshots may represent older versions of the software and differ somewhat from the current version

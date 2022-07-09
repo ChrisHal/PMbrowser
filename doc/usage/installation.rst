@@ -42,7 +42,7 @@ The executable :file:`QtPMbrowser` in :file:`/usr/bin` .
 
 Now, start :program:`PMbrowser` with ``QtPMbrowser &``.
 
-direct instalation of the executable
+direct installation of the executable
 *************************************
 
 The executable can be found at the GitHub repository release page: https://github.com/ChrisHal/PMbrowser/releases

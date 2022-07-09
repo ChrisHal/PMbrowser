@@ -28,6 +28,7 @@ But even if you do not use :program:`IgorPro`, you might find :program:`PMbrowse
    usage/new_user_tour
    usage/menues
    usage/displayarea
+   usage/tree-view
    usage/igor_export_infos
 
 
@@ -36,8 +37,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`search`
 
-
- 
- 
+.. * :ref:`search`

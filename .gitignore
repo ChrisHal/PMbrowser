@@ -7,7 +7,6 @@
 /QtPMBrowser/release
 /.qmake.stash
 ui_*.h
-QtPMbrowser.pro.user.459d117
 GeneratedFiles/
 Makefile
 moc_*
@@ -22,9 +21,9 @@ QtPMbrowser.aps
 doc/_build/
 doc/doxy_html/
 QtPMbrowser/release/
-QtPMbrowser/QtPMbrowser.pro.user.e316ca4
-build-QtPMbrowser-Desktop_Qt_5_15_2_clang_64bit-Debug/
-build-QtPMbrowser-Desktop_Qt_5_15_2_clang_64bit-Release/
+.DS_Store
+out
+QtPMbrowser/.qmake.stash
 .DS_Store
 *.pro.user
 QtPMbrowser/QtPMbrowser.pro.user

@@ -31,3 +31,40 @@ context menue
 -------------
 
 This menue is accessed by right-click (or option click on Macs). It offers a variety of functions.
+
+Buttons and Checkboxes
+----------------------
+
+wipe
+++++
+
+:index:`Clears display <clear display>`.
+
+auto
+++++
+
+Autoscales display.
+
+v.shrink
+++++++++
+
+Vertically shrinks display (i.e. increases y-axis range twofold).
+
+h.shrink
+++++++++
+
+Horizontally shrinks display (i.e. increases x-axis range twofold).
+
+.. _overlay-feature-label:
+
+
+Checkbox *autoscale on load*
+++++++++++++++++++++++++++++
+
+If selected, display will performe autoscale when a new trace is loaded into display.
+
+Checkbox *overlay*
+++++++++++++++++++
+
+If selected, traces in persistance buffer of the display will be displayed as background
+tarces.
