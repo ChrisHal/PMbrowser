@@ -885,6 +885,11 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
             pbar->setFormat("%v/%m");
             progress.setBar(pbar);
             progress.setWindowModality(Qt::WindowModal);
+#ifdef __APPLE__
+            // unfortunately, on macOS Qt doesn't support QWdiget::repaint
+            // This is a kind of work-around
+            progress.setMinimumDuration(0);
+#endif
 
             for (int i = 0; i < num_traces; ++i) {
                 progress.setValue(i);
