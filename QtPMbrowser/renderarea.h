@@ -116,6 +116,7 @@ private:
     void shiftByPixel(QPoint shift);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
+    void paint(QPainter& painter, const QRect& bounding_rectangle);
     void doContextMenu(QContextMenuEvent* event);
 
     //std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };

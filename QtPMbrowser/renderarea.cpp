@@ -121,16 +121,12 @@ void RenderArea::drawMarquee(QPainter& painter)
     //painter.restore();
 }
 
-void RenderArea::paintEvent(QPaintEvent* event)
+void RenderArea::paint(QPainter& painter, const QRect& rectangle)
 {
-    (void)event;
-    QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
     font.setPixelSize(24);
     painter.setFont(font);
-    //painter.drawPath(path);
-    const QRect rectangle = QRect(0, button_row_height, width(), height() - button_row_height);
     if (noData()) {
         button_row_height = my_layout->cellRect(0, 0).height() + 1;
         painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter, "no data to display");
@@ -195,6 +191,13 @@ void RenderArea::paintEvent(QPaintEvent* event)
             }
         }
     }
+}
+
+void RenderArea::paintEvent(QPaintEvent* event)
+{
+    (void)event;
+    QPainter painter(this);
+    paint(painter, QRect(0, button_row_height, width(), height() - button_row_height));
 }
 
 void RenderArea::keyPressEvent(QKeyEvent* event)
@@ -560,7 +563,10 @@ void RenderArea::setYTmode()
 
 void RenderArea::copyToClipboard()
 {
-    QPixmap pixmap(grab());
+    QPixmap pixmap(this->size());
+    pixmap.fill(); // fill with white
+    QPainter painter(&pixmap);
+    paint(painter, pixmap.rect());
     QGuiApplication::clipboard()->setPixmap(pixmap);
 }
 
