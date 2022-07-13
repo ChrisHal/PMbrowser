@@ -67,7 +67,7 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&chkOverlay, &QCheckBox::stateChanged, this, &RenderArea::toggleOverlay);
 
 
-    auto btnstyle = p_btnstyle.get();
+    //auto btnstyle = p_btnstyle.get();
     my_layout = new QGridLayout;
     this->setLayout(my_layout);
     my_layout->addWidget(&btnWipe, 0, 0);
@@ -83,18 +83,18 @@ RenderArea::RenderArea(QWidget* parent) :
     my_layout->setContentsMargins(0, 0, 0, 0);
     my_layout->setSpacing(1);
 
-    btnWipe.setStyle(btnstyle);
+    //btnWipe.setStyle(btnstyle);
     btnWipe.setToolTip("clear display");
-    btnAutoScale.setStyle(btnstyle);
+    //btnAutoScale.setStyle(btnstyle);
     btnAutoScale.setToolTip("auto scale");
-    btnVertShrink.setStyle(btnstyle);
+    //btnVertShrink.setStyle(btnstyle);
     btnVertShrink.setToolTip("expand y-axis range");
-    btnHrzShrink.setStyle(btnstyle);
+    //btnHrzShrink.setStyle(btnstyle);
     btnHrzShrink.setToolTip("expand x-axis range");
     chkAutoScale.setChecked(do_autoscale_on_load);
-    chkAutoScale.setStyle(btnstyle);
+    //chkAutoScale.setStyle(btnstyle);
     chkOverlay.setChecked(!background_traces_hidden);
-    chkOverlay.setStyle(btnstyle);
+    //chkOverlay.setStyle(btnstyle);
     chkOverlay.setToolTip("overlay traces");
 
 }

@@ -28,8 +28,8 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QCheckBox>
-#include <QStyle>
-#include <QStyleFactory>
+//#include <QStyle>
+//#include <QStyleFactory>
 #include <QGridLayout>
 #include <istream>
 #include "hkTree.h"
@@ -118,7 +118,7 @@ private:
     void drawMarquee(QPainter& painter);
     void doContextMenu(QContextMenuEvent* event);
 
-    std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
+    //std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
     QCheckBox chkAutoScale, chkOverlay;
     QGridLayout* my_layout{};
