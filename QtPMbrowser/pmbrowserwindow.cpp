@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <QDesktopServices>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -259,12 +260,19 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     settings_modified{ false }
 {
     ui->setupUi(this);
-
+        
     ui->treePulse->setExpandsOnDoubleClick(false);
 
     setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
+
+    help_path = QCoreApplication::applicationDirPath() +
+        "/../" + DOCDIR + "/html/index.html";
+    if (QFile::exists(help_path)) {
+        ui->menuHelp->insertAction(ui->actionAbout, &actHelp);
+        QObject::connect(&actHelp, &QAction::triggered, this, &PMbrowserWindow::openHelp);
+    }
 
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1036,6 +1044,12 @@ void PMbrowserWindow::on_actionPrint_All_Params_triggered()
 void PMbrowserWindow::on_menuGraph_aboutToShow()
 {
     ui->actionDo_Autoscale_on_Load->setChecked(ui->renderArea->isAutoscaleEnabled());
+}
+
+void PMbrowserWindow::openHelp()
+{
+    QUrl helpurl{ QUrl::fromLocalFile(help_path) };
+    QDesktopServices::openUrl(helpurl);
 }
 
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)

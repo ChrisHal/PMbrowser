@@ -2,3 +2,4 @@
 #define VERSION "@CMAKE_PROJECT_VERSION@"
 constexpr char COPYRIGHT_NOTICE[]="© Copyright @MY_COPYRIGHT@";
 constexpr char PROJECT_HOMEPAGE[]="@CMAKE_PROJECT_HOMEPAGE_URL@";
+constexpr char DOCDIR[]="@CMAKE_INSTALL_DOCDIR@";

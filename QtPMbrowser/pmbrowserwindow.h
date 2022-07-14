@@ -60,6 +60,7 @@ private slots:
     void on_actionSelect_Parameters_triggered();
     void on_actionPrint_All_Params_triggered();
     void on_menuGraph_aboutToShow();
+    void openHelp();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
@@ -96,7 +97,8 @@ private:
     void saveSettings();
     void loadSettings();
     Ui::PMbrowserWindow* ui;
-    QString currentFile;
+    QString currentFile, help_path{};
+    QAction actHelp{ "Help" };
     std::ifstream infile;
     std::unique_ptr<DatFile> datfile;
     QString lastloadpath, lastexportpath;
