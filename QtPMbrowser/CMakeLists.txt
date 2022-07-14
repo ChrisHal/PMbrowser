@@ -79,6 +79,7 @@ add_custom_command(TARGET QtPMbrowser POST_BUILD
     COMMAND powershell ${CMAKE_CURRENT_BINARY_DIR}/win_deploy.ps1
     COMMENT "Deploying Qt..."
 )
+install(TARGETS QtPMbrowser RUNTIME)
 install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/deploy/" TYPE BIN)
 elseif(APPLE)
 

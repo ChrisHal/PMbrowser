@@ -5,8 +5,6 @@ if (!(Test-Path $deploy_dir))
 	echo "creating deploy dir"
 	md $deploy_dir
 }
-echo "copy executable"
-cp ${CMAKE_CURRENT_BINARY_DIR}/QtPMbrowser.exe $deploy_dir/QtPMbrowser.exe
 echo "Calling ${WINDEPLOYQT_EXECUTABLE}"
-${WINDEPLOYQT_EXECUTABLE} --verbose 0 --no-compiler-runtime $deploy_dir/QtPMbrowser.exe
+${WINDEPLOYQT_EXECUTABLE} --verbose 0 --no-compiler-runtime --dir $deploy_dir "${CMAKE_CURRENT_BINARY_DIR}/QtPMbrowser.exe"
 echo "<=========== finish deploy"
