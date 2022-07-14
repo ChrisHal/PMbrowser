@@ -69,20 +69,17 @@ endif()
 # the project can use Qt 6.3. In that case rerun qmake2cmake with
 # --min-qt-version=6.3.
 
-# deploy script for Qt5
+# deploy script
 if(WIN32)
 get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+configure_file(win_deploy.ps1.in win_deploy.ps1)
 add_custom_command(TARGET QtPMbrowser POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E
-        env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            --verbose 0
-            --no-compiler-runtime # will be added by CPack
-            \"$<TARGET_FILE:QtPMbrowser>\"
+    COMMAND powershell ${CMAKE_CURRENT_BINARY_DIR}/win_deploy.ps1
     COMMENT "Deploying Qt..."
 )
-install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/" TYPE BIN)
+install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/deploy/" TYPE BIN)
 elseif(APPLE)
 
 install(TARGETS QtPMbrowser BUNDLE DESTINATION ./ COMPONENT pmbrowser)
