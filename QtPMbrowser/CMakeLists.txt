@@ -74,13 +74,16 @@ if(WIN32)
 get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-configure_file(win_deploy.ps1.in win_deploy.ps1)
-add_custom_command(TARGET QtPMbrowser POST_BUILD
-    COMMAND powershell ${CMAKE_CURRENT_BINARY_DIR}/win_deploy.ps1
+set(ms_deploy_dir "${CMAKE_CURRENT_BINARY_DIR}/deploy")
+message(STATUS "deploying to " ${ms_deploy_dir})
+add_custom_target(deploy ALL
+#    COMMAND powershell -Command "if ((Test-Path ${ms_deploy_dir})) {rm -r ${ms_deploy_dir}}"
+	COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --dir ${ms_deploy_dir}         \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
 )
+add_dependencies(deploy QtPMbrowser)
 install(TARGETS QtPMbrowser RUNTIME)
-install(DIRECTORY "$<TARGET_FILE_DIR:QtPMbrowser>/deploy/" TYPE BIN)
+install(DIRECTORY ${ms_deploy_dir}/ TYPE BIN)
 elseif(APPLE)
 
 install(TARGETS QtPMbrowser BUNDLE DESTINATION ./ COMPONENT pmbrowser)
