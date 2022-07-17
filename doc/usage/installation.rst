@@ -27,8 +27,7 @@ the documentation in the :file:`share/doc` folder.
 Installing on Linux
 ===================
 
-To run :program:`PMbrowser`, you will need the Qt5 libraries installed. On Debian and Ubuntu this is easily done
-with this command: ``sudo apt install qt5-default``
+To run :program:`PMbrowser`, you will need the Qt6 libraries installed.
 
 using DEB package
 *****************
@@ -82,10 +81,11 @@ Prerequisits
 ************
 
 You will need to install the usual build tools including :program:`cmake` and
-Qt-Library version 5.12 or newer. To build the documention, you need :program:`Sphinx` .
+Qt-Library version 6.2 or newer (for now, the source can also be build
+using version 5, but support will end soon). To build the documention, you need :program:`Sphinx` .
 
 On most :program:`Linux` distributions , Qt is provided as a package,
-e.g. :file:`qt5-default` for Ubuntu.
+e.g. :file:`qt6-base-dev` for Ubuntu.
 
 For :program:`Windows` and :program:`macOS` the Qt developer tools need to be installed.
 You can get them from `Qt <https://www.qt.io/>`_.
