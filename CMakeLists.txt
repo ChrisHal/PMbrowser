@@ -18,7 +18,7 @@ set(CPACK_PACKAGE_DESCRIPTION "tool to browse HEKA dat files and export to IgorP
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "tool to browse HEKA dat files and export to IgorPro")
 set(CPACK_PACKAGE_VENDOR "CRHalaszovichMD")
 set(CPACK_DEBIAN_PACKAGE_SECTION "science/utils")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "qt5-default")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6gui6,libqt6core6,libqt6widgets6")
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.halaszovich.de/pmbrowser/html/index.html")
 set(CPACK_WIX_UPGRADE_GUID FED5BE2C-2537-49A8-B5D8-39C00D289CC6)
 set(CPACK_PACKAGE_ICON ${CMAKE_CURRENT_SOURCE_DIR}/QtPMbrowser/myappico.ico)
