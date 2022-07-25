@@ -82,7 +82,6 @@ private:
 		*gridLayoutSer{ new QGridLayout },
 		*gridLayoutSwp{ new QGridLayout },
 		*gridLayoutTr{ new QGridLayout };
-	QWidget areaGrp{}, areaSer{}, areaSwp{}, areaTr{};
 
 	Ui::DlgSelectParameters *ui;
 };

@@ -24,23 +24,27 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 {
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
-	//gridGrp.setParent(ui->scrollAreaGrp);
-	areaGrp.setLayout(gridLayoutGrp);
-	areaGrp.setBackgroundRole(QPalette::Base);
-	ui->scrollAreaGrp->setWidget(&areaGrp);
+
+	auto w = new QWidget;
+	w->setLayout(gridLayoutGrp);
+	w->setBackgroundRole(QPalette::Base);
+	ui->scrollAreaGrp->setWidget(w); // this transfers ownership, doesn't it?
 	
-	//gridSer.setParent(ui->scrollAreaSer);
-	areaSer.setLayout(gridLayoutSer);
-	areaSer.setBackgroundRole(QPalette::Base);
-	ui->scrollAreaSer->setWidget(&areaSer);
-	//gridSwp.setParent(ui->scrollAreaSwp);
-	areaSwp.setLayout(gridLayoutSwp);
-	areaSwp.setBackgroundRole(QPalette::Base);
-	ui->scrollAreaSwp->setWidget(&areaSwp);
-	//gridTr.setParent(ui->scrollAreaTr);
-	areaTr.setLayout(gridLayoutTr);
-	areaTr.setBackgroundRole(QPalette::Base);
-	ui->scrollAreaTr->setWidget(&areaTr);
+	w = new QWidget;
+	w->setLayout(gridLayoutSer);
+	w->setBackgroundRole(QPalette::Base);
+	ui->scrollAreaSer->setWidget(w);
+	
+	w = new QWidget;
+	w->setLayout(gridLayoutSwp);
+	w->setBackgroundRole(QPalette::Base); 
+	ui->scrollAreaSwp->setWidget(w);
+	
+	w = new QWidget;
+	w->setLayout(gridLayoutTr);
+	w->setBackgroundRole(QPalette::Base); 
+	ui->scrollAreaTr->setWidget(w);
+	
 	populateGrid(gridLayoutGrp, parametersGroup);
 	populateGrid(gridLayoutSer, parametersSeries);
 	populateGrid(gridLayoutSwp, parametersSweep);
