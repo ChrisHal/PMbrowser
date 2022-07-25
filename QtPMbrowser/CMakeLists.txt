@@ -17,19 +17,8 @@ set(CMAKE_AUTORCC ON)
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets)
 
-set(MY_UI_FILES 
-	DlgChoosePathAndPrefix.ui
-	DlgGraphSettings.ui
-	DlgSelectParameters.ui
-	DlgTreeFilter.ui
-    DlgExportMetadata.ui
-	pmbrowserwindow.ui
-	renderarea.ui
-)
-
-set(SOURCES
-
-    DisplayTrace.cpp DisplayTrace.h
+add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
+ 	DisplayTrace.cpp DisplayTrace.h
     DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h 
     DlgGraphSettings.cpp DlgGraphSettings.h 
     DlgSelectParameters.cpp DlgSelectParameters.h 
@@ -41,12 +30,15 @@ set(SOURCES
 
 	QtPMbrowser.qrc
 	QtPMbrowser.rc
-)
-#qt5_wrap_ui(SOURCES ${MY_UI_FILES})
-add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
- 	${SOURCES} ${MY_UI_FILES}  
-)
 
+    DlgChoosePathAndPrefix.ui
+	DlgGraphSettings.ui
+	DlgSelectParameters.ui
+	DlgTreeFilter.ui
+    DlgExportMetadata.ui
+	pmbrowserwindow.ui
+	renderarea.ui
+)
 
 target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
