@@ -24,6 +24,7 @@ DlgTreeFilter::DlgTreeFilter(QWidget *parent, const QString& Grp, const QString&
 	: QDialog(parent), grp{Grp}, ser{Ser}, swp{Swp}, trace{Trace}
 {
 	ui.setupUi(this);
+	QObject::connect(ui.pushButtonReset, &QPushButton::clicked, this, &DlgTreeFilter::resetFilter);
 	ui.lineEditGrp->setText(grp);
 	ui.lineEditSer->setText(ser);
 	ui.lineEditSwp->setText(swp);
@@ -32,6 +33,14 @@ DlgTreeFilter::DlgTreeFilter(QWidget *parent, const QString& Grp, const QString&
 
 DlgTreeFilter::~DlgTreeFilter()
 {
+}
+
+void DlgTreeFilter::resetFilter()
+{
+	ui.lineEditGrp->setText(".*");
+	ui.lineEditSer->setText(".*");
+	ui.lineEditSwp->setText(".*");
+	ui.lineEditTr->setText(".*");
 }
 
 void DlgTreeFilter::accept()

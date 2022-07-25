@@ -33,6 +33,7 @@ public:
 	QString grp, ser, swp, trace;
 private slots:
 	void accept() override;
+    void resetFilter();
 private:
 	Ui::DlgTreeFilter ui;
 };
