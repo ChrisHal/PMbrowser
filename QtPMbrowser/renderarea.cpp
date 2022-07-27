@@ -51,13 +51,14 @@ RenderArea::RenderArea(QWidget* parent) :
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
-    do_autoscale_on_load{ true }, isTraceDragging{ false },
+    do_autoscale_on_load{ true }, isTraceDragging{ false }, isPinching{false},
     isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
     settings_modified{ false }
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setFocusPolicy(Qt::WheelFocus);
+    grabGesture(Qt::GestureType::PinchGesture);
 
     QObject::connect(&btnWipe, &QPushButton::clicked, this, &RenderArea::wipeAll);
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
@@ -193,6 +194,13 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
     }
 }
 
+bool RenderArea::event(QEvent* event)
+{
+    if (event->type() == QEvent::Gesture)
+        return gestureEvent(static_cast<QGestureEvent*>(event));
+    return QWidget::event(event);
+}
+
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     (void)event;
@@ -304,7 +312,8 @@ void RenderArea::doContextMenu(QContextMenuEvent* event)
 
 void RenderArea::mousePressEvent(QMouseEvent* event)
 {
-	if (noData() || (event->button() != Qt::MouseButton::LeftButton)) {
+	if (noData() || isPinching ||
+        (event->button() != Qt::MouseButton::LeftButton)) {
 		event->ignore();
 		return;
 	}
@@ -422,7 +431,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 
 void RenderArea::wheelEvent(QWheelEvent* event)
 {
-    if (noData()) {
+    if (noData() || isPinching) {
         event->ignore();
         return;
     }
@@ -585,14 +594,17 @@ void RenderArea::showSettingsDialog()
     }
 }
 
+//static double zoom_tranform(double v_max, double v, double factor)
+//{
+//    return v + (v_max - v) / factor;
+//}
+
 void RenderArea::zoomIn(double x_center, double y_center, double factor)
 {
-    double  x_offset = (x_max - x_min) / factor / 2.0,
-        y_offset = (y_max - y_min) / factor / 2.0;
-    x_min = x_center - x_offset;
-    x_max = x_center + x_offset;
-    y_min = y_center - y_offset;
-    y_max = y_center + y_offset;
+    x_min = x_center - (x_center - x_min) / factor;
+    x_max = x_center + (x_max - x_center) / factor;
+    y_min = y_center - (y_center - y_min) / factor;
+    y_max = y_center + (y_max - y_center) / factor;
     update();
 }
 
@@ -674,6 +686,33 @@ void RenderArea::clearTrace()
     }
     setMouseTracking(false);
     update();
+}
+
+bool RenderArea::gestureEvent(QGestureEvent* event)
+{
+    if (noData()) return false;
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture))
+        pinchTriggered(static_cast<QPinchGesture*>(pinch));
+    return true;
+}
+
+void RenderArea::pinchTriggered(QPinchGesture* gesture)
+{
+    auto change_flags = gesture->changeFlags();
+    auto state = gesture->state();
+    if (state == Qt::GestureStarted) { isPinching = true; }
+    else if (state == Qt::GestureFinished || state == Qt::GestureCanceled) {
+        isPinching = false;
+    }
+    if (change_flags & QPinchGesture::ScaleFactorChanged) {
+        auto scale = gesture->scaleFactor();
+        auto center = mapFromGlobal(gesture->centerPoint());
+        double x_c{}, y_c{};
+        scaleFromPixToXY(center, x_c, y_c);
+
+        //scaleFromPixToXY(width() / 2, height() / 2, x_c, y_c);
+        zoomIn(x_c, y_c, scale);       
+    }
 }
 
 void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)

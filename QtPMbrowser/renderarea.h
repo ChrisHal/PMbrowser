@@ -34,6 +34,7 @@
 #include <istream>
 #include "hkTree.h"
 #include "DisplayTrace.h"
+#include <QGestureEvent>
 class DisplayTrace;
 
 namespace Ui {
@@ -92,6 +93,7 @@ public slots:
     void copyToClipboard();
 
 protected:
+    bool event(QEvent* event) override;
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
@@ -109,6 +111,8 @@ protected:
     //void resizeEvent(QResizeEvent* event) override;
 
 private:
+    bool gestureEvent(QGestureEvent* event);
+    void pinchTriggered(QPinchGesture*);
     void setScaling(double x_0, double x_1, double y_0, double y_1);
     QPointF scaleToQPF(double x, double y);
     void scaleFromPixToXY(int px, int py, double& x, double& y);
@@ -134,7 +138,7 @@ private:
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;
-    bool isTraceDragging;
+    bool isTraceDragging, isPinching;
     // for marquee zoom function:
     bool isSelecting;
     QPoint selStart, selEnd;
