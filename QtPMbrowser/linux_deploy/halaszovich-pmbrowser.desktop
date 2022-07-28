@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PM browser
+Comment=Browse PM dat files
+Categories=Science
+Exec=/usr/bin/QtPMbrowser
+Icon=halaszovich-pmbrowser
