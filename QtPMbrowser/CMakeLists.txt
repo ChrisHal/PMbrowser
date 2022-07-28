@@ -97,8 +97,9 @@ install(TARGETS QtPMbrowser
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 endif()
-#if(CMAKE_SYSTEM_NAME EQUAL "Linux")
-if(UNIX)
+
+if(CMAKE_SYSTEM_NAME EQUAL "Linux")
+#if(UNIX)
 # install dektop file and icons
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser.desktop" DESTINATION
 	"${CMAKE_INSTALL_DATADIR}/applications")
