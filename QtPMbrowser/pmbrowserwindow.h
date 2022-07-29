@@ -41,6 +41,7 @@ class PMbrowserWindow : public QMainWindow
 public:
     PMbrowserWindow(QWidget *parent = nullptr);
     ~PMbrowserWindow();
+    void loadFile(QString filename);
 
 private slots:
     void on_actionOpen_triggered();
@@ -69,7 +70,7 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
-    void loadFile(QString filename);
+//    void loadFile(QString filename);
     void loadFile() {loadFile(currentFile);};
     void closeFile();
     void populateTreeView();
