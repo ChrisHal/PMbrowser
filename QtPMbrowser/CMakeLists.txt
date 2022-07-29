@@ -98,15 +98,15 @@ install(TARGETS QtPMbrowser
 )
 endif()
 
-if(CMAKE_SYSTEM_NAME EQUAL "Linux")
-#if(UNIX)
+#if(CMAKE_SYSTEM_NAME EQUAL "Linux")
+if(UNIX)
 # install dektop file and icons
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser.desktop" DESTINATION
 	"${CMAKE_INSTALL_DATADIR}/applications")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser128.png" DESTINATION
-	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps" RENAME halaszovich_pmbrowser.png)
+	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps" RENAME halaszovich-pmbrowser.png)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser256.png" DESTINATION
-	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME halaszovich_pmbrowser.png)
+	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME halaszovich-pmbrowser.png)
 endif()
 
 
