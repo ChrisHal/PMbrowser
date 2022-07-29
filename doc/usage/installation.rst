@@ -36,10 +36,28 @@ Download the installer :file:`PMbrowser-<version>-win64.deb` from the GitHub rep
 page: https://github.com/ChrisHal/PMbrowser/releases . Use the command `sudo dpkg -i `PMbrowser-<version>-win64.deb`
 to install.
 
+Your distribution needs to provide packages for the Qt libraries version 6. If not, you can
+use the selfcontained *AppImage* (see :ref:`appimage`).
+
 Documentation will be installed in :file:`/usr/share/doc/QtPMbrowser` by default.
 The executable :file:`QtPMbrowser` in :file:`/usr/bin` .
 
-Now, start :program:`PMbrowser` with ``QtPMbrowser &``.
+Now, you can start :program:`PMbrowser` with ``QtPMbrowser &`` from a terminal.
+
+Starting with Version 2.2.1, you should find :program:`PM browser`
+under *Applications*, too.
+
+.. _appimage:
+
+using the *AppImage*
+********************
+
+Dowload the AppImage file from https://github.com/ChrisHal/PMbrowser/releases. Make
+the file executable (usually a right-click in you file manager is involved in this).
+Double-clicking the file should start the application.
+
+The *AppImage contains* all necessary libraries, even when your distro does not provide
+them.
 
 direct installation of the executable
 *************************************
