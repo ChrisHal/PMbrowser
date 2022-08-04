@@ -274,7 +274,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     }
     else {
        help_url = PROJECT_HOMEPAGE;
-       actHelp.setText("Online Help");
+       actHelp.setText("Online &Help");
     }
     ui->menuHelp->insertAction(ui->actionAbout, &actHelp);
     QObject::connect(&actHelp, &QAction::triggered, this, &PMbrowserWindow::openHelp);

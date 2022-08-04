@@ -150,12 +150,12 @@
      <x>0</x>
      <y>0</y>
      <width>592</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuExport">
      <property name="title">
@@ -175,19 +175,19 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="actionClear_Text"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuGraph">
     <property name="title">
-     <string>Graph</string>
+     <string>&amp;Graph</string>
     </property>
     <addaction name="actionAuto_Scale"/>
     <addaction name="actionDo_Autoscale_on_Load"/>
@@ -201,7 +201,7 @@
    </widget>
    <widget class="QMenu" name="menuTree">
     <property name="title">
-     <string>Tree</string>
+     <string>&amp;Tree</string>
     </property>
     <addaction name="actionFilter"/>
     <addaction name="actionRemove_Filter"/>
@@ -231,7 +231,7 @@
   </action>
   <action name="actionClear_Text">
    <property name="text">
-    <string>Clear Text</string>
+    <string>&amp;Clear Text</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -244,7 +244,7 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionExport_All_as_IBW">
@@ -273,7 +273,7 @@
   </action>
   <action name="actionRemove_Filter">
    <property name="text">
-    <string>Show All</string>
+    <string>Show &amp;All</string>
    </property>
   </action>
   <action name="actionExport_All_Visible_Traces_as_IBW_Files2">
@@ -308,7 +308,7 @@
   </action>
   <action name="actionPrint_All_Params">
    <property name="text">
-    <string>Print All Parameters</string>
+    <string>&amp;Print All Parameters</string>
    </property>
   </action>
   <action name="actionSelect_Parameters">

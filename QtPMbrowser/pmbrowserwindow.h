@@ -101,7 +101,7 @@ private:
     Ui::PMbrowserWindow* ui;
     QString currentFile;
     QUrl help_url{};
-    QAction actHelp{ "Help" };
+    QAction actHelp{ "&Help" };
     std::ifstream infile;
     std::unique_ptr<DatFile> datfile;
     QString lastloadpath, lastexportpath;
