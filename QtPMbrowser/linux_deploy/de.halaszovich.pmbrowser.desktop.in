@@ -7,4 +7,4 @@ Terminal=false
 Categories=Science
 Exec=QtPMbrowser %u
 #MimeType=application/octet-stream
-Icon=halaszovich-pmbrowser
+Icon=${MY_APP_ID}

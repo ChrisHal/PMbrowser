@@ -101,12 +101,15 @@ endif()
 #if(CMAKE_SYSTEM_NAME EQUAL "Linux")
 if(UNIX)
 # install dektop file and icons
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser.desktop" DESTINATION
+	set(MY_APP_ID "de.halaszovich.PMbrowser")
+	configure_file(linux_deploy/de.halaszovich.pmbrowser.desktop.in ${MY_APP_ID}.desktop)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${MY_APP_ID}.desktop" DESTINATION
 	"${CMAKE_INSTALL_DATADIR}/applications")
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser128.png" DESTINATION
-	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps" RENAME halaszovich-pmbrowser.png)
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser256.png" DESTINATION
-	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME halaszovich-pmbrowser.png)
+	install(FILES "linux_deploy/de.halaszovich.PMbrowser.appdata.xml" DESTINATION "${CMAKE_INSTALL_DATADIR}/metainfo")
+#	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser128.png" DESTINATION
+#	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps" RENAME ${MY_APP_ID}.png)
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser256.png"  DESTINATION
+	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME ${MY_APP_ID}.png)
 endif()
 
 
