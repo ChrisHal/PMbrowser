@@ -25,6 +25,7 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QUrl>
 #include "ui_pmbrowserwindow.h"
 #include <fstream>
 #include <memory>
@@ -98,7 +99,8 @@ private:
     void saveSettings();
     void loadSettings();
     Ui::PMbrowserWindow* ui;
-    QString currentFile, help_path{};
+    QString currentFile;
+    QUrl help_url{};
     QAction actHelp{ "Help" };
     std::ifstream infile;
     std::unique_ptr<DatFile> datfile;

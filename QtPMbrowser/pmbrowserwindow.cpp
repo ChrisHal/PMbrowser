@@ -267,12 +267,17 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     setWindowTitle(myAppName);
     setAcceptDrops(true);
 
-    help_path = QCoreApplication::applicationDirPath() +
+    QString help_path = QCoreApplication::applicationDirPath() +
         "/../" + DOCDIR + "/html/index.html";
     if (QFile::exists(help_path)) {
-        ui->menuHelp->insertAction(ui->actionAbout, &actHelp);
-        QObject::connect(&actHelp, &QAction::triggered, this, &PMbrowserWindow::openHelp);
+        help_url = QUrl::fromLocalFile(help_path);
     }
+    else {
+       help_url = PROJECT_HOMEPAGE;
+       actHelp.setText("Online Help");
+    }
+    ui->menuHelp->insertAction(ui->actionAbout, &actHelp);
+    QObject::connect(&actHelp, &QAction::triggered, this, &PMbrowserWindow::openHelp);
 
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1048,8 +1053,7 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
 
 void PMbrowserWindow::openHelp()
 {
-    QUrl helpurl{ QUrl::fromLocalFile(help_path) };
-    QDesktopServices::openUrl(helpurl);
+    QDesktopServices::openUrl(help_url);
 }
 
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
