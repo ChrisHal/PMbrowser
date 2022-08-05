@@ -56,8 +56,17 @@ Dowload the AppImage file from https://github.com/ChrisHal/PMbrowser/releases. M
 the file executable (usually a right-click in you file manager is involved in this).
 Double-clicking the file should start the application.
 
-The *AppImage contains* all necessary libraries, even when your distro does not provide
+The *AppImage contains* all necessary Qt libraries, even when your distro does not provide
 them.
+
+using *flatpack*
+****************
+
+A delf-contained flatpak file is provided. If your system is set up accordingly,
+you can intall the flatpak by double-clicking the file after download.
+
+You might need to install the necessay runtime, which is provided by the flathub
+repository.
 
 direct installation of the executable
 *************************************
@@ -82,12 +91,11 @@ Now, start :program:`PMbrowser` with ``QtPMbrowser &``.
 Installing on macOS
 ===================
 
-Download the installer :file:`PMbrowser-<version>-Darwin.pkg` from the GitHub repository release
-page: https://github.com/ChrisHal/PMbrowser/releases . The installer will guide you through the
-instalation process.
-
-On :program:`macOS` no offline documentation will be installed.
-
+Download the DragN'Dropinstaller :file:`PMbrowser-<version>-Darwin.dmg` from
+the GitHub repository release
+page: https://github.com/ChrisHal/PMbrowser/releases .
+After openeing the file by double-clicking
+drag the application icon *QtPMbrowser* to your applications directory.
 
 Building from Source
 ====================
