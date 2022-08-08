@@ -62,35 +62,14 @@ them.
 using *flatpak*
 ***************
 
-A self-contained flatpak file is provided. If your system is set up accordingly,
-you can intall the flatpak by double-clicking the file after download.(See https://flatpak.org/setup/ 
+A self-contained :file:`flatpak` file is provided on https://github.com/ChrisHal/PMbrowser/releases.
+If your system is set up accordingly,
+you can intall the flatpak by double-clicking the file after download. (See https://flatpak.org/setup/ 
 for inforamtion on setting up flatpak.)
 
 You might need to install the necessay runtime, which is provided by the flathub
 repository.
 
-direct installation of the executable
-*************************************
-
-You need to have some Qt6 components intalled for this to work: Qt6 Core, Qt6 Gui and Qt6 Widget. Please check
-the repository of your distro for the appropiate packages.
-
-The executable can be found at the GitHub repository release page: https://github.com/ChrisHal/PMbrowser/releases
-
-Save to file to an appropiate location, e.g. :file:`/usr/local/bin/` and make sure it is marked executable.
-An easy way to achive this is to use the :command:`install` command.
-
-A possible command sequence to get and install v2.0 of :program:`PMbrowser` could look like this
-
-.. code-block:: bash
-
- wget https://github.com/ChrisHal/PMbrowser/releases/download/v2.1/QtPMbrowser
- sudo install QtPMbrowser /usr/local/bin/
-
-
-For this to work, :command:`wget` must be installed.
-
-Now, start :program:`PMbrowser` with ``QtPMbrowser &``.
 
 Installing on macOS
 ===================
