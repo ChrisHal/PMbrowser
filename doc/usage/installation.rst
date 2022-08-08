@@ -4,7 +4,7 @@ Installing :program:`PMbrowser`
 
 You can install from source or use one of the provided binaries. Currently,
 for Linux, an executable is available as well as a DEB package.
-For Windows (64bit only) and macOS (minimum version 10.13) installers are available.
+For Windows (64bit only) and macOS (minimum version 10.14) installers are available.
 
 Alternatively, you can build from source.
 
@@ -27,8 +27,6 @@ the documentation in the :file:`share/doc` folder.
 Installing on Linux
 ===================
 
-To run :program:`PMbrowser`, you will need the Qt6 libraries installed.
-
 using DEB package
 *****************
 
@@ -36,8 +34,8 @@ Download the installer :file:`PMbrowser-<version>-win64.deb` from the GitHub rep
 page: https://github.com/ChrisHal/PMbrowser/releases . Use the command `sudo dpkg -i `PMbrowser-<version>-win64.deb`
 to install.
 
-Your distribution needs to provide packages for the Qt libraries version 6. If not, you can
-use the selfcontained *AppImage* (see :ref:`appimage`).
+Your distribution needs to provide packages for the Qt libraries, version 6. If it does not, you can
+use the selfcontained *AppImage* (see :ref:`appimage`) or the flatpak (see :ref:`flatpak`).
 
 Documentation will be installed in :file:`/usr/share/doc/QtPMbrowser` by default.
 The executable :file:`QtPMbrowser` in :file:`/usr/bin` .
@@ -59,17 +57,23 @@ Double-clicking the file should start the application.
 The *AppImage contains* all necessary Qt libraries, even when your distro does not provide
 them.
 
-using *flatpack*
-****************
+.. _flatpak:
 
-A delf-contained flatpak file is provided. If your system is set up accordingly,
-you can intall the flatpak by double-clicking the file after download.
+using *flatpak*
+***************
+
+A self-contained flatpak file is provided. If your system is set up accordingly,
+you can intall the flatpak by double-clicking the file after download.(See https://flatpak.org/setup/ 
+for inforamtion on setting up flatpak.)
 
 You might need to install the necessay runtime, which is provided by the flathub
 repository.
 
 direct installation of the executable
 *************************************
+
+You need to have some Qt6 components intalled for this to work: Qt6 Core, Qt6 Gui and Qt6 Widget. Please check
+the repository of your distro for the appropiate packages.
 
 The executable can be found at the GitHub repository release page: https://github.com/ChrisHal/PMbrowser/releases
 
@@ -94,8 +98,8 @@ Installing on macOS
 Download the DragN'Dropinstaller :file:`PMbrowser-<version>-Darwin.dmg` from
 the GitHub repository release
 page: https://github.com/ChrisHal/PMbrowser/releases .
-After openeing the file by double-clicking
-drag the application icon *QtPMbrowser* to your applications directory.
+After opening the :file:`dmg` image by double-clicking,
+drag the application icon *QtPMbrowser* to your Applications directory.
 
 Building from Source
 ====================
