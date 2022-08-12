@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>de.halaszovich.PMbrowser</id>
+	<id>${MY_APP_ID}</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0</project_license>
 	<name>PM browser</name>
@@ -18,4 +18,8 @@
 	<provides>
 		<id>de.halaszovich.PMbrowser.desktop</id>
 	</provides>
+	<content_rating type="oars-1.0" />
+	<releases>
+		<release version="${CMAKE_PROJECT_VERSION}" date="${my_current_day}" />
+	</releases>
 </component>
