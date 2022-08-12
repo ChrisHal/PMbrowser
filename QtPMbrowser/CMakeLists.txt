@@ -98,8 +98,8 @@ install(TARGETS QtPMbrowser
 )
 endif()
 
-#if(CMAKE_SYSTEM_NAME EQUAL "Linux")
-if(UNIX)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+#if(UNIX)
 # install dektop file and icons
 	set(MY_APP_ID "de.halaszovich.PMbrowser")
 	configure_file(linux_deploy/de.halaszovich.pmbrowser.desktop.in ${MY_APP_ID}.desktop)
