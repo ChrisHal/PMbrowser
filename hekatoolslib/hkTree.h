@@ -34,6 +34,7 @@
 #include <type_traits>
 #include <cstring>
 #include <cstdint>
+#include <cstddef>
 #include "helpers.h"
 
 
@@ -138,14 +139,14 @@ enum class SegmentClass {
     Chirpwave
 };
 
-constexpr std::array<const char*, 6> SegmentClassNames{
+constexpr std::array<const char*, 6> SegmentClassNames{ {
     "Constant",
     "Ramp",
     "Continous",
     "ConstSine",
     "Squarewave",
     "ChirpWave"
-};
+} };
 
 enum class IncrementModeType {
     ModeInc,
@@ -160,7 +161,7 @@ enum class IncrementModeType {
     ModeLogAlternate
 };
 
-constexpr std::array<const char *, 10> IncrementModeNames {
+constexpr std::array<const char*, 10> IncrementModeNames{ {
     "ModeInc",
     "ModeDec",
     "ModeIncInterleaved",
@@ -171,7 +172,7 @@ constexpr std::array<const char *, 10> IncrementModeNames {
     "ModeLogIncInterleaved",
     "ModeLogDecInterleaved",
     "ModeLogAlternate"
-};
+} };
 
 // TrDataKind
 constexpr uint16_t LittleEndianBit = 1, IsLeak = 1 << 1, IsImon = 1 << 3, IsVmon = 1 << 4, ClipBit = 1 << 5;
@@ -213,7 +214,10 @@ private:
         return t;
     }
 public:
-    hkTreeNode() : Parent{ nullptr }, isSwapped{ false }, Data{ nullptr }, level{ -1 }, len{ 0 }, Children{} {};
+    hkTreeNode() : Parent{ nullptr }, Data{ nullptr }, len{ 0 }, Children{}, level{ -1 }, isSwapped{ false } {};
+    hkTreeNode(hkTreeNode&&) = default;
+    hkTreeNode(const hkTreeNode&) = delete;
+    hkTreeNode& operator=(const hkTreeNode&) = delete;
 
     /// <summary>
     /// extract a value from record data, swaps bytes if needed
@@ -295,11 +299,12 @@ private:
 
 public:
     hkTreeNode* Parent;
-    bool isSwapped;
     std::unique_ptr<char[]> Data;
-    int level;
     std::size_t len; //!< Length (in bytes) of data
     std::vector<hkTreeNode> Children;
+    int level;
+    bool isSwapped;
+
     friend class hkTree;
 };
 
