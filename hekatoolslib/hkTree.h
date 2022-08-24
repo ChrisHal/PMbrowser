@@ -200,7 +200,7 @@ class hkTree;
 /// </summary>
 struct hkTreeNode {
 private:
-    template<typename T> T extractValueNoCheck(std::size_t offset) const
+    template<typename T> T extractValueNoCheck(std::size_t offset) const noexcept
     {
         static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
         T t{};
@@ -244,7 +244,7 @@ public:
     /// <param name="offset">offset in record data (needn't be aligned)</param>
     /// <param name="defaultValue">default to be returned if offset is too large</param>
     /// <returns>extracted value or default value</returns>
-    template<typename T> T extractValue(std::size_t offset, T defaultValue) const
+    template<typename T> T extractValue(std::size_t offset, T defaultValue) const noexcept
     {
         if (len < offset + sizeof(T)) {
             return defaultValue;
@@ -261,7 +261,7 @@ public:
     int32_t extractInt32(std::size_t offset) const { return extractValue<int32_t>(offset); };
     uint16_t extractUInt16(std::size_t offset) const { return extractValue<uint16_t>(offset); };
     double extractLongReal(std::size_t offset) const { return extractValue<double>(offset); };
-    double extractLongRealNoThrow(std::size_t offset) const //! instead of throwing an exception, returns NaN if out of range
+    double extractLongRealNoThrow(std::size_t offset) const noexcept //! instead of throwing an exception, returns NaN if out of range
     {
         return extractValue(offset, std::numeric_limits<double>::quiet_NaN());
     }
