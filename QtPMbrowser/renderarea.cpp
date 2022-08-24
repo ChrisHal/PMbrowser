@@ -729,16 +729,15 @@ QPointF RenderArea::scaleToQPF(double x, double y)
     return QPointF(a_x+b_x*x, a_y+b_y*y);
 }
 
-void RenderArea::scaleFromPixToXY(int px, int py, double& x, double& y)
+void RenderArea::scaleFromPixToXY(double px, double py, double& x, double& y)
 {
-    x = x_min + double(px) / double(width()) * (x_max - x_min);
-    y = y_max - double(py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
+    x = x_min + px / double(width()) * (x_max - x_min);
+    y = y_max - (py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
 }
 
 void RenderArea::scaleFromPixToXY(const QPointF& p, double& x, double& y)
 {
-    QPoint t = p.toPoint();
-    scaleFromPixToXY(t.x(), t.y(), x, y);
+    scaleFromPixToXY(p.x(), p.y(), x, y);
 }
 
 void RenderArea::shiftByPixel(QPoint shift)

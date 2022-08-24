@@ -115,7 +115,7 @@ private:
     void pinchTriggered(QPinchGesture*);
     void setScaling(double x_0, double x_1, double y_0, double y_1);
     QPointF scaleToQPF(double x, double y);
-    void scaleFromPixToXY(int px, int py, double& x, double& y);
+    void scaleFromPixToXY(double px, double py, double& x, double& y);
     void scaleFromPixToXY(const QPointF& p, double& x, double& y);
     void shiftByPixel(QPoint shift);
     void zoomIn(double x_center, double y_center, double factor);
