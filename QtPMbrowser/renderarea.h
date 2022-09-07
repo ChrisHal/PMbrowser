@@ -28,8 +28,6 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QCheckBox>
-//#include <QStyle>
-//#include <QStyleFactory>
 #include <QGridLayout>
 #include <istream>
 #include "hkTree.h"
@@ -108,7 +106,6 @@ protected:
     void enterEvent(QEnterEvent* event) override;
 #endif
     void leaveEvent(QEvent* event) override;
-    //void resizeEvent(QResizeEvent* event) override;
 
 private:
     bool gestureEvent(QGestureEvent* event);
@@ -120,6 +117,7 @@ private:
     void shiftByPixel(QPoint shift);
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
+    void drawGrid(QPainter& painter, bool horizontal = true, bool vertical = true);
     void paint(QPainter& painter, const QRect& bounding_rectangle);
     void doContextMenu(QContextMenuEvent* event);
 
