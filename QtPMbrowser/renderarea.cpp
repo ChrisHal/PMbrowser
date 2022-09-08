@@ -196,22 +196,22 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
 
 void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
 {
-    int horz_divs{}, vert_divs{};
-    double horz_step{}, vert_step{};
     auto zero_point = scaleToQPF(0.0, 0.0);
     painter.save();
     QPen penSolid = painter.pen();
     penSolid.setColor(QColorConstants::Cyan);
     QPen penDashed{ penSolid };
-    penDashed.setStyle(Qt::DashLine);
-    auto d_width = width();
+    penDashed.setStyle(Qt::DotLine);
+    //penDashed.setWidthF(0.5);
     if (horizontal && y_min < y_max) {
-        horz_step = std::pow(10.0, std::floor(std::log10(y_max - y_min))) / 3.0;
-        horz_divs = static_cast<int>((y_max - y_min) / horz_step);
+        double d_width = width();
+        double horz_step = std::pow(10.0, std::floor(std::log10(y_max - y_min)));
+        int horz_divs = static_cast<int>((y_max - y_min) / horz_step) + 1;
         auto line_0 = std::ceil(y_min / horz_step) * horz_step;
         painter.setPen(penDashed);
         for (int i = 0; i < horz_divs; ++i) {
             double y = line_0 + i * horz_step;
+            if (y == 0.0) continue;
             auto py = scaleToQPF(0.0, y).y();
             painter.drawLine(QPointF(0.0, py), QPointF(d_width, py));
         }
@@ -222,10 +222,23 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
                 QPointF(d_width, zero_point.y()));
         }
     }
+
     if (vertical && x_min < x_max) {
-        vert_step = std::pow(10.0, std::floor(std::log10(x_max - x_min))) / 3.0;
-        vert_divs = static_cast<int>((x_max - x_min) / vert_step);
+        double d_height = height();
+        double vert_step = std::pow(10.0, std::floor(std::log10(x_max - x_min)));
+        int vert_divs = static_cast<int>((x_max - x_min) / vert_step) + 1 ;
+        if (vert_divs < 4) {
+            vert_divs *= 4;
+            vert_step /= 4.0;
+        }
+        auto line_0 = std::ceil(x_min / vert_step) * vert_step;
         painter.setPen(penDashed);
+        for (int i = 0; i < vert_divs; ++i) {
+            double x = line_0 + i * vert_step;
+            if (x == 0.0) continue;
+            auto px = scaleToQPF(x, 0.0).x();
+            painter.drawLine(QPointF(px, 0.0), QPointF(px, d_height));
+        }
         if (x_min < 0.0 && x_max > 0.0) {
             // draw zero line
             painter.setPen(penSolid);
