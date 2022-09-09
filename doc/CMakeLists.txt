@@ -6,6 +6,7 @@ if(APPLE)
     set(SPHINX_BUILD $<TARGET_BUNDLE_DIR:QtPMbrowser>/Contents/share/doc/QtPMbrowser/html)
 else()
      set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/html)
+     install(DIRECTORY ${SPHINX_BUILD} TYPE DOC)
 endif()
 
 configure_file(	"${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
@@ -20,7 +21,6 @@ add_custom_target(Sphinx ALL
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   COMMENT "Generating documentation with Sphinx")
 				  
-install(DIRECTORY ${SPHINX_BUILD} TYPE DOC)
 
 # check if Doxygen is installed
 find_package(Doxygen)
