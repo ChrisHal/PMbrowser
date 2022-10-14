@@ -202,10 +202,40 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
     penSolid.setColor(QColorConstants::Cyan);
     QPen penDashed{ penSolid };
     penDashed.setStyle(Qt::DotLine);
+    QString info{};
     //penDashed.setWidthF(0.5);
+    
+    if (vertical && x_min < x_max) {
+        double d_height = height();
+        double vert_step = std::pow(10.0, std::floor(std::log10(x_max - x_min)));
+        int vert_divs = static_cast<int>((x_max - x_min) / vert_step) + 1 ;
+        if (vert_divs < 4) {
+            vert_divs *= 4;
+            vert_step /= 4.0;
+        }
+        info.append(QString("x|%1/div").arg(vert_step));
+        auto line_0 = std::ceil(x_min / vert_step) * vert_step;
+        painter.setPen(penDashed);
+        for (int i = 0; i < vert_divs; ++i) {
+            double x = line_0 + i * vert_step;
+            if (x == 0.0) continue;
+            auto px = scaleToQPF(x, 0.0).x();
+            painter.drawLine(QPointF(px, 0.0), QPointF(px, d_height));
+        }
+        if (x_min < 0.0 && x_max > 0.0) {
+            // draw zero line
+            painter.setPen(penSolid);
+            painter.drawLine(QPointF(zero_point.x(),0.0),
+                QPointF(zero_point.x(), static_cast<double>(height())));
+        }
+    }
     if (horizontal && y_min < y_max) {
         double d_width = width();
         double horz_step = std::pow(10.0, std::floor(std::log10(y_max - y_min)));
+        if (info.length() > 0) {
+            info.append('\n');
+        }
+        info.append(QString("y|%1/div").arg(horz_step));
         int horz_divs = static_cast<int>((y_max - y_min) / horz_step) + 1;
         auto line_0 = std::ceil(y_min / horz_step) * horz_step;
         painter.setPen(penDashed);
@@ -223,28 +253,12 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
         }
     }
 
-    if (vertical && x_min < x_max) {
-        double d_height = height();
-        double vert_step = std::pow(10.0, std::floor(std::log10(x_max - x_min)));
-        int vert_divs = static_cast<int>((x_max - x_min) / vert_step) + 1 ;
-        if (vert_divs < 4) {
-            vert_divs *= 4;
-            vert_step /= 4.0;
-        }
-        auto line_0 = std::ceil(x_min / vert_step) * vert_step;
-        painter.setPen(penDashed);
-        for (int i = 0; i < vert_divs; ++i) {
-            double x = line_0 + i * vert_step;
-            if (x == 0.0) continue;
-            auto px = scaleToQPF(x, 0.0).x();
-            painter.drawLine(QPointF(px, 0.0), QPointF(px, d_height));
-        }
-        if (x_min < 0.0 && x_max > 0.0) {
-            // draw zero line
-            painter.setPen(penSolid);
-            painter.drawLine(QPointF(zero_point.x(),0.0),
-                QPointF(zero_point.x(), static_cast<double>(height())));
-        }
+    if (info.length() > 0) {
+        painter.setPen(penSolid);
+        QFont font = painter.font();
+        font.setPixelSize(12);
+        painter.setFont(font);
+        painter.drawText(rect(), Qt::AlignLeft | Qt::AlignBottom, info);
     }
     painter.restore();
 }
