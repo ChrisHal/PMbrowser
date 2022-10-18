@@ -832,6 +832,8 @@ void RenderArea::loadSettings()
     QSettings s;
     s.beginGroup("renderarea");
     do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    show_grid_horz = s.value("show_grid_horz", int(show_grid_horz)).toInt();
+    show_grid_vert = s.value("show_grid_vert", int(show_grid_vert)).toInt();
     background_traces_hidden = !s.value("overlay", 1).toInt();
     chkAutoScale.setChecked(do_autoscale_on_load);
     chkOverlay.setChecked(!background_traces_hidden);
@@ -844,6 +846,8 @@ void RenderArea::saveSettings()
     QSettings s;
     s.beginGroup("renderarea");
     s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("show_grid_horz", int(show_grid_horz));
+    s.setValue("show_grid_vert", int(show_grid_vert));
     s.setValue("overlay", int(!background_traces_hidden));
     s.setValue("numtraces", numtraces);
     s.endGroup();
