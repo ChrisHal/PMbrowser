@@ -121,7 +121,6 @@ private:
     void paint(QPainter& painter, const QRect& bounding_rectangle);
     void doContextMenu(QContextMenuEvent* event);
 
-    //std::unique_ptr<QStyle> p_btnstyle{ QStyleFactory::create("fusion") };
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
     QCheckBox chkAutoScale, chkOverlay;
     QGridLayout* my_layout{};
