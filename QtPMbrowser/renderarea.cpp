@@ -213,7 +213,7 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
             vert_divs *= 4;
             vert_step /= 4.0;
         }
-        info.append(QString("x|%1/div").arg(vert_step));
+        info.append(QString("x: %1/div").arg(vert_step));
         auto line_0 = std::ceil(x_min / vert_step) * vert_step;
         painter.setPen(penDashed);
         for (int i = 0; i < vert_divs; ++i) {
@@ -233,9 +233,9 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
         double d_width = width();
         double horz_step = std::pow(10.0, std::floor(std::log10(y_max - y_min)));
         if (info.length() > 0) {
-            info.append('\n');
+            info.append(" | ");
         }
-        info.append(QString("y|%1/div").arg(horz_step));
+        info.append(QString("y: %1/div").arg(horz_step));
         int horz_divs = static_cast<int>((y_max - y_min) / horz_step) + 1;
         auto line_0 = std::ceil(y_min / horz_step) * horz_step;
         painter.setPen(penDashed);
