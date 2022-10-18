@@ -34,9 +34,12 @@ DlgGraphSettings::~DlgGraphSettings()
 {
 }
 
-void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, double ymin, double ymax, int numtraces)
+void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, double ymin, double ymax,
+	int numtraces, bool grid_horz, bool grid_vert)
 {
 	ui.checkBoxEnableAutoscale->setChecked(autoscale);
+	ui.checkBoxHorzGrid->setChecked(grid_horz);
+	ui.checkBoxVertGrid->setChecked(grid_vert);
 	ui.lineEditXMin->setText(QString("%1").arg(xmin));
 	ui.lineEditXMax->setText(QString("%1").arg(xmax));
 	ui.lineEditYMin->setText(QString("%1").arg(ymin));
@@ -44,9 +47,12 @@ void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, doubl
 	ui.lineEditNumTraces->setText(QString("%1").arg(numtraces));
 }
 
-void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, double& ymin, double& ymax, int& numtraces)
+void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, double& ymin, double& ymax,
+	int& numtraces, bool& grid_horz, bool& grid_vert)
 {
 	autoscale = ui.checkBoxEnableAutoscale->isChecked();
+	grid_horz = ui.checkBoxHorzGrid->isChecked();
+	grid_vert = ui.checkBoxVertGrid->isChecked();
 	xmin = ui.lineEditXMin->text().toDouble();
 	xmax = ui.lineEditXMax->text().toDouble();
 	ymin = ui.lineEditYMin->text().toDouble();

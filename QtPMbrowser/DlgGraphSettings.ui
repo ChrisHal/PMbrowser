@@ -7,13 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>359</width>
-    <height>229</height>
+    <height>290</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Graph Settings &amp; Axis Ranges</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of traces to hold&lt;br/&gt;in persistance buffer (max. 99)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="checkBoxEnableAutoscale">
      <property name="text">
@@ -21,7 +28,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Axis Ranges</string>
@@ -100,23 +107,30 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_5">
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="lineEditNumTraces"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="checkBoxHorzGrid">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of traces to hold&lt;br/&gt;in persistance buffer (max. 99)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>show horizontal grid lines</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="lineEditNumTraces"/>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item row="5" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="checkBoxVertGrid">
+     <property name="text">
+      <string>show vertical grid lines</string>
      </property>
     </widget>
    </item>

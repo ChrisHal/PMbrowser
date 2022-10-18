@@ -31,9 +31,10 @@ public:
 	DlgGraphSettings(QWidget *parent = Q_NULLPTR);
 	~DlgGraphSettings();
 	void setValues(bool autoscale, double xmin, double xmax,
-		double ymin, double ymax, int numtraces);
+		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert);
 	void getValues(bool& autoscale, double& xmin, double& xmax,
-		double& ymin, double& ymax, int& numtraces);
+		double& ymin, double& ymax, int& numtraces,
+        bool& grid_horz, bool& gird_vert);
 
 private:
 	Ui::DlgGraphSettings ui;

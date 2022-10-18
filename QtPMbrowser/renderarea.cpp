@@ -147,7 +147,7 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
             }
             else {
                 setScaling(x_min, x_max, y_min, y_max);
-                drawGrid(painter);
+                drawGrid(painter, show_grid_horz, show_grid_vert);
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
                     painter.setPen(QColor(128, 128, 128)); // grey
@@ -651,10 +651,12 @@ void RenderArea::copyToClipboard()
 void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
-    dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
+    dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
+        show_grid_horz, show_grid_vert);
     if (dlg.exec()) {
         settings_modified = true;
-        dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces);
+        dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
+            show_grid_horz, show_grid_vert);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
