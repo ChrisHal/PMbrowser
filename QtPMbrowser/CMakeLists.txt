@@ -69,7 +69,7 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 set(ms_deploy_dir "${CMAKE_CURRENT_BINARY_DIR}/deploy")
 message(STATUS "deploying to " ${ms_deploy_dir})
 add_custom_target(deploy ALL
-#    COMMAND powershell -Command "if ((Test-Path ${ms_deploy_dir})) {rm -r ${ms_deploy_dir}}"
+    COMMAND powershell -Command "if ((Test-Path ${ms_deploy_dir})) {rm -r \"${ms_deploy_dir}\"}"
 	COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --dir ${ms_deploy_dir}         \"$<TARGET_FILE:QtPMbrowser>\"
     COMMENT "Deploying Qt..."
 )
