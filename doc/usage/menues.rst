@@ -224,5 +224,5 @@ can be set using the context menu of the **tree-view**. By default, the referenc
 'Setting and Ranges' Dialog
 ***************************
 
-Here you can configure the display area: axis ranges, *autoscale on load* and the number of overlay traces to
-be kept in the internal display buffer.
+Here you can configure the display area: axis ranges, *autoscale on load*, if grid lines should be displayed
+and the number of overlay traces to be kept in the internal display buffer.
