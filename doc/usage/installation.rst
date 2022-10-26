@@ -90,8 +90,9 @@ Prerequisits
 ************
 
 You will need to install the usual build tools including :program:`cmake` and
-Qt-Library version 6.2 or newer (for now, the source can also be build
-using version 5, but support will end soon). To build the documention, you need :program:`Sphinx` .
+Qt-Library version 6.2 or newer. To build the documentation, you need :program:`sphinx` 
+and :program:`sphinx_rtd_theme`. (Usually, these can be installed via :program:`pip`, 
+if :program:`python` is installed.)
 
 On most :program:`Linux` distributions , Qt is provided as a package,
 e.g. :file:`qt6-base-dev` for Ubuntu.
@@ -101,11 +102,11 @@ You can get them from `Qt <https://www.qt.io/>`_.
 
 On :program:`Linux`, there is an obscure bug in the Qt-libraries that can lead to the error
   
-  ``error while loading shared libraries: libQt5Core.so.5: cannot open shared object file: No such file or directory``
+  ``error while loading shared libraries: libQt6Core.so.6: cannot open shared object file: No such file or directory``
   
 This can be solved by this command:
  
-  ``sudo strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5``
+  ``sudo strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt6Core.so.6``
   
 Build commands
 **************
@@ -125,5 +126,9 @@ You might need to set the :command:`cmake` variable `CMAKE_PREFIX_PATH` to your 
 You might find this easier to do using :program:`cmake-gui` .
 
 By default, the *documentation* will not be build / installed. You have to set the `BUILD_DOCS` option
-for this.
+for this when configuring `cmake`:
+
+.. code-block:: bash
+
+	cmake ../PMbrowser -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS=on
 
