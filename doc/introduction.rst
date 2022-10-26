@@ -32,7 +32,7 @@ Is :program:`PMbrowser` free?
 -----------------------------
 
 :program:`PMbrowser` is open-source software. It is licensed under `GPLv3 <https://www.gnu.org/licenses/gpl-3.0.en.html>`_.
-You can use it freely. The source code can be found `here <https://www.gnu.org/licenses/gpl-3.0.en.html>`_.
+You can use it freely. The source code can be found `here <https://github.com/ChrisHal/PMbrowser>`_.
 
 .. rubric:: Footnotes
 
