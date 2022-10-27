@@ -163,20 +163,20 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
                 font.setPixelSize(16);
                 painter.setFont(font);
                 painter.setPen(QColor(200, 0, 0)); // some red
-                QString label = QString("%1 %2").arg(y_max).arg(yTrace.getYUnit());
+                QString label = QString("%L1 %2").arg(y_max).arg(yTrace.getYUnit());
                 painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignTop, label);
-                label = QString("%1 %2").arg(y_min).arg(yTrace.getYUnit());
+                label = QString("%L1 %2").arg(y_min).arg(yTrace.getYUnit());
                 painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignBottom, label);
                 if (isXYmode()) {
-                    label = QString("%1 %2").arg(x_min).arg(xTrace.getYUnit());
+                    label = QString("%L1 %2").arg(x_min).arg(xTrace.getYUnit());
                     painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-                    label = QString("%1 %2").arg(x_max).arg(xTrace.getYUnit());
+                    label = QString("%L1 %2").arg(x_max).arg(xTrace.getYUnit());
                     painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
                 }
                 else {
-                    label = QString("%1 %2").arg(x_min).arg(yTrace.getXUnit());
+                    label = QString("%L1 %2").arg(x_min).arg(yTrace.getXUnit());
                     painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignLeft, label);
-                    label = QString("%1 %2").arg(x_max).arg(yTrace.getXUnit());
+                    label = QString("%L1 %2").arg(x_max).arg(yTrace.getXUnit());
                     painter.drawText(rectangle, Qt::AlignVCenter | Qt::AlignRight, label);
                 }
             }
@@ -213,7 +213,7 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
             vert_divs *= 4;
             vert_step /= 4.0;
         }
-        info.append(QString("x: %1/div").arg(vert_step));
+        info.append(QString("x: %L1/div").arg(vert_step));
         auto line_0 = std::ceil(x_min / vert_step) * vert_step;
         painter.setPen(penDashed);
         for (int i = 0; i < vert_divs; ++i) {
@@ -235,7 +235,7 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
         if (info.length() > 0) {
             info.append(" | ");
         }
-        info.append(QString("y: %1/div").arg(horz_step));
+        info.append(QString("y: %L1/div").arg(horz_step));
         int horz_divs = static_cast<int>((y_max - y_min) / horz_step) + 1;
         auto line_0 = std::ceil(y_min / horz_step) * horz_step;
         painter.setPen(penDashed);
