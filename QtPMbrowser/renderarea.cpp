@@ -839,8 +839,8 @@ void RenderArea::loadSettings()
     chkOverlay.setChecked(!background_traces_hidden);
     numtraces = s.value("numtraces", numtraces).toInt();
     color_grid = s.value("color_grid", color_grid).value<QColor>();
-    color_grid = s.value("color_trace", color_trace).value<QColor>();
-    color_grid = s.value("color_bktrace", color_bktrace).value<QColor>();
+    color_trace = s.value("color_trace", color_trace).value<QColor>();
+    color_bktrace = s.value("color_bktrace", color_bktrace).value<QColor>();
     s.endGroup();
 }
 
