@@ -150,11 +150,11 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
                 drawGrid(painter, show_grid_horz, show_grid_vert);
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
-                    painter.setPen(QColor(128, 128, 128)); // grey
+                    painter.setPen(color_bktrace);
                     for (auto trace : qAsConst(tracebuffer)) {
                         trace->render(painter, this);
                     }
-                    painter.setPen(QColor(0, 0, 0)); // black
+                    painter.setPen(color_trace);
                 }
 
                 yTrace.render(painter, this);
@@ -652,11 +652,11 @@ void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
     dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
-        show_grid_horz, show_grid_vert, color_grid);
+        show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
     if (dlg.exec()) {
         settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
-            show_grid_horz, show_grid_vert, color_grid);
+            show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
@@ -839,6 +839,8 @@ void RenderArea::loadSettings()
     chkOverlay.setChecked(!background_traces_hidden);
     numtraces = s.value("numtraces", numtraces).toInt();
     color_grid = s.value("color_grid", color_grid).value<QColor>();
+    color_grid = s.value("color_trace", color_trace).value<QColor>();
+    color_grid = s.value("color_bktrace", color_bktrace).value<QColor>();
     s.endGroup();
 }
 
@@ -852,5 +854,7 @@ void RenderArea::saveSettings()
     s.setValue("overlay", int(!background_traces_hidden));
     s.setValue("numtraces", numtraces);
     s.setValue("color_grid", color_grid);
+    s.setValue("color_trace", color_trace);
+    s.setValue("color_bktrace", color_bktrace);
     s.endGroup();
 }

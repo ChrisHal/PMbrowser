@@ -28,21 +28,24 @@ class DlgGraphSettings : public QDialog
 	Q_OBJECT
 
 private slots:
-    void selectLineColor();
+    void selectGridColor();
+    void selectTraceColor();
+    void selectBkTraceColor();
 
 public:
 	DlgGraphSettings(QWidget *parent = Q_NULLPTR);
 	~DlgGraphSettings();
 	void setValues(bool autoscale, double xmin, double xmax,
 		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert,
-        QColor color_grid);
+        QColor color_grid, QColor color_trace, QColor color_bktrace);
 	void getValues(bool& autoscale, double& xmin, double& xmax,
 		double& ymin, double& ymax, int& numtraces,
-        bool& grid_horz, bool& gird_vert, QColor& color_grid);
+        bool& grid_horz, bool& gird_vert,
+        QColor& color_grid, QColor& color_trace, QColor& color_bktrace);
 
 private:
 	Ui::DlgGraphSettings ui;
 	QIntValidator validator;
 	QDoubleValidator dvalidator;
-    QColor m_color_grid{};
+    QColor m_color_grid{}, m_color_trace{}, m_color_bktrace{};
 };

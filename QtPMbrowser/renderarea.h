@@ -142,7 +142,8 @@ private:
     QPoint selStart, selEnd;
     QPixmap* tempPixMap;
     bool settings_modified;
-    QColor color_grid{ QColorConstants::Cyan };
+    QColor color_grid{ QColorConstants::Cyan }, color_trace{QColorConstants::Black},
+        color_bktrace{QColorConstants::Gray};
 
     friend class DisplayTrace;
 };

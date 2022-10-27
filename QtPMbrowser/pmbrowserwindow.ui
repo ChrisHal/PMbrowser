@@ -150,7 +150,7 @@
      <x>0</x>
      <y>0</y>
      <width>592</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -283,12 +283,12 @@
   </action>
   <action name="actionSettings">
    <property name="text">
-    <string>Settings and Ranges...</string>
+    <string>&amp;Settings and Ranges...</string>
    </property>
   </action>
   <action name="actionWipe">
    <property name="text">
-    <string>Wipe All</string>
+    <string>&amp;Wipe All</string>
    </property>
   </action>
   <action name="actionClear_Persitant_Traces">

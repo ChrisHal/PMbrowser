@@ -32,23 +32,47 @@ DlgGraphSettings::DlgGraphSettings(QWidget *parent)
 	ui.lineEditYMin->setValidator(&dvalidator);
 	ui.lineEditYMax->setValidator(&dvalidator);
 	QObject::connect(ui.pushButtonSelectGridColor, &QPushButton::clicked,
-		this, &DlgGraphSettings::selectLineColor);
+		this, &DlgGraphSettings::selectGridColor);
+	QObject::connect(ui.pushButtonColorTrace, &QPushButton::clicked,
+		this, &DlgGraphSettings::selectTraceColor);
+	QObject::connect(ui.pushButtonColorBkTrace, &QPushButton::clicked,
+		this, &DlgGraphSettings::selectBkTraceColor);
 }
 
 DlgGraphSettings::~DlgGraphSettings()
 {
 }
 
-void DlgGraphSettings::selectLineColor()
+void DlgGraphSettings::selectGridColor()
 {
 	auto color = QColorDialog::getColor(m_color_grid);
 	if (color.isValid()) {
 		m_color_grid = color;
+		ui.widgetColorGrid->setPalette(QPalette(m_color_grid));
+	}
+}
+
+void DlgGraphSettings::selectTraceColor()
+{
+	auto color = QColorDialog::getColor(m_color_trace);
+	if (color.isValid()) {
+		m_color_trace = color;
+		ui.widgetColorTrace->setPalette(QPalette(m_color_trace));
+	}
+}
+
+void DlgGraphSettings::selectBkTraceColor()
+{
+	auto color = QColorDialog::getColor(m_color_bktrace);
+	if (color.isValid()) {
+		m_color_bktrace = color;
+		ui.widgetColorBkTrace->setPalette(QPalette(m_color_bktrace));
 	}
 }
 
 void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, double ymin, double ymax,
-	int numtraces, bool grid_horz, bool grid_vert, QColor color_grid)
+	int numtraces, bool grid_horz, bool grid_vert,
+	QColor color_grid, QColor color_trace, QColor color_bktrace)
 {
 	QLocale loc{};
 	ui.checkBoxEnableAutoscale->setChecked(autoscale);
@@ -60,10 +84,16 @@ void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, doubl
 	ui.lineEditYMax->setText(loc.toString(ymax));
 	ui.lineEditNumTraces->setText(loc.toString(numtraces));
 	m_color_grid = color_grid;
+	ui.widgetColorGrid->setPalette(QPalette(m_color_grid));
+	m_color_trace = color_trace;
+	ui.widgetColorTrace->setPalette(QPalette(m_color_trace));
+	m_color_bktrace = color_bktrace;
+	ui.widgetColorBkTrace->setPalette(QPalette(m_color_bktrace));
 }
 
 void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, double& ymin, double& ymax,
-	int& numtraces, bool& grid_horz, bool& grid_vert, QColor& color_grid)
+	int& numtraces, bool& grid_horz, bool& grid_vert, 
+	QColor& color_grid, QColor& color_trace, QColor& color_bktrace)
 {
 	QLocale loc{};
 	autoscale = ui.checkBoxEnableAutoscale->isChecked();
@@ -75,4 +105,6 @@ void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, do
 	ymax = loc.toDouble(ui.lineEditYMax->text());
 	numtraces = loc.toInt(ui.lineEditNumTraces->text());
 	color_grid = m_color_grid;
+	color_trace = m_color_trace;
+	color_bktrace = m_color_bktrace;
 }
