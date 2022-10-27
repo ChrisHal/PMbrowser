@@ -199,7 +199,7 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
     auto zero_point = scaleToQPF(0.0, 0.0);
     painter.save();
     QPen penSolid = painter.pen();
-    penSolid.setColor(QColorConstants::Cyan);
+    penSolid.setColor(color_grid);
     QPen penDashed{ penSolid };
     penDashed.setStyle(Qt::DotLine);
     QString info{};
@@ -652,11 +652,11 @@ void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
     dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
-        show_grid_horz, show_grid_vert);
+        show_grid_horz, show_grid_vert, color_grid);
     if (dlg.exec()) {
         settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
-            show_grid_horz, show_grid_vert);
+            show_grid_horz, show_grid_vert, color_grid);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();
@@ -838,6 +838,7 @@ void RenderArea::loadSettings()
     chkAutoScale.setChecked(do_autoscale_on_load);
     chkOverlay.setChecked(!background_traces_hidden);
     numtraces = s.value("numtraces", numtraces).toInt();
+    color_grid = s.value("color_grid", color_grid).value<QColor>();
     s.endGroup();
 }
 
@@ -850,5 +851,6 @@ void RenderArea::saveSettings()
     s.setValue("show_grid_vert", int(show_grid_vert));
     s.setValue("overlay", int(!background_traces_hidden));
     s.setValue("numtraces", numtraces);
+    s.setValue("color_grid", color_grid);
     s.endGroup();
 }

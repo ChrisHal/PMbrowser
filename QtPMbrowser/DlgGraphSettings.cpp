@@ -18,6 +18,8 @@
 */
 
 #include <QLocale>
+#include <QColor>
+#include <QColorDialog>
 #include "DlgGraphSettings.h"
 
 DlgGraphSettings::DlgGraphSettings(QWidget *parent)
@@ -29,14 +31,24 @@ DlgGraphSettings::DlgGraphSettings(QWidget *parent)
 	ui.lineEditXMax->setValidator(&dvalidator);
 	ui.lineEditYMin->setValidator(&dvalidator);
 	ui.lineEditYMax->setValidator(&dvalidator);
+	QObject::connect(ui.pushButtonSelectGridColor, &QPushButton::clicked,
+		this, &DlgGraphSettings::selectLineColor);
 }
 
 DlgGraphSettings::~DlgGraphSettings()
 {
 }
 
+void DlgGraphSettings::selectLineColor()
+{
+	auto color = QColorDialog::getColor(m_color_grid);
+	if (color.isValid()) {
+		m_color_grid = color;
+	}
+}
+
 void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, double ymin, double ymax,
-	int numtraces, bool grid_horz, bool grid_vert)
+	int numtraces, bool grid_horz, bool grid_vert, QColor color_grid)
 {
 	QLocale loc{};
 	ui.checkBoxEnableAutoscale->setChecked(autoscale);
@@ -47,10 +59,11 @@ void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, doubl
 	ui.lineEditYMin->setText(loc.toString(ymin));
 	ui.lineEditYMax->setText(loc.toString(ymax));
 	ui.lineEditNumTraces->setText(loc.toString(numtraces));
+	m_color_grid = color_grid;
 }
 
 void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, double& ymin, double& ymax,
-	int& numtraces, bool& grid_horz, bool& grid_vert)
+	int& numtraces, bool& grid_horz, bool& grid_vert, QColor& color_grid)
 {
 	QLocale loc{};
 	autoscale = ui.checkBoxEnableAutoscale->isChecked();
@@ -61,4 +74,5 @@ void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, do
 	ymin = loc.toDouble(ui.lineEditYMin->text());
 	ymax = loc.toDouble(ui.lineEditYMax->text());
 	numtraces = loc.toInt(ui.lineEditNumTraces->text());
+	color_grid = m_color_grid;
 }

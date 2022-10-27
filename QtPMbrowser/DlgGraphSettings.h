@@ -27,17 +27,22 @@ class DlgGraphSettings : public QDialog
 {
 	Q_OBJECT
 
+private slots:
+    void selectLineColor();
+
 public:
 	DlgGraphSettings(QWidget *parent = Q_NULLPTR);
 	~DlgGraphSettings();
 	void setValues(bool autoscale, double xmin, double xmax,
-		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert);
+		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert,
+        QColor color_grid);
 	void getValues(bool& autoscale, double& xmin, double& xmax,
 		double& ymin, double& ymax, int& numtraces,
-        bool& grid_horz, bool& gird_vert);
+        bool& grid_horz, bool& gird_vert, QColor& color_grid);
 
 private:
 	Ui::DlgGraphSettings ui;
 	QIntValidator validator;
 	QDoubleValidator dvalidator;
+    QColor m_color_grid{};
 };
