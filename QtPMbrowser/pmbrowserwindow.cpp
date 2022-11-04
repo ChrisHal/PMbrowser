@@ -262,7 +262,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     ui->setupUi(this);
         
     ui->treePulse->setExpandsOnDoubleClick(false);
-
+    ui->actionSettings->setMenuRole(QAction::NoRole); // for macOS: prevent placment of entry in app menu
+    
     setWindowIcon(QIcon(QString(":/myappico.ico")));
     setWindowTitle(myAppName);
     setAcceptDrops(true);
