@@ -68,7 +68,7 @@ int32_t swap_bytes(int32_t x)
 uint32_t swap_bytes(uint32_t x)
 {
     char* a = reinterpret_cast<char*>(&x);
-    int32_t b{};
+    uint32_t b{};
     char* p = reinterpret_cast<char*>(&b);
     p[0] = a[3];
     p[1] = a[2];
@@ -84,7 +84,7 @@ int16_t swap_bytes(int16_t x)
 
 uint16_t swap_bytes(uint16_t x)
 {
-    return ((x & 0xff00) >> 8) | ((x & 0xff) << 8);
+    return ((x & 0xff00U) >> 8U) | ((x & 0xffU) << 8U);
 }
 
 std::string formTraceName(const hkTreeNode& tr, int count)

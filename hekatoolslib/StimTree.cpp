@@ -37,7 +37,7 @@ StimulationRecord::StimulationRecord(const hkTreeNode& node)
 	DataStartTime = node.extractValue<double>(stDataStartTime);
 	NumberSweeps = node.extractValue<int32_t>(stNumberSweeps);
 	ActualDacChannels = node.extractValue<int32_t>(stActualDacChannels);
-	HasLockIn = node.getChar(stHasLockIn);
+	HasLockIn = static_cast<bool>(node.getChar(stHasLockIn));
 	for (const auto& c : node.Children) {
 		Channels.emplace_back(c);
 	}
@@ -65,7 +65,7 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 		if ((first_seg.Class == SegmentClass::Ramp) ||
 			((first_seg.Class == SegmentClass::Constant || first_seg.Class == SegmentClass::Continuous)
 			&& first_seg.VoltageSource != 1 && first_seg.Voltage != holding)) {
-			points.push_back({ curr_t, holding });
+			points.push_back({ { curr_t, holding } });
 		}
 		for (const auto& seg : stim_ch.Segments) {
 			double actV{ seg.Voltage };
@@ -89,7 +89,7 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 					break;
 				default:
 					throw std::runtime_error(std::string("unsupported voltage inc. mode ") +
-						IncrementModeNames.at(static_cast<int>(seg.VoltageIncMode)));
+						IncrementModeNames.at(static_cast<unsigned>(seg.VoltageIncMode)));
 				}
 			}
 			double duration{ seg.Duration };
@@ -108,40 +108,40 @@ std::vector<std::array<double, 2>> StimulationRecord::constructStimTrace(int swe
 				break;
 			default:
 				throw std::runtime_error(std::string("unsupported duration inc. mode ") +
-					IncrementModeNames.at(static_cast<int>(seg.DurationIncMode)));
+					IncrementModeNames.at(static_cast<unsigned>(seg.DurationIncMode)));
 			}
 			if (seg.Class == SegmentClass::Constant ||
 				seg.Class == SegmentClass::Continuous) {
-				points.push_back({ curr_t,actV });
+				points.push_back({ { curr_t,actV } });
 				curr_t += duration;
-				points.push_back({ curr_t,actV });
+				points.push_back({ { curr_t,actV } });
 			}
 			else if (seg.Class == SegmentClass::Ramp) {
 				curr_t += duration;
-				points.push_back({ curr_t,actV });
+				points.push_back({ { curr_t,actV } });
 			}
 			else {
 				throw std::runtime_error("unsupported segment class '"
-					+ std::string(SegmentClassNames.at(static_cast<int>(seg.Class))) + "'");
+					+ std::string(SegmentClassNames.at(static_cast<unsigned>(seg.Class))) + "'");
 			}
 		}
 		if (!stim_ch.SetLastSegVmemb) {
 			const auto& last_seg = stim_ch.Segments.back();
 			if (last_seg.Voltage != holding && last_seg.VoltageSource != 1) {
 				// we jump back to holding after last segment
-				points.push_back({ curr_t, holding });
+				points.push_back({ { curr_t, holding } });
 			}
 		}
 		if (stim_ch.DacUnit == "A") {
 			// current is actually stored as nA, not A
 			std::transform(points.begin(), points.end(), points.begin(),
 				[](const std::array<double,2> & p) {
-					return std::array<double, 2>{ p[0], 1e-9 * p[1] };
+					return std::array<double, 2>{ { p[0], 1e-9 * p[1] } };
 				});
 		}
 	}
 	else {
-		points.push_back({ curr_t, holding });
+		points.push_back({ { curr_t, holding } });
 	}
 	return points;
 }

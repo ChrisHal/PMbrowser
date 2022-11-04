@@ -315,7 +315,7 @@ class hkTree
     std::string ID;
     double time0{};
     bool isSwapped;
-    void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
+    void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, unsigned int level);
 public:
     hkTree() : LevelSizes{}, RootNode{}, isSwapped{ false } {};
     std::string getID() {
@@ -330,7 +330,7 @@ public:
     /// <param name="offset">offset of start of tree in infile stream</param>
     /// <param name="len">length in bytes of tree data in file (this data contains the total of the tree)</param>
     /// <returns>true on success</returns>
-    bool InitFromStream(const std::string_view& id, std::istream& infile, int offset, int len);
+    bool InitFromStream(const std::string_view& id, std::istream& infile, int offset, unsigned int len);
 
     /// <summary>
     /// Initialize tree from data buffered in memory

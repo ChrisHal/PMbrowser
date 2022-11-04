@@ -693,7 +693,7 @@ void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
     yTrace.y_unit = qs_from_sv(TrRecord->getString<8>(TrYUnit));
     yTrace.x_unit = qs_from_sv(TrRecord->getString<8>(TrXUnit));
     yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
-    ndatapoints = TrRecord->extractInt32(TrDataPoints);
+    ndatapoints = TrRecord->extractValue<uint32_t>(TrDataPoints);
     yTrace.data.resize(ndatapoints);
 	try {
 		if (dataformat == DFT_int16) {

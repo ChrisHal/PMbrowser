@@ -64,10 +64,10 @@ struct TreeRoot {
 		LevelSizes[1];	//!< variable length array (nLevels entries with size of level data in bytes)
 };
 
-void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
+void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, unsigned int level)
 {
 	node.tree = this;
-	auto size = LevelSizes.at(level);
+	auto size = static_cast<unsigned>(LevelSizes.at(level));
 	node.level = level;
 	node.len = size;
 	node.isSwapped = isSwapped;
@@ -85,7 +85,7 @@ void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int 
 	}
 }
 
-bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, int len)
+bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, unsigned int len)
 {
 	assert(!!infile);
 	auto buffer = std::make_unique<char[]>(len);

@@ -116,7 +116,7 @@ template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode
 	double* target)
 {
 	static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
-	assert(trdatapoints == TrRecord.extractInt32(TrDataPoints));
+	assert(trdatapoints == TrRecord.extractValue<uint32_t>(TrDataPoints));
 	int32_t trdata = TrRecord.extractInt32(TrData);
 	datafile.seekg(trdata);
 

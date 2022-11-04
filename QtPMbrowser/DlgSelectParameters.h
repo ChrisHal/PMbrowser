@@ -68,7 +68,7 @@ private:
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
 		std::array<PMparameter, Nrows>& ar)
 	{
-		for (int i = 0; i < int(ar.size()); ++i) {
+		for (int i = 0; i < static_cast<int>(ar.size()); ++i) {
 			auto chkExport = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget());
 			assert(chkExport);
 			ar[i].exportIBW = chkExport->isChecked();

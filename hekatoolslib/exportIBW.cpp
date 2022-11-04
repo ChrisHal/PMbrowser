@@ -81,7 +81,7 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	yunit = TrRecord.getString(TrYUnit); // assuming the string is zero terminated...
 	xunit = TrRecord.getString(TrXUnit);
 	double x0 = TrRecord.extractLongReal(TrXStart), deltax = TrRecord.extractLongReal(TrXInterval);
-	int32_t trdatapoints = TrRecord.extractInt32(TrDataPoints);
+	auto trdatapoints = TrRecord.extractValue<uint32_t>(TrDataPoints);
 
 	auto target = std::make_unique<double[]>(trdatapoints);
 
