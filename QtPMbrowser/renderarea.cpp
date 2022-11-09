@@ -570,7 +570,7 @@ void RenderArea::autoScale()
     else
     {
         x_min = yTrace.x0;
-        x_max = yTrace.x0 + (yTrace.data.size() - 1) * yTrace.deltax;
+        x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
     }
     find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), y_min, y_max);
     update();
