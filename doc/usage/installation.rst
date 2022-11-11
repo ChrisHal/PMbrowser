@@ -47,8 +47,8 @@ under *Applications*, too.
 
 .. _appimage:
 
-using the *AppImage*
-********************
+using the *AppImage* (currently not supported)
+**********************************************
 
 Dowload the AppImage file from https://github.com/ChrisHal/PMbrowser/releases. Make
 the file executable (usually a right-click in you file manager is involved in this).
@@ -62,13 +62,16 @@ them.
 using *flatpak*
 ***************
 
-A self-contained :file:`flatpak` file is provided on https://github.com/ChrisHal/PMbrowser/releases.
-If your system is set up accordingly,
-you can intall the flatpak by double-clicking the file after download. (See https://flatpak.org/setup/ 
-for inforamtion on setting up flatpak.)
+:program:`PM browser` is hosted on *flathub*: https://flathub.org/apps/details/de.halaszovich.PMbrowser
 
-You might need to install the necessay runtime, which is provided by the flathub
-repository.
+If your system is set up accordingly,
+you can install the flatpak (see https://flatpak.org/setup/  
+for information on setting up flatpak) with this command:
+
+``flatpak install flathub de.halaszovich.PMbrowser``
+
+Or use this link: https://dl.flathub.org/repo/appstream/de.halaszovich.PMbrowser.flatpakref
+
 
 
 Installing on macOS
