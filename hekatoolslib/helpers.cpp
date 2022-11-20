@@ -17,11 +17,11 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include<cinttypes>
+#include <cinttypes>
 #include <sstream>
 #include "hkTree.h"
 #include "DatFile.h"
-#include"helpers.h"
+#include "helpers.h"
 
 // some tools
 
