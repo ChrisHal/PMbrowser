@@ -19,6 +19,7 @@
 
 #include <cinttypes>
 #include <sstream>
+#include <cassert>
 #include "hkTree.h"
 #include "DatFile.h"
 #include "helpers.h"
@@ -102,6 +103,7 @@ hkSettings global_hkSettings{};
 /// <returns>trace name</returns>
 std::string formTraceName(const hkTreeNode& tr, int count)
 {
+    assert(tr.getLevel() == hkTreeNode::LevelTrace);
     int datakind = tr.extractUInt16(TrDataKind);
     std::stringstream trace_ext;
     if (datakind & IsImon && !global_hkSettings.ext_Imon.empty()) {
