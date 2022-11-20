@@ -16,10 +16,7 @@ public:
 	int getSelection() {
 		return selection;
 	}
-	void accept() override {
-		selection = ui->comboBoxLevel->currentIndex();
-		QDialog::accept();
-	};
+	void accept() override;
 
 private:
 	int selection;
