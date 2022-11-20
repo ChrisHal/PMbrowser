@@ -47,6 +47,7 @@
 #include "DlgTreeFilter.h"
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
+#include "DlgPreferences.h"
 #include "qstring_helper.h"
 #include "Config.h"
 
@@ -279,6 +280,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     }
     ui->menuHelp->insertAction(ui->actionAbout, &actHelp);
     QObject::connect(&actHelp, &QAction::triggered, this, &PMbrowserWindow::openHelp);
+
+    QObject::connect(ui->action_Preferences, &QAction::triggered, this, &PMbrowserWindow::openPreferences);
 
     QObject::connect(ui->actionAuto_Scale, &QAction::triggered, ui->renderArea, &RenderArea::autoScale);
     ui->treePulse->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1064,6 +1067,12 @@ void PMbrowserWindow::openHelp()
     }
 }
 
+void PMbrowserWindow::openPreferences()
+{
+    DlgPreferences dlg;
+    dlg.exec();
+}
+
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
 {
     auto mimedata = event->mimeData();
@@ -1180,5 +1189,10 @@ void PMbrowserWindow::loadSettings()
     for (auto& p : parametersTrace) {
         p.fromInt(settings.value(p.name, p.toInt()).toInt());
     }
+    settings.endGroup();
+
+    settings.beginGroup("Preferencres");
+    global_hkSettings.ext_Vmon = settings.value("Vmon", "Vmon").toString().toStdString();
+    global_hkSettings.ext_Imon = settings.value("Imon", "Imon").toString().toStdString();
     settings.endGroup();
 }

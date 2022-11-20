@@ -34,6 +34,7 @@
 #include <cassert>
 #include "machineinfo.h"
 #include "hkTree.h"
+#include "helpers.h"
 
 /// <summary>
 /// each BundleItem describes offset and length of

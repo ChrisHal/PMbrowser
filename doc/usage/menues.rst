@@ -67,6 +67,11 @@ Select Parameters
 Opens the :ref:`select-params-dlg-label`. There you can select which parameters from the PatchMaster-file
 will be either *printed* to the **text-area** or *exported* as *wave-notes* and *tables*.
 
+Preferences
+-----------
+
+Open *Preferences* dialog. Here you can configure how Imon and Vmon traces are labled.
+
 
 "Edit"
 ******
