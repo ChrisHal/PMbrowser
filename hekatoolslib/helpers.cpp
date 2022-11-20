@@ -87,21 +87,34 @@ uint16_t swap_bytes(uint16_t x)
     return ((x & 0xff00U) >> 8U) | ((x & 0xffU) << 8U);
 }
 
+hkSettings global_hkSettings{};
+
+
+/// <summary>
+/// GEnerate canonical name for trace using extensions
+/// for Imon and Vmon and possibly Leak traces given in global_hkSettings.
+/// (LEak traces are a special case, since there might be several of them.)
+/// If strings in settings are empty, lables provided in DAT-file will be used,
+/// if available. Otherwise, trace count will be used.
+/// </summary>
+/// <param name="tr">tree node the must repesent a trace</param>
+/// <param name="count">trace count used for labeling</param>
+/// <returns>trace name</returns>
 std::string formTraceName(const hkTreeNode& tr, int count)
 {
-    int32_t datakind = tr.extractUInt16(TrDataKind);
+    int datakind = tr.extractUInt16(TrDataKind);
     std::stringstream trace_ext;
-    if (datakind & IsImon) {
-        trace_ext << "Imon";
+    if (datakind & IsImon && !global_hkSettings.ext_Imon.empty()) {
+        trace_ext << global_hkSettings.ext_Imon;
     }
-    else if (datakind & IsVmon) {
-        trace_ext << "Vmon";
+    else if (datakind & IsVmon && !global_hkSettings.ext_Vmon.empty()) {
+        trace_ext << global_hkSettings.ext_Vmon;
     }
     else {
         auto lable = tr.getString(TrLabel);
-        if (lable.length() == 0) {
-            if (datakind & IsLeak) {
-                trace_ext << "Leak";
+        if (lable.empty()) {
+            if (datakind & IsLeak && !global_hkSettings.ext_Leak.empty()) {
+                trace_ext << global_hkSettings.ext_Leak;
             }
             else {
                 trace_ext << "trace_" << count;

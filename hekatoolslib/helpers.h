@@ -28,6 +28,7 @@
 #pragma once
 #include "hkTree.h"
 #include <cstdint>
+#include <string>
 
 template<typename T> T swap_bytes(T) = delete;
 double swap_bytes(double x);
@@ -42,6 +43,13 @@ template<typename T> void swapInPlace(T& x)
     x = swap_bytes(x);
 }
 
+struct hkSettings {
+    std::string ext_Imon{ "Imon" };
+    std::string ext_Vmon{ "Vmon" };
+    std::string ext_Leak{ "Leak" };
+};
+
+extern hkSettings global_hkSettings;
 
 /// <summary>
 /// form canonical displayname for trace
