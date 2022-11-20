@@ -28,6 +28,10 @@ add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     pmbrowserwindow.cpp pmbrowserwindow.h
     renderarea.cpp renderarea.h 
 
+    DlgPreferences.cpp
+    DlgPreferences.h
+    DlgPreferences.ui
+
 	QtPMbrowser.qrc
 	QtPMbrowser.rc
 

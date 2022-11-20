@@ -63,6 +63,7 @@ private slots:
     void on_actionPrint_All_Params_triggered();
     void on_menuGraph_aboutToShow();
     void openHelp();
+    void openPreferences();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;

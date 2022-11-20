@@ -150,7 +150,7 @@
      <x>0</x>
      <y>0</y>
      <width>592</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -171,6 +171,7 @@
     <addaction name="actionExport_All_as_IBW"/>
     <addaction name="actionSelect_Parameters"/>
     <addaction name="separator"/>
+    <addaction name="action_Preferences"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -353,6 +354,11 @@
   <action name="actionExport_Metadata_as_Table">
    <property name="text">
     <string>metadata as table</string>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="text">
+    <string>&amp;Preferences...</string>
    </property>
   </action>
  </widget>
