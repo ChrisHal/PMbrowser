@@ -1191,8 +1191,14 @@ void PMbrowserWindow::loadSettings()
     }
     settings.endGroup();
 
-    settings.beginGroup("Preferencres");
-    global_hkSettings.ext_Vmon = settings.value("Vmon", "Vmon").toString().toStdString();
-    global_hkSettings.ext_Imon = settings.value("Imon", "Imon").toString().toStdString();
+    settings.beginGroup("Preferences");
+	int t = settings.value("selectionButton", 0).toInt();
+	if(t == 2) {
+		global_hkSettings.ext_Vmon = settings.value("Vmon", "Vmon").toString().toStdString();
+		global_hkSettings.ext_Imon = settings.value("Imon", "Imon").toString().toStdString();
+	} else if(t == 1) {
+		global_hkSettings.ext_Vmon.clear();
+		global_hkSettings.ext_Imon.clear();
+	}
     settings.endGroup();
 }
