@@ -26,7 +26,6 @@
 #include <QProgressDialog>
 #include <QProgressBar>
 #include <QString>
-#include <QLatin1StringView>
 #include <QDir>
 #include <QDebug>
 #include <QRegularExpression>
@@ -52,9 +51,14 @@
 #include "qstring_helper.h"
 #include "Config.h"
 
-
+#if QT_VERSION >= QT_VERSION_CHECK(6,4,0)
+#include <QLatin1StringView>
 constexpr QLatin1StringView myAppName("PM browser");
 constexpr QLatin1StringView appVersion(VERSION);
+#else
+const QString myAppName("PM browser");
+const QString appVersion(VERSION);
+#endif
 
 Q_DECLARE_METATYPE(hkTreeNode*)
 
