@@ -16,10 +16,14 @@
 	You should have received a copy of the GNU General Public License
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 #pragma once
-#include <QString>
+#ifndef QSTRING_HELPER_H
+#define QSTRING_HELPER_H
+
 #include <string_view>
+
+#if QT_VERSION < QT_VERSION_CHECK(6,4,0)
+#include <QString>
 
 /// <summary>
 /// create a QString from a latin-1 encoded std::string_view
@@ -30,3 +34,15 @@ inline QString qs_from_sv(const std::string_view& sv)
 {
 	return QString::fromLatin1(sv.data(), static_cast<int>(sv.size()));
 }
+
+#else
+#include <QLatin1StringView>
+
+inline const QLatin1StringView  qs_from_sv(const std::string_view& sv)
+{
+	return {sv.data(), static_cast<qsizetype>(sv.size())};
+}
+
+#endif
+
+#endif // !QSTRING_HELPER_H
