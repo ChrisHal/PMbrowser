@@ -120,8 +120,8 @@ void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& out
 	// we will calculate checksum later, all other entries in bh remain 0
 	wh.type = NT_FP64;
 	wavename.copy(wh.bname, MAX_WAVE_NAME5);
-	wh.npnts = trdatapoints;
-	wh.nDim[0] = trdatapoints;
+	wh.npnts = static_cast<int32_t>(trdatapoints);
+	wh.nDim[0] = static_cast<int32_t>(trdatapoints);
 	std::memcpy((void*)wh.sfA, (void*)&deltax, sizeof(double));
 	std::memcpy((void*)wh.sfB, (void*)&x0, sizeof(double));
 	wh.whVersion = 1; // yes, for version 5 files files this must be 1...

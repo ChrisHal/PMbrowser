@@ -313,7 +313,7 @@ class hkTree
     std::string ID;
     double time0{};
     bool isSwapped;
-    void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, unsigned int level);
+    void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
 public:
     hkTree() : LevelSizes{}, RootNode{}, isSwapped{ false } {};
     std::string getID() {

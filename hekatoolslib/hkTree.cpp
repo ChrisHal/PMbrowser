@@ -64,7 +64,7 @@ struct TreeRoot {
 		LevelSizes[1];	//!< variable length array (nLevels entries with size of level data in bytes)
 };
 
-void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, unsigned int level)
+void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
 {
 	node.tree = this;
 	auto size = static_cast<unsigned>(LevelSizes.at(level));
