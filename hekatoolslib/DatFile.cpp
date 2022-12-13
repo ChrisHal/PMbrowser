@@ -43,9 +43,9 @@ void DatFile::InitFromStream(std::istream& infile)
         throw std::runtime_error("cannot read file");
     }
 
-    bool isValid = std::strncmp(bh->Signature, BundleSignature, 8) == 0;
-    bool isInvalidBundle = std::strncmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
+    bool isValid = std::memcmp(bh->Signature, BundleSignature, 8) == 0;
     if (!isValid) {
+        bool isInvalidBundle = std::memcmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
         if (isInvalidBundle) {
             throw std::runtime_error("invalid bundle signature");
         }
