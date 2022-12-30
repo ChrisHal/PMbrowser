@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020 - 2022 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -18,10 +18,8 @@
 */
 
 #include "pmbrowserwindow.h"
-//#include <stdexcept>
 #include <QApplication>
 #include <QSettings>
-//#include <QDebug>
 
 int main(int argc, char *argv[])
 {

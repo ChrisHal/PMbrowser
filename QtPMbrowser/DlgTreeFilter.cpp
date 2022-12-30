@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Christian R. Halaszovich
+    Copyright 2020 - 2022 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -21,7 +21,7 @@
 
 DlgTreeFilter::DlgTreeFilter(QWidget *parent, const QString& Grp, const QString& Ser,
 	const QString& Swp, const QString& Trace)
-	: QDialog(parent), grp{Grp}, ser{Ser}, swp{Swp}, trace{Trace}
+    : QDialog{parent}, grp{Grp}, ser{Ser}, swp{Swp}, trace{Trace}
 {
 	ui.setupUi(this);
 	QObject::connect(ui.pushButtonReset, &QPushButton::clicked, this, &DlgTreeFilter::resetFilter);
