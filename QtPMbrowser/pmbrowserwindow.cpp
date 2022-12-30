@@ -274,8 +274,8 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     setWindowTitle(myAppName);
     setAcceptDrops(true);
 
-    QString help_path = QCoreApplication::applicationDirPath() +
-        "/../" + DOCDIR + "/html/index.html";
+    QDir help_dir{QCoreApplication::applicationDirPath() + "/../" + DOCDIR + "/html"};
+    QString help_path = help_dir.absoluteFilePath("index.html");
     if (QFile::exists(help_path)) {
         help_url = QUrl::fromLocalFile(help_path);
     }
