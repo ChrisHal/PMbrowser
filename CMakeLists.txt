@@ -31,7 +31,7 @@ include(CPack)
 
 if (MSVC)
     # warning level 4 and some
-    add_compile_options(/W4 /permissive- /sdl /arch:AVX)
+    add_compile_options(/W4 /permissive- /sdl /EHsc)
 else()
     # lots of warnings
     add_compile_options(-Wall -Wextra -pedantic 
