@@ -716,7 +716,7 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
     if (!assertDatFileOpen()) {
         return;
     }
-    DlgExportMetadata dlg;
+    DlgExportMetadata dlg(this);
     if (dlg.exec()) {
         auto selected = dlg.getSelection();
         if (selected < 0)
@@ -753,7 +753,7 @@ void PMbrowserWindow::on_actionAbout_triggered()
                                 "<p>PatchMaster is a trademark of Heka GmbH</p>"
                                 "<p>Build using Qt Library version " + QT_VERSION_STR +
                                 "</p><p>License: GNU General Public License Version 3 (GPLv3)</p>";
-    QMessageBox msg;
+    QMessageBox msg(this);
     msg.setTextFormat(Qt::RichText);
     msg.setWindowTitle("About");
     msg.setText(txt);
@@ -927,7 +927,7 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
 
 void PMbrowserWindow::on_actionSelect_Parameters_triggered()
 {
-    DlgSelectParameters dlg;
+    DlgSelectParameters dlg(this);
     if (dlg.exec()) {
         dlg.storeParams();
         settings_modified = true;
@@ -1075,7 +1075,7 @@ void PMbrowserWindow::openHelp()
 
 void PMbrowserWindow::openPreferences()
 {
-    DlgPreferences dlg;
+    DlgPreferences dlg(this);
     dlg.exec();
 }
 
