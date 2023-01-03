@@ -1062,10 +1062,11 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
 
 void PMbrowserWindow::openHelp()
 {
-    if (!QDesktopServices::openUrl(help_url)) {
+    if (!QDesktopServices::openUrl(help_url) && help_url.isLocalFile()) {
         // we should only get here when trying to
-        // open a local file from qithin a flatpak sandbox
-        auto res = QMessageBox::question(this, "Error", "Could not open local help url.\nDo you want to try the online help instead?");
+        // open a local file from within a flatpak sandbox
+        auto res = QMessageBox::question(this, "Error",
+            "Could not open local help url.\nDo you want to try the online help instead?");
         if (res == QMessageBox::Yes) {
             QDesktopServices::openUrl(QString(PROJECT_HOMEPAGE));
         }
