@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(QtPMbrowser VERSION 2.2.3 LANGUAGES CXX)
+project(QtPMbrowser VERSION 2.3.0 LANGUAGES CXX)
 set(MY_COPYRIGHT "2020 - 2023 Christian R. Halaszovich")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
