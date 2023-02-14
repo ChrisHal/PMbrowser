@@ -27,6 +27,23 @@ the documentation in the :file:`share/doc` folder.
 Installing on Linux
 ===================
 
+.. _flatpak:
+
+using *flatpak*
+***************
+
+The is the recommended installation method on Linux.
+
+:program:`PM browser` is hosted on *flathub*: https://flathub.org/apps/details/de.halaszovich.PMbrowser
+
+If your system is set up accordingly (see https://flatpak.org/setup/
+for information on setting up flatpak),
+you can install the flatpak with this command:
+
+``flatpak install flathub de.halaszovich.PMbrowser``
+
+Or simply use this link: https://dl.flathub.org/repo/appstream/de.halaszovich.PMbrowser.flatpakref
+
 using DEB package
 *****************
 
@@ -56,22 +73,6 @@ Double-clicking the file should start the application.
 
 The *AppImage contains* all necessary Qt libraries, even when your distro does not provide
 them.
-
-.. _flatpak:
-
-using *flatpak*
-***************
-
-:program:`PM browser` is hosted on *flathub*: https://flathub.org/apps/details/de.halaszovich.PMbrowser
-
-If your system is set up accordingly,
-you can install the flatpak (see https://flatpak.org/setup/  
-for information on setting up flatpak) with this command:
-
-``flatpak install flathub de.halaszovich.PMbrowser``
-
-Or use this link: https://dl.flathub.org/repo/appstream/de.halaszovich.PMbrowser.flatpakref
-
 
 
 Installing on macOS
