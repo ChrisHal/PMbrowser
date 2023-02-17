@@ -18,7 +18,7 @@ as ibw-files that can be read by IgorPro(tm). IgorPro is a trademark of Wavemetr
 
 ## Building from Source
 Currently, PMbrowser can be build for Windows, macOS, and Linux.
-You will need to install the usual build tools and Qt-Library version 5.xx.
+You will need to install the usual build tools and Qt-Library version 6.xx.
 The cmake build system is used.
 
 See https://www.halaszovich.de/pmbrowser/html/usage/installation.html#building-from-source
