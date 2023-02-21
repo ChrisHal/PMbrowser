@@ -44,7 +44,7 @@ const std::array<const char*, 4> AmpModeNames = {
 };
 
 
-std::array<PMparameter, 32> parametersTrace{ {
+std::array<PMparameter, 33> parametersTrace{ {
 	{false,false,"TrMark","",PMparameter::Int32,0},
 	{false,false,"TrLabel","",PMparameter::String32,4},
 	{false,false,"TraceID","",PMparameter::Int32,36},
@@ -55,6 +55,7 @@ std::array<PMparameter, 32> parametersTrace{ {
 	{false,false,"UseXStart","",PMparameter::Boolean,66},
 	{false,true,"Recording Mode","",PMparameter::RecordingMode,68},
 	{false,false,"XStart","s",PMparameter::LongReal,112},
+	{false,false,"XInterval","s",PMparameter::LongReal,104},
 	{false,false,"Time offset","s",PMparameter::LongReal,80},
 	{false,false,"Zero data","A|V",PMparameter::LongReal,88},
 	{false,false,"Bandwidth","Hz",PMparameter::LongReal,144},

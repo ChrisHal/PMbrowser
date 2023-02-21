@@ -90,7 +90,7 @@ private:
 	}
 };
 
-extern std::array<PMparameter, 32>parametersTrace;
+extern std::array<PMparameter, 33>parametersTrace;
 extern std::array<PMparameter, 17>parametersSweep;
 extern std::array<PMparameter, 15>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
