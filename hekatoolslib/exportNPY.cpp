@@ -141,7 +141,7 @@ void NPYExportAllTraces(std::istream& datafile, DatFile& datf, const std::string
                     std::stringstream wavename;
                     wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount << "_";
                     wavename << formTraceName(trace, tracecount);
-                    std::string filename = path + wavename.str() + ".ibw";
+                    std::string filename = path + wavename.str() + ".npy";
                     NPYExportTrace(datafile, trace, filename, true);
                 }
             }
