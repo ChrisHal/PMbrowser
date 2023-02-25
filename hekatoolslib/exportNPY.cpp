@@ -96,7 +96,7 @@ void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesyste
         break;
     }
 
-    std::ofstream outfile(filename);
+    std::ofstream outfile(filename, std::ios::binary|std::ios::out);
     if (!outfile)
     {
         throw std::runtime_error{ "could not create file" };
@@ -112,11 +112,11 @@ void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesyste
         if (!jsonfile) {
             throw std::runtime_error{ "could not create JSON file" };
         }
-        jsonfile << std::scientific << "{ \"x_0\":" << x0 << ", \"delta_x\":" << deltax
-            << ", \"numpnts\":" << trdatapoints << ", \"unit_x\":\"" << xunit <<
-            "\", \"unit_y\":\"" << yunit << "\", ";
+        jsonfile << std::scientific << "{ \"x_0\": " << x0 << ", \"delta_x\": " << deltax
+            << ", \"numpnts\": " << trdatapoints << ", \"unit_x\": \"" << xunit <<
+            "\", \"unit_y\": \"" << yunit << "\" ";
         // TODO: add more metadata
-        jsonfile << "}\n";
+        jsonfile << "}";
         if (!jsonfile) {
             throw std::runtime_error{ "error while writing JSON file" };
         }
