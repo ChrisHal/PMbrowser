@@ -56,7 +56,7 @@ static std::ostream& writeNpy(std::ostream& os, const std::vector<double>& v)
         os << std::string(NPY_ALIGN - remainder, ' ');
     }
     os << '\n';
-    uint16_t header_len = static_cast<int>(os.tellp()) - 10;
+    uint16_t header_len = static_cast<uint16_t>(static_cast<int>(os.tellp()) - 10);
     os.seekp(NPY_OFFSET_HEADER_LEN);
     os.write(reinterpret_cast<const char*>(&header_len), sizeof(uint16_t));
     os.seekp(0, std::ios::end);
