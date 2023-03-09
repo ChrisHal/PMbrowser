@@ -336,6 +336,27 @@ void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const
 	}
 }
 
+void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss) const
+{
+	ss << '"' << name << "\": \"";
+	formatValueOnly(node, ss);
+	// hack to choose correctly for holding voltage or current
+	if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
+	{
+		int recording_mode = node.getChar(TrRecordingMode);
+		if (recording_mode == CClamp) {
+			ss << " A";
+		}
+		else {
+			ss << " V";
+		}
+	}
+	else {
+		if(unit[0]) ss << ' ' << unit;
+	}
+	ss << '"';
+}
+
 void PMparameter::format(const hkTreeNode& node, std::string& s) const
 {
 	std::stringstream ss;

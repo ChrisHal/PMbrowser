@@ -114,9 +114,22 @@ void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesyste
         }
         jsonfile << std::scientific << "{ \"x_0\": " << x0 << ", \"delta_x\": " << deltax
             << ", \"numpnts\": " << trdatapoints << ", \"unit_x\": \"" << xunit <<
-            "\", \"unit_y\": \"" << yunit << "\" ";
-        // TODO: add more metadata
-        jsonfile << "}";
+            "\", \"unit_y\": \"" << yunit << "\", \"params\": { " << 
+            "\"trace\": ";
+        formatParamListExportJSON(TrRecord, parametersTrace, jsonfile);
+        jsonfile << ", \"sweep\": ";
+        const auto sweep = TrRecord.getParent();
+        formatParamListExportJSON(*sweep, parametersSweep, jsonfile);
+        jsonfile << ", \"series\": ";
+        const auto series = sweep->getParent();
+        formatParamListExportJSON(*series, parametersSeries, jsonfile);
+        jsonfile << ", \"group\": ";
+        const auto group = series->getParent();
+        formatParamListExportJSON(*group, parametersGroup, jsonfile);
+        jsonfile << ", \"root\": ";
+        const auto root = group->getParent();
+        formatParamListExportJSON(*root, parametersRoot, jsonfile);
+        jsonfile << " } }";
         if (!jsonfile) {
             throw std::runtime_error{ "error while writing JSON file" };
         }
