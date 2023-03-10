@@ -39,6 +39,7 @@
 #include <cmath>
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
+#include "exportNPY.h"
 #include "hkTree.h"
 #include "StimTree.h"
 #include "helpers.h"
@@ -361,28 +362,30 @@ bool PMbrowserWindow::assertDatFileOpen()
     return true;
 }
 
-void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, std::ostream* poutfile, bool create_datafolders, int folder_level)
+void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, ExportType export_type, std::ostream* poutfile, bool create_datafolders, int folder_level)
 {
     if (item->isHidden()) { return; } // export only visible items
     int N = item->childCount();
     if (N > 0) {
         bool new_datafolder{ false };
-        if (create_datafolders && poutfile!=nullptr) {
-            auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            new_datafolder = (poutfile != nullptr) && (node->getLevel() >= hkTreeNode::LevelGroup &&
-                node->getLevel() <= folder_level);
-        }
-        if (new_datafolder) {
-            PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
-            char buf[32]{};
-            item->text(0).toStdString().copy(buf, 31);
-            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
-            poutfile->write(buf, 32);
+        if (export_type == ExportType::Igor) {
+            if (create_datafolders && poutfile != nullptr) {
+                auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
+                new_datafolder = (poutfile != nullptr) && (node->getLevel() >= hkTreeNode::LevelGroup &&
+                    node->getLevel() <= folder_level);
+            }
+            if (new_datafolder) {
+                PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
+                char buf[32]{};
+                item->text(0).toStdString().copy(buf, 31);
+                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                poutfile->write(buf, 32);
+            }
         }
         for (int i = 0; i < N; ++i) {
-            exportSubTree(item->child(i), path, prefix, poutfile, create_datafolders, folder_level);
+            exportSubTree(item->child(i), path, prefix, export_type, poutfile, create_datafolders, folder_level);
         }
-        if (new_datafolder) {
+        if (export_type == ExportType::Igor && new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderEndRecord,0,0 };
             poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
         }
@@ -405,32 +408,38 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         ui->textEdit->append("exporting " + wavename);
         ui->textEdit->update();
 
-        if (poutfile == nullptr) { // multi-file export
-            QString filename = path + wavename + ".ibw";
-            std::ofstream outfile(filename.toStdString(), std::ios::out | std::ios::binary);
-            if (!outfile) {
-                std::stringstream msg;
-                msg << "error opening file '" << filename.toStdString() << "' for writing: " << strerror(errno);
-                throw std::runtime_error(msg.str());
+        if (export_type == ExportType::Igor) {
+            if (poutfile == nullptr) { // multi-file export
+                QString filename = path + wavename + ".ibw";
+                std::ofstream outfile(filename.toStdString(), std::ios::out | std::ios::binary);
+                if (!outfile) {
+                    std::stringstream msg;
+                    msg << "error opening file '" << filename.toStdString() << "' for writing: " << strerror(errno);
+                    throw std::runtime_error(msg.str());
+                }
+                ExportTrace(infile, *traceentry, outfile, wavename.toStdString());
             }
-            ExportTrace(infile, *traceentry, outfile, wavename.toStdString());
+            else {
+                PackedFileRecordHeader pfrh{};
+                pfrh.recordType = kWaveRecord;
+                size_t offset_record = poutfile->tellp();
+                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                ExportTrace(infile, *traceentry, *poutfile, wavename.toStdString());
+                size_t offset_end = poutfile->tellp();
+                pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
+                poutfile->seekp(offset_record);
+                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                poutfile->seekp(offset_end);
+            }
         }
-        else {
-            PackedFileRecordHeader pfrh{};
-            pfrh.recordType = kWaveRecord;
-            size_t offset_record = poutfile->tellp();
-            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
-            ExportTrace(infile, *traceentry, *poutfile, wavename.toStdString());
-            size_t offset_end = poutfile->tellp();
-            pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
-            poutfile->seekp(offset_record);
-            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
-            poutfile->seekp(offset_end);
+        else if (export_type == ExportType::NPY) {
+            QString filename = path + wavename + ".npy";
+            NPYExportTrace(infile, *traceentry, filename.toStdString(), true);
         }
     }
 }
 
-bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& pxp_export, bool& create_datafolders, int & last_folder_level)
+bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, ExportType& export_type, bool& pxp_export, bool& create_datafolders, int & last_folder_level)
 {
     if (!QDir(lastexportpath).exists()) {
         lastexportpath.clear();
@@ -447,6 +456,7 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, bool& 
         if (!path.endsWith('/')) {
             path.append('/');
         }
+        export_type = dlg.export_type;
         pxp_export = dlg.pxp_export;
         create_datafolders = dlg.create_datafolders;
         last_folder_level = dlg.level_last_folder + hkTreeNode::LevelGroup; // combo box starts with Group
@@ -470,11 +480,12 @@ void PMbrowserWindow::exportAllVisibleTraces()
     }
     
     QString path, prefix;
+    ExportType export_type{};
     bool pxp_export{}, create_datafolders{};
     int folder_level{};
     std::ofstream outfile;
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
-        if (pxp_export) {
+    if (choosePathAndPrefix(path, prefix, export_type, pxp_export, create_datafolders, folder_level)) {
+        if (export_type==ExportType::Igor && pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
             if (filename.length() == 0) return;
@@ -493,14 +504,14 @@ void PMbrowserWindow::exportAllVisibleTraces()
         try {
             int N = ui->treePulse->topLevelItemCount();
             for (int i = 0; i < N; ++i) {
-                if (pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, &outfile, create_datafolders, folder_level);
+                if (export_type == ExportType::Igor && pxp_export) {
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
                 }
                 else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, nullptr, false, 0);
+                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
                 }
             }
-            if (pxp_export && create_datafolders) {
+            if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
                 WriteIgorProcedureRecord(outfile);
             }
         }
@@ -568,11 +579,12 @@ void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_
 void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
 {
     QString path, prefix;
+    ExportType export_type{};
     bool pxp_export, create_datafolders;
     int folder_level{};
     std::ofstream outfile;
 
-    if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
+    if (choosePathAndPrefix(path, prefix, export_type, pxp_export, create_datafolders, folder_level)) {
         if (pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
@@ -587,10 +599,10 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
         }
         try {
             if (pxp_export) {
-                exportSubTree(root, path, prefix, &outfile, create_datafolders, folder_level);
+                exportSubTree(root, path, prefix, export_type, &outfile, create_datafolders, folder_level);
             }
             else {
-                exportSubTree(root, path, prefix, nullptr, false, 0);
+                exportSubTree(root, path, prefix, export_type, nullptr, false, 0);
             }
             if (pxp_export&&create_datafolders) {
                 WriteIgorProcedureRecord(outfile);
@@ -690,9 +702,10 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     }
     else {
         QString path, prefix;
+        ExportType export_type{};
         bool pxp_export, create_datafolders;
         int folder_level{};
-        if (choosePathAndPrefix(path, prefix, pxp_export, create_datafolders, folder_level)) {
+        if (choosePathAndPrefix(path, prefix, export_type, pxp_export, create_datafolders, folder_level)) {
             if (pxp_export) {
                 QMessageBox::warning(this, "Error", "pxp export for\nthis option\nnot yet implimented");
                 return;

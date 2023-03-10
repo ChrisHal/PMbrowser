@@ -42,6 +42,15 @@ ui(new Ui::DlgChoosePathAndPrefix)
 	ui->comboBoxLevel->setCurrentIndex(
 		settings.value("DlgChoosePathAndPrefix/last_export_level", 1).toInt()
 	);
+	export_type = static_cast<ExportType>(settings.value("DlgChoosePathAndPrefix/export_type", 0).toInt());
+	switch (export_type) {
+	case ExportType::Igor:
+		ui->radioButtonIgor->setChecked(true);
+		break;
+	case ExportType::NPY:
+		ui->radioButtonNPY->setChecked(true);
+		break;
+	}
 	QObject::connect(ui->pushButtonChoosePath, SIGNAL(clicked()), this, SLOT(choosePath()));
 	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::stateChanged,
 		this, &DlgChoosePathAndPrefix::stateExportPXPchanged);
@@ -83,11 +92,19 @@ void DlgChoosePathAndPrefix::accept()
 	create_datafolders = ui->checkBox_create_datafolders->isChecked();
 	level_last_folder = ui->comboBoxLevel->currentIndex();
 
+	if (ui->radioButtonIgor->isChecked()) {
+		export_type = ExportType::Igor;
+	}
+	else if (ui->radioButtonNPY->isChecked()) {
+		export_type = ExportType::NPY;
+	}
+
 	QSettings settings;
 
 	settings.setValue("DlgChoosePathAndPrefix/prefix", prefix);
 	settings.setValue("DlgChoosePathAndPrefix/pxp_export", pxp_export);
 	settings.setValue("DlgChoosePathAndPrefix/create_folders", create_datafolders);
 	settings.setValue("DlgChoosePathAndPrefix/last_export_level", level_last_folder);
+	settings.setValue("DlgChoosePathAndPrefix/export_type", static_cast<int>(export_type));
 	QDialog::accept();
 }
