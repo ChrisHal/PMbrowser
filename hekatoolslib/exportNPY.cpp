@@ -115,7 +115,7 @@ void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesyste
         jsonfile << std::scientific << "{ \"x_0\": " << x0 << ", \"delta_x\": " << deltax
             << ", \"numpnts\": " << trdatapoints << ", \"unit_x\": \"" << xunit <<
             "\", \"unit_y\": \"" << yunit << "\", \"params\": { " << 
-            "\"trace\": ";
+            "\"trace\": " << std::defaultfloat;
         formatParamListExportJSON(TrRecord, parametersTrace, jsonfile);
         jsonfile << ", \"sweep\": ";
         const auto sweep = TrRecord.getParent();
