@@ -51,6 +51,7 @@ ui(new Ui::DlgChoosePathAndPrefix)
 
 DlgChoosePathAndPrefix::~DlgChoosePathAndPrefix()
 {
+	delete ui;
 }
 
 void DlgChoosePathAndPrefix::choosePath()
