@@ -336,10 +336,26 @@ void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const
 	}
 }
 
+static std::string JSONescapeQuotes(const std::string_view& s) {
+	std::string tmp;
+	tmp.reserve(s.size());
+	for (const char c : s) {
+		if (c == '"') {
+			tmp.append("\\\"");
+		}
+		else {
+			tmp.push_back(c);
+		}
+	}
+	return tmp;
+}
+
 void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss) const
 {
 	ss << '"' << name << "\": \"";
-	formatValueOnly(node, ss);
+	std::stringstream tmp;
+	formatValueOnly(node, tmp);
+	ss << JSONescapeQuotes(tmp.str());
 	// hack to choose correctly for holding voltage or current
 	if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
 	{
@@ -352,7 +368,7 @@ void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss) const
 		}
 	}
 	else {
-		if(unit[0]) ss << ' ' << unit;
+		if (unit[0]) { ss << ' ' << JSONescapeQuotes(unit); }
 	}
 	ss << '"';
 }
