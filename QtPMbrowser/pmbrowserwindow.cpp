@@ -585,7 +585,7 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
     std::ofstream outfile;
 
     if (choosePathAndPrefix(path, prefix, export_type, pxp_export, create_datafolders, folder_level)) {
-        if (pxp_export) {
+        if (export_type==ExportType::Igor && pxp_export) {
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
             if (filename.length() == 0) return;
@@ -595,16 +595,15 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
                 QMessageBox::warning(this, QString("Error"), msg);
                 return;
             }
- //           WriteIgorPlatformRecord(outfile);
         }
         try {
-            if (pxp_export) {
+            if (export_type == ExportType::Igor && pxp_export) {
                 exportSubTree(root, path, prefix, export_type, &outfile, create_datafolders, folder_level);
             }
             else {
                 exportSubTree(root, path, prefix, export_type, nullptr, false, 0);
             }
-            if (pxp_export&&create_datafolders) {
+            if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
                 WriteIgorProcedureRecord(outfile);
             }
         }
