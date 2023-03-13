@@ -23,7 +23,12 @@ Close currently open file.
 'Export...' Submenu
 -------------------
 
-Here you find options to export traces to :program:`IgorPro` and metadata as a table.
+Here you find options to export traces (available export formats: :file:`.pxp`, and
+:file:`.ibw` for import by :program:`IgorPro`, :program:`numpy` format :file:`.npy` for import by :program:`python`,
+and raw binary data) and metadata as a table.
+
+When exporting traces and the choosen file format does not support inclusion of metadata, for each trace a :file:`.json` file
+will be created that contains the exported metadata.
 
 
 .. _export-all-visible-traces-label:
@@ -34,18 +39,15 @@ all visible traces
 	All traces that are currently visible (i.e. not hidden)
 	in the **tree-view** are selected for export. Traces can be hidden either by *filtering* (see
 	:ref:`filter-menue-label` and :ref:`filter-dlg-label`) or by using the context menue of the **tree-view**.
-	
-	This function also available from the context menue of the **tree-view**.
-
+		
 .. _export-children:
 
 selected with children
 ++++++++++++++++++++++
 
-	All traces, that are children of the node currently selected in the **tree-view** are selected for export
-	as either individual :file:`.ibw`-files or as one packaged experiment file (extension :file:`.pxp`)
-	which can be read by
-	:program:`IgorPro`.
+	All visible traces, that are children of the node currently selected in the **tree-view** are selected for export.
+	This function also available from the context menue of the **tree-view** (*"export subtree"*).
+
 
 The :ref:`export dialog <export-dlg-label>` will appear, which allows you to select paths and filenames as well as several options
 that pertain to exports to packed experiment files (also see :ref:`igor-export-infos-label` for additional information on exports).
@@ -173,7 +175,11 @@ The Dialogs
 Igor Export: 'Choose Path & Prefix' Dialog
 ******************************************
 
-This dialog is displayed every time you are exporting Igor :file:`ibw` files.
+.. image::  Screenshot_exportDlg.png
+	:width: 400px
+	:alt: Screenshot of Dialog Choose Path and Prefix
+
+This dialog is displayed every time you are about to export traces.
 
 *'path'*: If multiple files are exported, this is the path they will be saved to.
 Use button *'choose...'* to call up a file dialog to choose the path (or enter a valid path manually).
@@ -181,12 +187,32 @@ Use button *'choose...'* to call up a file dialog to choose the path (or enter a
 *'prefix'*: Exported waves will be prefixed with this text. If individual files are exported,
 they will have this prefix, too (since they will be named after the wave).
 
+Export for Igor Pro
+-------------------
+
 Checkbox *'create pxp file'*: All waves will be exported into a single packaged experiment file (:file:`pxp`).
 After clicking *'OK'*, a file dialog will show up that allows you to select a filename for the file to be created.
 
 Checkbox *'create folder structure'*: If you export as a :file:`pxp` file, select this to create datafolders within
 the :file:`pxp` file that match the tree structure. You can choose if the grouping level for traces should be
 *group* or *series*.
+
+Metadata will be included as wavenotes.
+
+Export NPY for Python / numpy + metadata as JSON
+------------------------------------------------
+
+Each trace will be export as a :file:`.npy` file that can be read via `numpy.load(<filename>)`. Metadata for
+each trace will be export in JSON format (:file:`.json`).
+
+Demo :program:`python` code showing how to use these files can be found in the Git repository
+(folder `demo <https://github.com/ChrisHal/PMbrowser/tree/feature_npy_export/demo>`_).
+
+Export raw binary + metadata as JSON
+------------------------------------
+
+Each trace will be export as a :file:`.bin` raw binary file. The data is exported as 64bit floating point.
+Metadata for each trace, including samplerate, will be export in JSON format (:file:`.json`).
 
 .. _filter-dlg-label:
 

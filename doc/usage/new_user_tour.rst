@@ -102,8 +102,11 @@ In the *Choose Path \& Prefix* dialog, we change the
 	:align: center
 	:alt: tour step 5 export dialog
 	
+Select the radio button "Export for Igor Pro" (not shown in image).
+
 We want to create a single experiment file that contains all data. Also we want to create have datafolders according to the tree
-structure in this file. Therefore we select "create pxp file" and "create folder structure".
+structure in this file. Therefore we select "create pxp file" and "create folder structure". As last folder level we select "series".
+This means that all sweeps and traces belonging to one series will be placed in one datafolder.
 (Since we have only one group and one series to be exported, we could do without the datafolders. But for this
 demonstration, we select this anyway.)
 
