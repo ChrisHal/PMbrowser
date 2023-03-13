@@ -84,10 +84,11 @@ std::array<PMparameter, 34> parametersTrace{ {
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 } };
 
-std::array<PMparameter, 17> parametersSweep{ {
+std::array<PMparameter, 18> parametersSweep{ {
 	{false,false,"SwMark","",PMparameter::Int32,0},
 	{false,false,"SwLabel","",PMparameter::String32,4},
 	{false,false,"Stim Count","",PMparameter::Int32,40},
+	{false,false,"SwSweepCount","",PMparameter::Int32,44},
 	{true,true,"Sweep Time raw","s",PMparameter::LongReal,48},
 	{true,true,"Rel. Sweep Time","s",PMparameter::RelativeTime,48},
 	{true,true,"Sweep Time","",PMparameter::DateTime,48},
