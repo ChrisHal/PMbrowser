@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>327</width>
-    <height>258</height>
+    <width>359</width>
+    <height>279</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,18 +26,109 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0,0">
-     <item row="1" column="3">
-      <spacer name="horizontalSpacer">
+     <item row="0" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditPath"/>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>last folder level:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="4">
+      <widget class="QRadioButton" name="radioButtonIgor">
+       <property name="text">
+        <string>Export for Igor Pro</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>path</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButtonChoosePath">
+       <property name="text">
+        <string>choose...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>68</width>
+         <width>40</width>
          <height>20</height>
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditPrefix">
+       <property name="toolTip">
+        <string>wavenames will be prefixed with this</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="4">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="3" column="1" colspan="3">
+      <widget class="QCheckBox" name="checkBox_pxp_export">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>all traces are stored in one file</string>
+       </property>
+       <property name="text">
+        <string>create pxp file</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2" colspan="2">
+      <widget class="QCheckBox" name="checkBox_create_datafolders">
+       <property name="text">
+        <string>create folder structure (only for pxp files)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QComboBox" name="comboBoxLevel">
+       <item>
+        <property name="text">
+         <string>Group</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Series</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item row="5" column="0" colspan="2">
       <spacer name="horizontalSpacer_3">
@@ -47,6 +138,26 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="6" column="0" colspan="4">
+      <widget class="QRadioButton" name="radioButtonNPY">
+       <property name="text">
+        <string>Export NPY for Python / numpy + metadata as JSON</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>68</width>
          <height>20</height>
         </size>
        </property>
@@ -65,16 +176,6 @@
        </property>
       </spacer>
      </item>
-     <item row="5" column="2">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>last folder level:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="toolTip">
@@ -85,104 +186,10 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="2" colspan="2">
-      <widget class="QCheckBox" name="checkBox_create_datafolders">
-       <property name="text">
-        <string>create folder structure (only for pxp files)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditPath"/>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditPrefix">
-       <property name="toolTip">
-        <string>wavenames will be prefixed with this</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="3">
-      <widget class="QComboBox" name="comboBoxLevel">
-       <item>
-        <property name="text">
-         <string>Group</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Series</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="pushButtonChoosePath">
-       <property name="text">
-        <string>choose...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="3">
-      <widget class="QCheckBox" name="checkBox_pxp_export">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>all traces are stored in one file</string>
-       </property>
-       <property name="text">
-        <string>create pxp file</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>path</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="4">
-      <widget class="QRadioButton" name="radioButtonNPY">
-       <property name="text">
-        <string>Export NPY for Python / numpy</string>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="0" colspan="4">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="0" colspan="4">
-      <widget class="QRadioButton" name="radioButtonIgor">
+      <widget class="QRadioButton" name="radioButtonBIN">
        <property name="text">
-        <string>Export for Igor Pro</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>Export raw binary + metadata as JSON</string>
        </property>
       </widget>
      </item>

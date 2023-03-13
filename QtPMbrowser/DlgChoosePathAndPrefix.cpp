@@ -50,6 +50,9 @@ ui(new Ui::DlgChoosePathAndPrefix)
 	case ExportType::NPY:
 		ui->radioButtonNPY->setChecked(true);
 		break;
+	case ExportType::BIN:
+		ui->radioButtonBIN->setChecked(true);
+		break;
 	}
 	QObject::connect(ui->pushButtonChoosePath, SIGNAL(clicked()), this, SLOT(choosePath()));
 	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::stateChanged,
@@ -97,6 +100,9 @@ void DlgChoosePathAndPrefix::accept()
 	}
 	else if (ui->radioButtonNPY->isChecked()) {
 		export_type = ExportType::NPY;
+	}
+	else if (ui->radioButtonBIN->isChecked()) {
+		export_type = ExportType::BIN;
 	}
 
 	QSettings settings;

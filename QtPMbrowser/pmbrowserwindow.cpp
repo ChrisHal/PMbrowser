@@ -434,7 +434,11 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         }
         else if (export_type == ExportType::NPY) {
             QString filename = path + wavename + ".npy";
-            NPYExportTrace(infile, *traceentry, filename.toStdString(), true);
+            NPYorBINExportTrace(infile, *traceentry, filename.toStdString(), true);
+        }
+        else if (export_type == ExportType::BIN) {
+            QString filename = path + wavename + ".bin";
+            NPYorBINExportTrace(infile, *traceentry, filename.toStdString(), true);
         }
     }
 }

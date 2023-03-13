@@ -43,28 +43,30 @@ constexpr char NPY_VERSION_MINOR{ '\x00' };
 constexpr std::size_t NPY_OFFSET_HEADER_LEN{ 8 }; // file offset to HEADER_LEN field
 constexpr std::size_t NPY_ALIGN{ 64 };
 
-static std::ostream& writeNpy(std::ostream& os, const std::vector<double>& v)
+static std::ostream& writeNpy(std::ostream& os, const std::vector<double>& v, bool raw_only)
 {
-    os << NPY_MAGIC << NPY_VERSION_MAJOR << NPY_VERSION_MINOR << '\0' << '\0' <<
-        "{'descr': 'f8', 'fortran_order': False, 'shape': (" << v.size() << ",), }";
-    // NOTE: 'f8': double in native byte order, '<f8': double in little endian byte order
-    std::size_t offset = os.tellp();
-    ++offset; // leave room for '\n'
-    auto remainder = offset % NPY_ALIGN;
-    if (remainder != 0) {
-        // pad to multiple of NPY_ALIGN
-        os << std::string(NPY_ALIGN - remainder, ' ');
+    if (!raw_only) {
+        os << NPY_MAGIC << NPY_VERSION_MAJOR << NPY_VERSION_MINOR << '\0' << '\0' <<
+            "{'descr': 'f8', 'fortran_order': False, 'shape': (" << v.size() << ",), }";
+        // NOTE: 'f8': double in native byte order, '<f8': double in little endian byte order
+        std::size_t offset = os.tellp();
+        ++offset; // leave room for '\n'
+        auto remainder = offset % NPY_ALIGN;
+        if (remainder != 0) {
+            // pad to multiple of NPY_ALIGN
+            os << std::string(NPY_ALIGN - remainder, ' ');
+        }
+        os << '\n';
+        uint16_t header_len = static_cast<uint16_t>(static_cast<int>(os.tellp()) - 10);
+        os.seekp(NPY_OFFSET_HEADER_LEN);
+        os.write(reinterpret_cast<const char*>(&header_len), sizeof(uint16_t));
+        os.seekp(0, std::ios::end);
     }
-    os << '\n';
-    uint16_t header_len = static_cast<uint16_t>(static_cast<int>(os.tellp()) - 10);
-    os.seekp(NPY_OFFSET_HEADER_LEN);
-    os.write(reinterpret_cast<const char*>(&header_len), sizeof(uint16_t));
-    os.seekp(0, std::ios::end);
     os.write(reinterpret_cast<const char*>(v.data()), v.size() * sizeof(double));
     return os;
 }
 
-void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON = true)
+void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON = true)
 {
     assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
     auto dataformat = TrRecord.getChar(TrDataFormat);
@@ -101,7 +103,8 @@ void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesyste
     {
         throw std::runtime_error{ "could not create file" };
     }
-    if (!writeNpy(outfile, tr_data))
+    bool binexport = filename.extension() != ".npy";
+    if (!writeNpy(outfile, tr_data, binexport))
     {
         throw std::runtime_error{ "error while writing npy file" };
     }
@@ -155,7 +158,7 @@ void NPYExportAllTraces(std::istream& datafile, DatFile& datf, const std::string
                     wavename << prefix << "_" << groupcount << "_" << seriescount << "_" << sweepcount << "_";
                     wavename << formTraceName(trace, tracecount);
                     std::string filename = path + wavename.str() + ".npy";
-                    NPYExportTrace(datafile, trace, filename, true);
+                    NPYorBINExportTrace(datafile, trace, filename, true);
                 }
             }
         }

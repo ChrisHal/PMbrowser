@@ -29,7 +29,8 @@ QT_END_NAMESPACE
 
 enum class ExportType {
     Igor = 0,
-    NPY = 1
+    NPY = 1,
+    BIN = 2
 };
 
 class DlgChoosePathAndPrefix : public QDialog

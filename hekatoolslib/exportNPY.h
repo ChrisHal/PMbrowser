@@ -26,7 +26,17 @@
 #include <filesystem>
 #include "hkTree.h"
 
-void NPYExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON);
+/// <summary>
+/// Export trace as either npy or raw binary.
+/// The selection is made depoending on the extension of filanme:
+/// .npy for npy format
+/// any other extension for raw binary
+/// </summary>
+/// <param name="datafile">Datafile from which the trace is taken</param>
+/// <param name="TrRecord">hkTreeNode of the trace record</param>
+/// <param name="filename">export filename</param>
+/// <param name="createJSON">true if JSON metadata file should be created</param>
+void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON);
 
 /// <summary>
 /// Export all trace in NPY format
