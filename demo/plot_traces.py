@@ -30,6 +30,9 @@ example: plot_traces "PM_1_*V*.npy" "PM_2_*Vm.npy"
     filelist=[]
     for index in range(1,len(sys.argv)): 
         filelist+=glob.glob(sys.argv[index])
+    if(len(filelist)==0):
+        print("no matching files found",file=sys.stderr)
+        sys.exit(-1)
     for npy_filename in filelist: 
         basename=os.path.basename(os.path.splitext(npy_filename)[0])
         meta=getMeta(npy_filename)
