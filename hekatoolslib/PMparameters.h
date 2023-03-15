@@ -66,6 +66,7 @@ struct PMparameter {
 
 	void format(const hkTreeNode& node, std::string& s) const;
 	void format(const hkTreeNode& node, std::ostream& ss) const;
+	void formatJSON(const hkTreeNode& node, std::ostream& ss) const;
 	void formatValueOnly(const hkTreeNode& node, std::ostream& ss) const;
 
 	/// <summary>
@@ -90,8 +91,8 @@ private:
 	}
 };
 
-extern std::array<PMparameter, 33>parametersTrace;
-extern std::array<PMparameter, 17>parametersSweep;
+extern std::array<PMparameter, 34>parametersTrace;
+extern std::array<PMparameter, 18>parametersSweep;
 extern std::array<PMparameter, 15>parametersSeries;
 extern std::array<PMparameter, 5>parametersGroup;
 extern std::array<PMparameter, 8>parametersRoot;
@@ -143,6 +144,25 @@ template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,
 			ss << "\n";
 		}
 	}
+}
+
+template<std::size_t Nrows> void formatParamListExportJSON(const hkTreeNode& n,
+	const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
+{
+	ss << "{ ";
+	bool is_first{ true };
+	for (const PMparameter& p : ar) {
+		if (p.exportIBW) {
+			if (is_first) {
+				is_first = false;
+			}
+			else {
+				ss << ", ";
+			}
+			p.formatJSON(n, ss);
+		}
+	}
+	ss << " }";
 }
 
 template<std::size_t Nrows> void formatParamListExportIBW(const hkTreeNode& n,

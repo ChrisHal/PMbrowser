@@ -44,7 +44,7 @@ const std::array<const char*, 4> AmpModeNames = {
 };
 
 
-std::array<PMparameter, 33> parametersTrace{ {
+std::array<PMparameter, 34> parametersTrace{ {
 	{false,false,"TrMark","",PMparameter::Int32,0},
 	{false,false,"TrLabel","",PMparameter::String32,4},
 	{false,false,"TraceID","",PMparameter::Int32,36},
@@ -56,6 +56,7 @@ std::array<PMparameter, 33> parametersTrace{ {
 	{false,true,"Recording Mode","",PMparameter::RecordingMode,68},
 	{false,false,"XStart","s",PMparameter::LongReal,112},
 	{false,false,"XInterval","s",PMparameter::LongReal,104},
+	{false,false,"SampleRate","Hz",PMparameter::InvLongReal,104},
 	{false,false,"Time offset","s",PMparameter::LongReal,80},
 	{false,false,"Zero data","A|V",PMparameter::LongReal,88},
 	{false,false,"Bandwidth","Hz",PMparameter::LongReal,144},
@@ -83,10 +84,11 @@ std::array<PMparameter, 33> parametersTrace{ {
 	//false,false,"TrXTrace","",PMparameter::Int32,420
 } };
 
-std::array<PMparameter, 17> parametersSweep{ {
+std::array<PMparameter, 18> parametersSweep{ {
 	{false,false,"SwMark","",PMparameter::Int32,0},
 	{false,false,"SwLabel","",PMparameter::String32,4},
 	{false,false,"Stim Count","",PMparameter::Int32,40},
+	{false,false,"SwSweepCount","",PMparameter::Int32,44},
 	{true,true,"Sweep Time raw","s",PMparameter::LongReal,48},
 	{true,true,"Rel. Sweep Time","s",PMparameter::RelativeTime,48},
 	{true,true,"Sweep Time","",PMparameter::DateTime,48},
@@ -333,6 +335,43 @@ void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const
 	else {
 		ss << unit;
 	}
+}
+
+static std::string JSONescapeQuotes(const std::string_view& s) {
+	std::string tmp;
+	tmp.reserve(s.size());
+	for (const char c : s) {
+		if (c == '"') {
+			tmp.append("\\\"");
+		}
+		else {
+			tmp.push_back(c);
+		}
+	}
+	return tmp;
+}
+
+void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss) const
+{
+	ss << '"' << name << "\": \"";
+	std::stringstream tmp;
+	formatValueOnly(node, tmp);
+	ss << JSONescapeQuotes(tmp.str());
+	// hack to choose correctly for holding voltage or current
+	if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
+	{
+		int recording_mode = node.getChar(TrRecordingMode);
+		if (recording_mode == CClamp) {
+			ss << " A";
+		}
+		else {
+			ss << " V";
+		}
+	}
+	else {
+		if (unit[0]) { ss << ' ' << JSONescapeQuotes(unit); }
+	}
+	ss << '"';
 }
 
 void PMparameter::format(const hkTreeNode& node, std::string& s) const

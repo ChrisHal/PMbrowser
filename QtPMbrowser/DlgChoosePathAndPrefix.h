@@ -27,17 +27,25 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class PMbrowserWindow; }
 QT_END_NAMESPACE
 
+enum class ExportType {
+    Igor = 0,
+    NPY = 1,
+    BIN = 2
+};
+
 class DlgChoosePathAndPrefix : public QDialog
 {
 	Q_OBJECT
 
 public:
+
 	DlgChoosePathAndPrefix(QWidget* parent, const QString& Path);
 	~DlgChoosePathAndPrefix();
     void accept() override;
 	QString path, prefix{};
     bool pxp_export{}, create_datafolders{};
     int level_last_folder{};
+    ExportType export_type{ ExportType::Igor };
 
 private slots:
 	void choosePath();
