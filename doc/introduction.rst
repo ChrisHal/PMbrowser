@@ -17,7 +17,10 @@ as old as v2.0, which is now more than 15 years old [#f1]_.
 	:align: center
 	:alt: PMbrowser in action
 
-The second major function of :program:`PMbrowser` is the export of data (and also *metadata*) for use in :program:`IgorPro`.
+The second major function of :program:`PMbrowser` is the export of data (and also *metadata*) for use in :program:`IgorPro`
+or :program:`Python/numpy` scripts. Also export as generic *raw binary* data is supported.
+
+Features for export to :program:`IgorPro`:
 
 	Traces can be exported either as individual Igor binary waves (:file:`ibw`-files) or several traces can be bundled into 
 	a packaged experiment (:file:`pxp`-file).
@@ -26,6 +29,13 @@ The second major function of :program:`PMbrowser` is the export of data (and als
 	hierachy created in the experiment that matches the structure (Experiment/Group, Series) in which the data was stored in the Patchmaster file.
 	
 	*Metadata* will be exported as wave-notes, so you will have all relevant metadata available in IgorPro.
+	
+Features for export to :program:`Python`:
+
+	Traces are exported in :file:`npy` format. These can be read with the ``numpy.load()`` method of the :program:`numpy`
+	package.
+	
+	Metadata will be exported in JSON format.
 
 
 Is :program:`PMbrowser` free?

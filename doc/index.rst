@@ -16,8 +16,11 @@ Welcome to PMbrowser's documentation!
 :program:`PMbrowser` is open-source software aimed at electrophysiologists who use :program:`PATCHMASTER` or
 :program:`PATCHMASTER NEXT` from `HEKA <http://www.heka.com/downloads/downloads_main.html#down_patchmaster_next>`_ and
 :program:`IgorPro` of `WaveMetrics <https://www.wavemetrics.com/>`_. It can open bundled data files (:file:`.dat`) and 
-export :program:`IgorPro` compatible files (see :ref:`intro-label` for details).
-But even if you do not use :program:`IgorPro`, you might find :program:`PMbrowser` helpful.
+export :program:`IgorPro` compatible files (and supports some additional export formats,
+see :ref:`intro-label` for details).
+
+But even if you do not use :program:`IgorPro`, you might find :program:`PMbrowser` useful for browsing PatchMaster files
+and exploring the metadata of such files.
 
 .. toctree::
    :maxdepth: 2
