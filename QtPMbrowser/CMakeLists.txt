@@ -10,7 +10,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #set(CMAKE_AUTOMOC ON)
 #set(CMAKE_AUTOUIC ON)
-#set(CMAKE_AUTORCC ON)
+
+# qt_standard_project_setup() does not set CMAKE_AUTORCC
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 qt_standard_project_setup()
@@ -64,7 +66,9 @@ endif()
 
 # deploy script
 if(WIN32)	
-	install(TARGETS QtPMbrowser RUNTIME)
+	install(TARGETS QtPMbrowser
+	RUNTIME
+	BUNDLE DESTINATION .)
 	qt_generate_deploy_app_script(
     TARGET QtPMbrowser
     FILENAME_VARIABLE deploy_script
