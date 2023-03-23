@@ -214,7 +214,7 @@ Each trace will be export as a :file:`.npy` file that can be read via ``numpy.lo
 each trace will be export in JSON format (:file:`.json`).
 
 Demo :program:`python` code showing how to use these files can be found in the Git repository
-(folder `demo <https://github.com/ChrisHal/PMbrowser/tree/feature_npy_export/demo>`_).
+(folder `demo <https://github.com/ChrisHal/PMbrowser/tree/master/demo>`_).
 
 Export raw binary + metadata as JSON
 ++++++++++++++++++++++++++++++++++++
