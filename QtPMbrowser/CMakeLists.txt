@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 project(QtPMbrowser LANGUAGES CXX)
 #set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -7,14 +7,15 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Set up AUTOMOC and some sensible defaults for runtime execution
 # When using Qt 6.3, you can replace the code block below with
-# qt_standard_project_setup()
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
+
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+qt_standard_project_setup()
 
-add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
+qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
  	DisplayTrace.cpp DisplayTrace.h
     DlgChoosePathAndPrefix.cpp DlgChoosePathAndPrefix.h 
     DlgGraphSettings.cpp DlgGraphSettings.h 
@@ -62,21 +63,15 @@ endif()
 # the project can use Qt 6.3. 
 
 # deploy script
-if(WIN32)
-	get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
-	get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-	find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-	set(ms_deploy_dir "${CMAKE_CURRENT_BINARY_DIR}/deploy")
-	message(STATUS "deploying to " ${ms_deploy_dir})
-	add_custom_target(deploy ALL
-		COMMAND powershell -Command "if ((Test-Path ${ms_deploy_dir})) {rm -r \"${ms_deploy_dir}\"}"
-		COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --dir ${ms_deploy_dir}         \"$<TARGET_FILE:QtPMbrowser>\"
-		COMMENT "Deploying Qt..."
-	)
-	add_dependencies(deploy QtPMbrowser)
+if(WIN32)	
 	install(TARGETS QtPMbrowser RUNTIME)
-	install(DIRECTORY ${ms_deploy_dir}/ TYPE BIN)
-	elseif(APPLE)
+	qt_generate_deploy_app_script(
+    TARGET QtPMbrowser
+    FILENAME_VARIABLE deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+	)
+	install(SCRIPT ${deploy_script})
+elseif(APPLE)
 
 	install(TARGETS QtPMbrowser BUNDLE DESTINATION ./ COMPONENT pmbrowser)
 	cpack_add_component(pmbrowser)
