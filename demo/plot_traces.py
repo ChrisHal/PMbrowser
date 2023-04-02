@@ -19,6 +19,40 @@ def createX(meta):
     x=np.linspace(x0,lastx,numpnts)
     return x
 
+def getNpyBasename(npy_filename):
+    return os.path.basename(os.path.splitext(npy_filename)[0])
+
+class TraceKey:
+    """Key useable for sorting tracenames."""
+    def __init__(self,npy_filename):
+        c=getNpyBasename(npy_filename).split('_')
+        self.prefix=c[0]
+        self.group=int(c[1])
+        self.series=int(c[2])
+        self.sweep=int(c[3])
+        self.trace=c[4]
+        
+    def __lt__(self, other):
+        if(self.prefix<other.prefix):
+            return True
+        if(self.prefix>other.prefix):
+            return False
+        if(self.group<other.group):
+            return True
+        if(self.group>other.group):
+            return False
+        if(self.series<other.series):
+            return True
+        if(self.series>other.series):
+            return False
+        if(self.sweep<other.sweep):
+            return True
+        if(self.sweep>other.sweep):
+            return False
+        if(self.trace<other.trace):
+            return True
+        return False
+
 if __name__ == '__main__':
     if(len(sys.argv)<2):
         print("""
@@ -33,6 +67,7 @@ example: plot_traces "PM_1_*V*.npy" "PM_2_*Vm.npy"
     if(len(filelist)==0):
         print("no matching files found",file=sys.stderr)
         sys.exit(-1)
+    filelist.sort(key=TraceKey)
     for npy_filename in filelist: 
         basename=os.path.basename(os.path.splitext(npy_filename)[0])
         meta=getMeta(npy_filename)
