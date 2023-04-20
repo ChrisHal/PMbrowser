@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QProgressBar>
+#include <QProcess>
 #include <QString>
 #include <QDir>
 #include <QDebug>
@@ -1078,6 +1079,14 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
 
 void PMbrowserWindow::openHelp()
 {
+    if (help_url.isLocalFile() && QFile::exists("/.flatpak-info")) {
+	    QString u = help_url.toEncoded();
+	    QStringList a;
+	    a.append(u);
+	    auto res = QProcess::startDetached("/usr/bin/xdg-open", a);
+	    assert(res);
+	    return;
+    }
     if (!QDesktopServices::openUrl(help_url) && help_url.isLocalFile()) {
         // we should only get here when trying to
         // open a local file from within a flatpak sandbox
