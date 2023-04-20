@@ -1085,6 +1085,7 @@ void PMbrowserWindow::openHelp()
 	    a.append(u);
 	    auto res = QProcess::startDetached("/usr/bin/xdg-open", a);
 	    assert(res);
+	    (void)res;
 	    return;
     }
     if (!QDesktopServices::openUrl(help_url) && help_url.isLocalFile()) {
