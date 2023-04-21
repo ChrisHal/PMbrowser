@@ -8,14 +8,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set up AUTOMOC and some sensible defaults for runtime execution
 # When using Qt 6.3, you can replace the code block below with
 
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 
 # qt_standard_project_setup() does not set CMAKE_AUTORCC
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
-qt_standard_project_setup()
+# qt_standard_project_setup()
 
 qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
  	DisplayTrace.cpp DisplayTrace.h
