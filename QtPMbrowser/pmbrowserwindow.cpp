@@ -1079,6 +1079,7 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
 
 void PMbrowserWindow::openHelp()
 {
+#ifdef __linux__
     if (help_url.isLocalFile() && QFile::exists("/.flatpak-info")) {
 	    QString u = help_url.toEncoded();
 	    QStringList a;
@@ -1088,6 +1089,7 @@ void PMbrowserWindow::openHelp()
 	    (void)res;
 	    return;
     }
+#endif
     if (!QDesktopServices::openUrl(help_url) && help_url.isLocalFile()) {
         // we should only get here when trying to
         // open a local file from within a flatpak sandbox
