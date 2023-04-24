@@ -1080,6 +1080,8 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
 void PMbrowserWindow::openHelp()
 {
 #ifdef __linux__
+    // workaround for broken xdgDesktopPortal support in Qt
+    // when calling from within a flatpak
     if (help_url.isLocalFile() && QFile::exists("/.flatpak-info")) {
 	    QString u = help_url.toEncoded();
 	    QStringList a;
@@ -1091,8 +1093,6 @@ void PMbrowserWindow::openHelp()
     }
 #endif
     if (!QDesktopServices::openUrl(help_url) && help_url.isLocalFile()) {
-        // we should only get here when trying to
-        // open a local file from within a flatpak sandbox
         auto res = QMessageBox::question(this, "Error",
             "Could not open local help url.\nDo you want to try the online help instead?");
         if (res == QMessageBox::Yes) {
