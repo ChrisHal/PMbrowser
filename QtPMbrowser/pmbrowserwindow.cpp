@@ -25,7 +25,6 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QProgressBar>
-#include <QProcess>
 #include <QString>
 #include <QDir>
 #include <QDebug>
@@ -52,6 +51,13 @@
 #include "DlgPreferences.h"
 #include "qstring_helper.h"
 #include "Config.h"
+
+#ifdef __linux__
+#include <QDBusMessage>
+#include <QDBusConnection>
+#include <QDBusUnixFileDescriptor>
+#include <fcntl.h>
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,4,0)
 #include <QLatin1StringView>
@@ -1077,18 +1083,50 @@ void PMbrowserWindow::on_menuGraph_aboutToShow()
     ui->actionDo_Autoscale_on_Load->setChecked(ui->renderArea->isAutoscaleEnabled());
 }
 
+#ifdef __linux__
+// fixed bug QTBUG-113143
+static inline QDBusMessage xdgDesktopPortalOpenFile(const QUrl &url)
+{
+    // DBus signature:
+    // OpenFile (IN   s      parent_window,
+    //           IN   h      fd,
+    //           IN   a{sv}  options,
+    //           OUT  o      handle)
+    // Options:
+    // handle_token (s) -  A string that will be used as the last element of the @handle.
+    // writable (b) - Whether to allow the chosen application to write to the file.
+
+    const int fd = open(QFile::encodeName(url.toLocalFile()), O_PATH|O_CLOEXEC);
+    // const int fd = qt_safe_open(QFile::encodeName(url.toLocalFile()), O_PATH);
+    if (fd != -1) {
+        QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.portal.Desktop",
+                                                              "/org/freedesktop/portal/desktop",
+                                                              "org.freedesktop.portal.OpenURI",
+                                                              "OpenFile");
+
+        QDBusUnixFileDescriptor descriptor;
+        descriptor.giveFileDescriptor(fd);
+
+        // don't set option!
+        const QVariantMap options;// = {{"writable"_L1, true}};
+
+        // FIXME parent_window_id
+        message << QString() << QVariant::fromValue(descriptor) << options;
+
+        return QDBusConnection::sessionBus().call(message);
+    }
+    return QDBusMessage::createError(QDBusError::InternalError, qt_error_string());
+}
+
+#endif
+
 void PMbrowserWindow::openHelp()
 {
 #ifdef __linux__
     // workaround for broken xdgDesktopPortal support in Qt
     // when calling from within a flatpak
     if (help_url.isLocalFile() && QFile::exists("/.flatpak-info")) {
-	    QString u = help_url.toEncoded();
-	    QStringList a;
-	    a.append(u);
-	    auto res = QProcess::startDetached("/usr/bin/xdg-open", a);
-	    assert(res);
-	    (void)res;
+		QDBusError error = xdgDesktopPortalOpenFile(help_url);
 	    return;
     }
 #endif

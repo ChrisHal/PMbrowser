@@ -14,7 +14,7 @@ set(CMAKE_AUTOUIC ON)
 # qt_standard_project_setup() does not set CMAKE_AUTORCC
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets DBus)
 # qt_standard_project_setup()
 
 qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
@@ -49,6 +49,13 @@ target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	target_link_libraries(QtPMbrowser PRIVATE
+	    Qt6::DBus
+	)
+endif()
+
 target_link_libraries(QtPMbrowser PUBLIC hekatoolslib)
 
 configure_file(Config.h.in Config.h)
