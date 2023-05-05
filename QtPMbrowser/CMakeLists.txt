@@ -33,7 +33,7 @@ qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     DlgPreferences.ui
 
 	QtPMbrowser.qrc
-	QtPMbrowser.rc
+	${PROJECT_BINARY_DIR}/QtPMbrowser.rc
 
     DlgChoosePathAndPrefix.ui
 	DlgGraphSettings.ui
@@ -59,7 +59,7 @@ endif()
 target_link_libraries(QtPMbrowser PUBLIC hekatoolslib)
 
 configure_file(Config.h.in Config.h)
-configure_file(QtPMbrowser.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/QtPMbrowser.rc)
+configure_file(QtPMbrowser.rc.in ${PROJECT_BINARY_DIR}/QtPMbrowser.rc)
 target_include_directories(QtPMbrowser PUBLIC "${PROJECT_BINARY_DIR}")
 
 if(CMAKE_BUILD_TYPE STREQUAL Release)
