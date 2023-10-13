@@ -679,8 +679,9 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
     update();
 }
 
-void RenderArea::renderTrace(hkTreeNode* TrRecord, std::istream& infile)
+void RenderArea::renderTrace(hkLib::hkTreeNode* TrRecord, std::istream& infile)
 {
+    using namespace hkLib;
     if (yTrace.isValid()) {
         tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
         while (tracebuffer.size() > numtraces) {

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -29,44 +29,46 @@ constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
 constexpr double JanFirst1990MACTime = 1580970496.0; //1580947200.0; // better value?
 constexpr auto HIGH_DWORD = 4294967296.0;
 
-/// <summary>
-/// Convert PatchMaster time to unix time_t
-/// This follows the documentation, but the result is not excact
-/// </summary>
-/// <param name="t">time as stored in .dat file</param>
-/// <returns>unix time_t</returns>
-static std::time_t PMtime2time_t(double t)
-{
-    t -= JanFirst1990MACTime;
-    if (t < 0.0) {
-        t += HIGH_DWORD; // why is this necessary?
+namespace hkLib {
+    /// <summary>
+    /// Convert PatchMaster time to unix time_t
+    /// This follows the documentation, but the result is not excact
+    /// </summary>
+    /// <param name="t">time as stored in .dat file</param>
+    /// <returns>unix time_t</returns>
+    static std::time_t PMtime2time_t(double t)
+    {
+        t -= JanFirst1990MACTime;
+        if (t < 0.0) {
+            t += HIGH_DWORD; // why is this necessary?
+        }
+        return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
     }
-    return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
-}
 
-constexpr std::size_t BUFF_SIZE = 128;
+    constexpr std::size_t BUFF_SIZE = 128;
 
-static std::string formatPMtime(double t, const char* fmt_str)
-{
-    auto unixtime = PMtime2time_t(t);
-    char buffer[BUFF_SIZE]{};
-    auto mtm = gmtime(&unixtime);
-    if (mtm) {
-        auto count = std::strftime(buffer, BUFF_SIZE, fmt_str, mtm);
-        assert(count != 0);
-        return std::string(buffer, count);
+    static std::string formatPMtime(double t, const char* fmt_str)
+    {
+        auto unixtime = PMtime2time_t(t);
+        char buffer[BUFF_SIZE]{};
+        auto mtm = gmtime(&unixtime);
+        if (mtm) {
+            auto count = std::strftime(buffer, BUFF_SIZE, fmt_str, mtm);
+            assert(count != 0);
+            return std::string(buffer, count);
+        }
+        else {
+            return "<conversion error>";
+        }
     }
-    else {
-        return "<conversion error>";
+
+    std::string formatPMtimeDate(double t)
+    {
+        return formatPMtime(t, "%F");
     }
-}
 
-std::string formatPMtimeDate(double t)
-{
-    return formatPMtime(t, "%F");
-}
-
-std::string formatPMtimeUTC(double t)
-{
-    return formatPMtime(t, "%FT%T UTC");
+    std::string formatPMtimeUTC(double t)
+    {
+        return formatPMtime(t, "%FT%T UTC");
+    }
 }

@@ -45,10 +45,10 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	w->setBackgroundRole(QPalette::Base); 
 	ui->scrollAreaTr->setWidget(w);
 	
-	populateGrid(gridLayoutGrp, parametersGroup);
-	populateGrid(gridLayoutSer, parametersSeries);
-	populateGrid(gridLayoutSwp, parametersSweep);
-	populateGrid(gridLayoutTr, parametersTrace);
+	populateGrid(gridLayoutGrp, hkLib::parametersGroup);
+	populateGrid(gridLayoutSer, hkLib::parametersSeries);
+	populateGrid(gridLayoutSwp, hkLib::parametersSweep);
+	populateGrid(gridLayoutTr, hkLib::parametersTrace);
 }
 
 DlgSelectParameters::~DlgSelectParameters()
@@ -74,8 +74,8 @@ DlgSelectParameters::~DlgSelectParameters()
 
 void DlgSelectParameters::storeParams()
 {
-	readFromGrid(gridLayoutGrp, parametersGroup);
-	readFromGrid(gridLayoutSer, parametersSeries);
-	readFromGrid(gridLayoutSwp, parametersSweep);
-	readFromGrid(gridLayoutTr, parametersTrace);
+	readFromGrid(gridLayoutGrp, hkLib::parametersGroup);
+	readFromGrid(gridLayoutSer, hkLib::parametersSeries);
+	readFromGrid(gridLayoutSwp, hkLib::parametersSweep);
+	readFromGrid(gridLayoutTr, hkLib::parametersTrace);
 }

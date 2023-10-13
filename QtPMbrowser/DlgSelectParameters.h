@@ -41,7 +41,7 @@ public:
 private:
 	static constexpr int chkbox_width = 40;
 	template<std::size_t Nrows> void populateGrid(QGridLayout* grid,
-		const std::array<PMparameter, Nrows>& ar)
+		const std::array<hkLib::PMparameter, Nrows>& ar)
 	{
 		for (int i = 0; i < int(ar.size()); ++i) {
 			auto chk1 = new QCheckBox();// ("export");
@@ -66,7 +66,7 @@ private:
 	}
 
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
-		std::array<PMparameter, Nrows>& ar)
+		std::array<hkLib::PMparameter, Nrows>& ar)
 	{
 		for (int i = 0; i < static_cast<int>(ar.size()); ++i) {
 			auto chkExport = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget());

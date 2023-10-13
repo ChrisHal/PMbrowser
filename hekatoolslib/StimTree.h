@@ -1,5 +1,5 @@
 /*
-    Copyright 2022 Christian R. Halaszovich
+    Copyright 2022-2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -25,87 +25,87 @@
 #include <array>
 #include "hkTree.h"
 
-class StimSegmentRecord
-{
-public:
-    StimSegmentRecord(const hkTreeNode& node);
-    SegmentClass Class;
-    double Voltage,
-        DeltaVFactor,
-        DeltaVIncrement;
-    int VoltageSource;
-    IncrementModeType
-        DurationIncMode,
-        VoltageIncMode;
-    double Duration,
-        DeltaTFactor,
-        DeltaTIncrement;
-    // for testing:
-    const hkTreeNode* Node;
-private:
+namespace hkLib {
+    class StimSegmentRecord
+    {
+    public:
+        StimSegmentRecord(const hkTreeNode& node);
+        SegmentClass Class;
+        double Voltage,
+            DeltaVFactor,
+            DeltaVIncrement;
+        int VoltageSource;
+        IncrementModeType
+            DurationIncMode,
+            VoltageIncMode;
+        double Duration,
+            DeltaTFactor,
+            DeltaTIncrement;
+        // for testing:
+        const hkTreeNode* Node;
+    private:
 
-};
+    };
 
-
-/// <summary>
-/// ChannelRecord from stim tree
-/// </summary>
-class ChannelRecord
-{
-public:
-    ChannelRecord(const hkTreeNode& node);
-    //~ChannelRecord();
-    int LinkedChannel;
-    int DacMode;
-    std::string DacUnit;
-    double Holding;
-    std::vector<StimSegmentRecord> Segments;
-    bool SetLastSegVmemb;
-private:
-
-};
-
-
-/// <summary>
-/// contains needed info about stim record from stim tree
-/// </summary>
-class StimulationRecord
-{
-public:
-	StimulationRecord(const hkTreeNode& node);
-    bool hasStimChannel() const { return ActualDacChannels != 0; };
-    const ChannelRecord& getStimChannel() const;
-    double getHolding() const;
 
     /// <summary>
-    /// Contruct the theoretical stimulation trace
-    /// (might need to be calculated bsed on sweep-count)
+    /// ChannelRecord from stim tree
     /// </summary>
-    /// <param name="sweep_count">zero-base index of sweep</param>
-    /// <returns>vector containing x/y coordinate pairs</returns>
-    std::vector<std::array<double,2>> constructStimTrace(int sweep_count) const;
+    class ChannelRecord
+    {
+    public:
+        ChannelRecord(const hkTreeNode& node);
+        //~ChannelRecord();
+        int LinkedChannel;
+        int DacMode;
+        std::string DacUnit;
+        double Holding;
+        std::vector<StimSegmentRecord> Segments;
+        bool SetLastSegVmemb;
+    private:
 
-	//~StimulationRecord();
-    std::string EntryName;
-    int DataStartSegment;
-    double DataStartTime;
-    int NumberSweeps;
-    int ActualDacChannels;
-    bool HasLockIn;
-    std::vector<ChannelRecord> Channels;
-private:
-
-};
-
-class StimRootRecord
-{
-public:
-    StimRootRecord(const hkTreeNode& node);
-    std::vector<StimulationRecord> Stims;
-
-private:
-
-};
+    };
 
 
+    /// <summary>
+    /// contains needed info about stim record from stim tree
+    /// </summary>
+    class StimulationRecord
+    {
+    public:
+        StimulationRecord(const hkTreeNode& node);
+        bool hasStimChannel() const { return ActualDacChannels != 0; };
+        const ChannelRecord& getStimChannel() const;
+        double getHolding() const;
+
+        /// <summary>
+        /// Contruct the theoretical stimulation trace
+        /// (might need to be calculated bsed on sweep-count)
+        /// </summary>
+        /// <param name="sweep_count">zero-base index of sweep</param>
+        /// <returns>vector containing x/y coordinate pairs</returns>
+        std::vector<std::array<double, 2>> constructStimTrace(int sweep_count) const;
+
+        //~StimulationRecord();
+        std::string EntryName;
+        int DataStartSegment;
+        double DataStartTime;
+        int NumberSweeps;
+        int ActualDacChannels;
+        bool HasLockIn;
+        std::vector<ChannelRecord> Channels;
+    private:
+
+    };
+
+    class StimRootRecord
+    {
+    public:
+        StimRootRecord(const hkTreeNode& node);
+        std::vector<StimulationRecord> Stims;
+
+    private:
+
+    };
+}
 #endif // !STIM_TREE_H

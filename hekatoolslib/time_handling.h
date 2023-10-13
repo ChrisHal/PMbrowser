@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -22,19 +22,23 @@
 
 #pragma once
 
-/// <summary>
-/// Convert time as found in .dat file, only return date part
-/// (ignore time)
-/// </summary>
-/// <param name="t">time found in .dat file</param>
-/// <returns>std::string containing formatted date</returns>
-std::string formatPMtimeDate(double t); // date only
+namespace hkLib {
+ 
+    /// <summary>
+    /// Convert time as found in .dat file, only return date part
+    /// (ignore time)
+    /// </summary>
+    /// <param name="t">time found in .dat file</param>
+    /// <returns>std::string containing formatted date</returns>
+    std::string formatPMtimeDate(double t); // date only
 
-/// <summary>
-/// Convert time as found in .dat file to date and UTC time
-/// </summary>
-/// <param name="t">time found in .dat file</param>
-/// <returns>std::string containing formatted date and UTC time</returns>
-std::string formatPMtimeUTC(double t); // UTC date/time
+    /// <summary>
+    /// Convert time as found in .dat file to date and UTC time
+    /// </summary>
+    /// <param name="t">time found in .dat file</param>
+    /// <returns>std::string containing formatted date and UTC time</returns>
+    std::string formatPMtimeUTC(double t); // UTC date/time
+
+}
 
 #endif // !TIME_HANDLING_H

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -77,18 +77,18 @@ private:
     void loadFile() {loadFile(currentFile);};
     void closeFile();
     void populateTreeView();
-    void groupSelected(QTreeWidgetItem* item, hkTreeNode* node);
-    void seriesSelected(QTreeWidgetItem* item, hkTreeNode* node);
-    void sweepSelected(QTreeWidgetItem* item, hkTreeNode* node);
-    void traceSelected(QTreeWidgetItem* item, hkTreeNode* trace);
-    void collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list);
+    void groupSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* node);
+    void seriesSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* node);
+    void sweepSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* node);
+    void traceSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* trace);
+    void collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkLib::hkTreeNode*>& trace_list);
     void printAllParameters(QTreeWidgetItem* item);
-    void printAllParameters(hkTreeNode* node);
-    void printAmplifierState(const hkTreeNode* series);
-    void drawStimulus(const hkTreeNode* sweep);
-    void useStimAsX(const hkTreeNode* sweep);
-    void drawStimuliSeries(const hkTreeNode* sweep);
-    void create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const;
+    void printAllParameters(hkLib::hkTreeNode* node);
+    void printAmplifierState(const hkLib::hkTreeNode* series);
+    void drawStimulus(const hkLib::hkTreeNode* sweep);
+    void useStimAsX(const hkLib::hkTreeNode* sweep);
+    void drawStimuliSeries(const hkLib::hkTreeNode* sweep);
+    void create_stim_trace(const hkLib::hkTreeNode* sweep, DisplayTrace& dt) const;
     bool assertDatFileOpen();
     void exportSubTree(QTreeWidgetItem* item, const QString& path, const QString& prefix, ExportType export_type, std::ostream *outfile, bool create_datafolders, int folder_level);
     bool choosePathAndPrefix(QString& path, QString& prefix, ExportType& export_type, bool& pxp_export, bool& create_datafolders, int & last_folder_level);
@@ -105,7 +105,7 @@ private:
     QUrl help_url{};
     QAction actHelp{ "&Help" };
     std::ifstream infile;
-    std::unique_ptr<DatFile> datfile;
+    std::unique_ptr<hkLib::DatFile> datfile;
     QString lastloadpath, lastexportpath;
     QString filterStrGrp, filterStrSer, filterStrSwp, filterStrTr;
     bool settings_modified;

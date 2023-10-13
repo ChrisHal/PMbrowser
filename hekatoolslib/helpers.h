@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 Christian R. Halaszovich
+    Copyright 2020-2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -30,39 +30,41 @@
 #include <cstdint>
 #include <string>
 
-template<typename T> T swap_bytes(T) = delete;
-double swap_bytes(double x);
-float swap_bytes(float x);
-int32_t swap_bytes(int32_t x);
-uint32_t swap_bytes(uint32_t x);
-int16_t swap_bytes(int16_t x);
-uint16_t swap_bytes(uint16_t x);
+namespace hkLib {
 
-template<typename T> void swapInPlace(T& x)
-{
-    x = swap_bytes(x);
+    template<typename T> T swap_bytes(T) = delete;
+    double swap_bytes(double x);
+    float swap_bytes(float x);
+    int32_t swap_bytes(int32_t x);
+    uint32_t swap_bytes(uint32_t x);
+    int16_t swap_bytes(int16_t x);
+    uint16_t swap_bytes(uint16_t x);
+
+    template<typename T> void swapInPlace(T& x)
+    {
+        x = swap_bytes(x);
+    }
+
+    struct hkSettings {
+        std::string ext_Imon{ "Imon" };
+        std::string ext_Vmon{ "Vmon" };
+        std::string ext_Leak{ "Leak" };
+    };
+
+    extern hkSettings global_hkSettings;
+
+    /// <summary>
+    /// form canonical displayname for trace
+    /// treat Vmon, Imon and to some extend Leak traces
+    /// as special cases.
+    /// If a lable is provided in the trace-record and the trace is
+    /// neither of type Vmon nor Imon, the lable will be used. Otherwise,
+    /// leak traces will be labled "leak", all remaining traces will
+    /// be labled "trace_&lt;count&gt;".
+    /// </summary>
+    /// <param name="tr">trace record</param>
+    /// <param name="count">count of trace (starting from 1)</param>
+    /// <returns>string containing canonical trace-name</returns>
+    std::string formTraceName(const hkTreeNode& tr, int count);
 }
-
-struct hkSettings {
-    std::string ext_Imon{ "Imon" };
-    std::string ext_Vmon{ "Vmon" };
-    std::string ext_Leak{ "Leak" };
-};
-
-extern hkSettings global_hkSettings;
-
-/// <summary>
-/// form canonical displayname for trace
-/// treat Vmon, Imon and to some extend Leak traces
-/// as special cases.
-/// If a lable is provided in the trace-record and the trace is
-/// neither of type Vmon nor Imon, the lable will be used. Otherwise,
-/// leak traces will be labled "leak", all remaining traces will
-/// be labled "trace_&lt;count&gt;".
-/// </summary>
-/// <param name="tr">trace record</param>
-/// <param name="count">count of trace (starting from 1)</param>
-/// <returns>string containing canonical trace-name</returns>
-std::string formTraceName(const hkTreeNode& tr, int count);
-
 #endif // !HELPERS_H

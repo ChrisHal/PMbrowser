@@ -52,6 +52,8 @@
 #include "qstring_helper.h"
 #include "Config.h"
 
+using namespace hkLib;
+
 #if QT_VERSION >= QT_VERSION_CHECK(6,4,0)
 #include <QLatin1StringView>
 constexpr QLatin1StringView myAppName("PM browser");
@@ -134,7 +136,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     info.append("\n");
     info.append(str.c_str());
     ui->textEdit->append(info);
-    ui->renderArea->renderTrace(trace, infile);
+    ui->renderArea->renderTrace(trace, this->infile);
 }
 
 void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list)
@@ -1008,7 +1010,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         // auto secount = series->extractInt32(SeSeriesCount);
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
         const auto& ampse = amproot.Children.at(size_t(ampstateref) - 1); // Is this correct? Or seCount?
-        for (const auto& ampre : ampse.Children) { // there might be multiple amplifiers
+        for(const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
             std::memcpy(amprecord.Data.get(), ampre.Data.get() + AmAmplifierState, amprecord.len);
             //amprecord.Data = ampre.Data.get() + AmAmplifierState;
