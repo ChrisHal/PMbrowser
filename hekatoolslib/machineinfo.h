@@ -20,6 +20,9 @@
 #define MACHINEINFO_H
 
 #pragma once
+
+#include <bit>
+
 namespace hkLib {
 
     /// <summary>
@@ -27,11 +30,9 @@ namespace hkLib {
     /// (will be optimized to a constant by compiler)
     /// </summary>
     /// <returns>true if machine is little-endian</returns>
-    inline bool MachineIsLittleEndian()
+    consteval bool MachineIsLittleEndian()
     {
-        unsigned t = 1;
-        auto p = reinterpret_cast<char*>(&t);
-        return *p == 1;
+        return std::endian::native == std::endian::little;
     }
 }
 #endif // !MACHINEINFO_H
