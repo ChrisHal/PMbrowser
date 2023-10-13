@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -31,6 +31,8 @@
 #include "machineinfo.h"
 #include "PMparameters.h"
 #include <iomanip>
+
+using namespace hkLib;
 
 void DatFile::InitFromStream(std::istream& infile)
 {

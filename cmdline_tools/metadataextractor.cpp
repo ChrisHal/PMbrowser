@@ -1,5 +1,5 @@
 /*
-    Copyright 2022 Christian R. Halaszovich
+    Copyright 2022-2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -21,6 +21,8 @@
 #include<fstream>
 #include"DatFile.h"
 #include"PMparameters.h"
+
+using namespace hkLib;
 
 int main(int argc, char** argv) {
     if (argc < 2) {

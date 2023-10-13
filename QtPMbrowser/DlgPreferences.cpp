@@ -59,16 +59,16 @@ void DlgPreferences::accept()
 	settings.endGroup();
 	switch (selection) {
 	case 0:
-		global_hkSettings.ext_Imon = "Imon";
-		global_hkSettings.ext_Vmon = "Vmon";
+		hkLib::global_hkSettings.ext_Imon = "Imon";
+		hkLib::global_hkSettings.ext_Vmon = "Vmon";
 		break;
 	case 1: // use names from file
-		global_hkSettings.ext_Imon.clear();
-		global_hkSettings.ext_Vmon.clear();
+		hkLib::global_hkSettings.ext_Imon.clear();
+		hkLib::global_hkSettings.ext_Vmon.clear();
 		break;
 	default:
-		global_hkSettings.ext_Imon = ui->lineEditImon->text().toStdString();
-		global_hkSettings.ext_Vmon = ui->lineEditVmon->text().toStdString();
+		hkLib::global_hkSettings.ext_Imon = ui->lineEditImon->text().toStdString();
+		hkLib::global_hkSettings.ext_Vmon = ui->lineEditVmon->text().toStdString();
 	}
 
 	QDialog::accept();

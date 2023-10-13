@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -20,17 +20,18 @@
 #define MACHINEINFO_H
 
 #pragma once
+namespace hkLib {
 
-/// <summary>
-/// check endianess of machine
-/// (will be optimized to a constant by compiler)
-/// </summary>
-/// <returns>true if machine is little-endian</returns>
-inline bool MachineIsLittleEndian()
-{
-    unsigned t = 1;
-    auto p = reinterpret_cast<char*>(&t);
-    return *p == 1;
+    /// <summary>
+    /// check endianess of machine
+    /// (will be optimized to a constant by compiler)
+    /// </summary>
+    /// <returns>true if machine is little-endian</returns>
+    inline bool MachineIsLittleEndian()
+    {
+        unsigned t = 1;
+        auto p = reinterpret_cast<char*>(&t);
+        return *p == 1;
+    }
 }
-
 #endif // !MACHINEINFO_H

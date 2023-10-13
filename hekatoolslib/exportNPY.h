@@ -26,27 +26,30 @@
 #include <filesystem>
 #include "hkTree.h"
 
-/// <summary>
-/// Export trace as either npy or raw binary.
-/// The selection is made depoending on the extension of filanme:
-/// .npy for npy format
-/// any other extension for raw binary
-/// </summary>
-/// <param name="datafile">Datafile from which the trace is taken</param>
-/// <param name="TrRecord">hkTreeNode of the trace record</param>
-/// <param name="filename">export filename</param>
-/// <param name="createJSON">true if JSON metadata file should be created</param>
-void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON);
+namespace hkLib {
 
-/// <summary>
-/// Export all trace in NPY format
-/// mainly for testing purposes
-/// </summary>
-/// <param name="datafile">heka data stream</param>
-/// <param name="datf">datafile object</param>
-/// <param name="path">path in which exporteed files will be saved</param>
-/// <param name="prefix">tracename prefix (selected by user)</param>
-void NPYExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
 
+	/// <summary>
+	/// Export trace as either npy or raw binary.
+	/// The selection is made depoending on the extension of filanme:
+	/// .npy for npy format
+	/// any other extension for raw binary
+	/// </summary>
+	/// <param name="datafile">Datafile from which the trace is taken</param>
+	/// <param name="TrRecord">hkTreeNode of the trace record</param>
+	/// <param name="filename">export filename</param>
+	/// <param name="createJSON">true if JSON metadata file should be created</param>
+	void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON);
+
+	/// <summary>
+	/// Export all trace in NPY format
+	/// mainly for testing purposes
+	/// </summary>
+	/// <param name="datafile">heka data stream</param>
+	/// <param name="datf">datafile object</param>
+	/// <param name="path">path in which exporteed files will be saved</param>
+	/// <param name="prefix">tracename prefix (selected by user)</param>
+	void NPYExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
+}
 
 #endif // !EXPORT_NPY_H

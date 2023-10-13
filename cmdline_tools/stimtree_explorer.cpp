@@ -1,5 +1,5 @@
 /*
-    Copyright 2022 Christian R. Halaszovich
+    Copyright 2022-2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -24,6 +24,7 @@
 #include "StimTree.h"
 #include"PMparameters.h"
 
+using namespace hkLib;
 
 void do_exploring(const hkTreeNode& root, int index, int ch) {
     //std::array<double, 10> params{};
