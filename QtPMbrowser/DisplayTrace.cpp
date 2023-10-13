@@ -94,9 +94,9 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 					path.moveTo(display->scaleToQPF(x0 + pFirst * deltax, data_min));
 					path.lineTo(display->scaleToQPF(x0 + pFirst * deltax, data_max));
 					for (int i = step + pFirst; i < pEnd; i += step) {
-						auto [data_min, data_max] = getDataMinMax(i, i + step);
-						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_min));
-						path.lineTo(display->scaleToQPF(x0 + i * deltax, data_max));
+						auto [datamin, datamax] = getDataMinMax(i, i + step);
+						path.lineTo(display->scaleToQPF(x0 + i * deltax, datamin));
+						path.lineTo(display->scaleToQPF(x0 + i * deltax, datamax));
 					}
 				}
 				else {
@@ -142,9 +142,9 @@ double DisplayTrace::interp(double x)
 	if (has_x_trace()) {
 		for (std::size_t i = 0; i < p_xdata->size() - 1; ++i) {
 			if (p_xdata->at(i) <= x && p_xdata->at(i + 1) >= x) {
-				auto x0 = p_xdata->at(i), x1 = p_xdata->at(i + 1),
+				auto x_0 = p_xdata->at(i), x_1 = p_xdata->at(i + 1),
 					y0 = data.at(i), y1 = data.at(i + 1);
-				datay = y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+				datay = y0 + (y1 - y0) * (x - x_0) / (x_1 - x_0);
 				break;
 			}
 		}
