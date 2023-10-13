@@ -73,9 +73,8 @@ namespace hkLib {
 		node.level = level;
 		node.len = size;
 		node.isSwapped = isSwapped;
-		node.Data = std::make_unique<char[]>(size);
 		node.Parent = parent;
-		std::memcpy(node.Data.get(), *pdata, size);
+		node.Data = *pdata;
 		*pdata += size;
 		uint32_t nchildren;
 		std::memcpy(&nchildren, *pdata, sizeof(uint32_t));
@@ -90,13 +89,13 @@ namespace hkLib {
 	bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, unsigned int len)
 	{
 		assert(!!infile);
-		auto buffer = std::make_unique<char[]>(len);
-		infile.seekg(offset).read(buffer.get(), len);
+		Data = std::make_unique<char[]>(len);
+		infile.seekg(offset).read(Data.get(), len);
 		if (!infile) {
 			infile.clear();
 			return false;
 		}
-		bool res = this->InitFromBuffer(id, buffer.get(), len);
+		bool res = this->InitFromBuffer(id, Data.get(), len);
 		return res;
 	}
 
@@ -151,7 +150,7 @@ namespace hkLib {
 		if (len <= offset) {
 			throw std::out_of_range("offset to large while accessing tree node");
 		}
-		return std::string_view(Data.get() + offset);
+		return std::string_view(Data + offset);
 	}
 
 	std::ostream& operator<<(std::ostream& os, const UserParamDescr& p)

@@ -204,7 +204,7 @@ namespace hkLib {
         {
             static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
             T t{};
-            auto src = Data.get() + offset;
+            auto src = Data + offset;
             if (!isSwapped) {
                 std::copy(src, src + sizeof t, reinterpret_cast<char*>(&t));
             }
@@ -273,7 +273,7 @@ namespace hkLib {
             if (len < offset + N) {
                 throw std::out_of_range("offset to large while accessing tree node");
             }
-            const auto* p = Data.get() + offset;
+            const auto* p = Data + offset;
             if (p[N - 1]) {
                 // in theory, string is not zero terminated
                 // unfortunately, some PM version mess this up
@@ -299,7 +299,8 @@ namespace hkLib {
 
     public:
         hkTreeNode* Parent;
-        std::unique_ptr<char[]> Data;
+        //std::unique_ptr<char[]> Data;
+        const char* Data;
         std::size_t len; //!< Length (in bytes) of data
         std::vector<hkTreeNode> Children;
         int level;
@@ -313,6 +314,7 @@ namespace hkLib {
         std::vector<int32_t> LevelSizes;
         hkTreeNode RootNode;
         std::string ID;
+        std::unique_ptr<char[]> Data{};
         double time0{};
         bool isSwapped;
         void LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level);
@@ -336,7 +338,7 @@ namespace hkLib {
         /// Initialize tree from data buffered in memory
         /// </summary>
         /// <param name="id">id (pgf, pul, ...) of tree</param>
-        /// <param name="buffer">pointer to data stored in memory</param>
+        /// <param name="buffer">pointer to data stored in memory, must be permamnent for lifetime of hkTree</param>
         /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
         /// <returns>true on success</returns>
         bool InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len);

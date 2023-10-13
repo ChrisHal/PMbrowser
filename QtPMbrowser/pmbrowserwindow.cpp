@@ -995,13 +995,15 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
     assert(series->getLevel() == hkTreeNode::LevelSeries);
     hkTreeNode amprecord;
     amprecord.len = AmplifierStateSize;
-    amprecord.Data = std::make_unique<char[]>(amprecord.len);
+    //auto buffer = std::make_unique<char[]>(amprecord.len);
+    //amprecord.Data = buffer.get();
     amprecord.isSwapped = series->getIsSwapped();
     auto ampstateflag = series->extractInt32(SeAmplStateFlag),
         ampstateref = series->extractInt32(SeAmplStateRef);
     if (ampstateflag > 0 || ampstateref == 0) {
         // use local amp state record
-        std::memcpy(amprecord.Data.get(), series->Data.get() + SeOldAmpState, amprecord.len);
+        amprecord.Data = series->Data + SeOldAmpState;
+        //std::memcpy(buffer.get(), series->Data + SeOldAmpState, amprecord.len);
         std::string s;
         formatParamList(amprecord, parametersAmpplifierState, s);
         ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
@@ -1012,7 +1014,8 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         const auto& ampse = amproot.Children.at(size_t(ampstateref) - 1); // Is this correct? Or seCount?
         for(const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
-            std::memcpy(amprecord.Data.get(), ampre.Data.get() + AmAmplifierState, amprecord.len);
+            amprecord.Data = series->Data + SeOldAmpState;
+                //std::memcpy(buffer.get(), ampre.Data + AmAmplifierState, amprecord.len);
             //amprecord.Data = ampre.Data.get() + AmAmplifierState;
             std::string s;
             formatParamList(amprecord, parametersAmpplifierState, s);
