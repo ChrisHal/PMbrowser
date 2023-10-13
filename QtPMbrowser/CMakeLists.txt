@@ -14,7 +14,7 @@ set(CMAKE_AUTOUIC ON)
 # qt_standard_project_setup() does not set CMAKE_AUTORCC
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets DBus)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 # qt_standard_project_setup()
 
 qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
