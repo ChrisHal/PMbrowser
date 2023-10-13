@@ -35,3 +35,5 @@ out/
 CMakeSettings.json
 doc/conf.py
 QtPMbrowser/QtPMbrowser.rc
+/CMakeUserPresets.json
+/CMakePresets.json
