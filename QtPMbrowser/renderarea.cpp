@@ -28,7 +28,9 @@
 #include <limits>
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <cmath>
+
 #include "DlgGraphSettings.h"
 #include "renderarea.h"
 #include "ui_renderarea.h"
@@ -151,7 +153,7 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
                     painter.setPen(color_bktrace);
-                    for (auto trace : qAsConst(tracebuffer)) {
+                    for (auto trace : std::as_const(tracebuffer)) {
                         trace->render(painter, this);
                     }
                     painter.setPen(color_trace);
