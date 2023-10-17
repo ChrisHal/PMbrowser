@@ -79,7 +79,7 @@ if(WIN32 OR APPLE)
 	qt_generate_deploy_app_script(
     TARGET QtPMbrowser
     OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
+	NO_COMPILER_RUNTIME
 	)
 	install(SCRIPT ${deploy_script})
 else()
