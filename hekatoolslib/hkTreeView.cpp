@@ -20,6 +20,7 @@
 #include "hkTreeView.h"
 
 using hkLib::hkNodeView;
+using hkLib::hkTreeNode;
 
 static void collect_views(const hkNodeView& node, std::vector<const hkNodeView*>& res, int level)
 {
@@ -35,9 +36,28 @@ static void collect_views(const hkNodeView& node, std::vector<const hkNodeView*>
     }
 }
 
-std::vector<const hkNodeView*> hkLib::hkTreeView::GetListForLevel(int level)
+
+static void collect_nodes(const hkNodeView& root, std::vector<const hkTreeNode*>& res, int level)
+{
+    std::vector<const hkNodeView*> tmp;
+    collect_views(root, tmp, level);
+    for (const auto& e : tmp) {
+        res.push_back(e->p_node);
+    }
+}
+
+
+std::vector<const hkNodeView*> hkLib::hkTreeView::GetViewListForLevel(int level)
 {
     std::vector<const hkNodeView*> res;
     collect_views(root, res, level);
     return res;
 }
+
+std::vector<const hkTreeNode*> hkLib::hkTreeView::GetNodeListForLevel(int level)
+{
+    std::vector<const hkTreeNode*> res;
+    collect_nodes(root, res, level);
+    return res;
+}
+

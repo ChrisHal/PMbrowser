@@ -37,7 +37,8 @@ namespace hkLib {
         /// </summary>
         /// <param name="level">desired level</param>
         /// <returns></returns>
-        std::vector<const hkNodeView*> GetListForLevel(int level);
+        std::vector<const hkNodeView*> GetViewListForLevel(int level);
+        std::vector<const hkTreeNode*> GetNodeListForLevel(int level);
     };
 }
 
