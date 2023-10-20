@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <cstddef>
 #include <cassert>
 #include <cstring>
 #include "DatFile.h"
@@ -114,11 +115,11 @@ namespace hkLib {
 		if (isSwapped) {
 			swapInPlace(root->nLevels);
 		}
-		for (unsigned i = 0; i < root->nLevels; ++i) {
+		for (std::size_t i = 0; i < root->nLevels; ++i) {
 			if (isSwapped) { swapInPlace(root->LevelSizes[i]); }
 			LevelSizes.push_back(root->LevelSizes[i]);
 		}
-		char* data = buffer + sizeof(uint32_t) * (2ull + root->nLevels); // start of first tree node
+		char* data = buffer + offsetof(TreeRoot, LevelSizes) + sizeof(uint32_t) * root->nLevels; // start of first tree node
 		LoadToNode(nullptr, RootNode, &data, 0);
 		if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 			throw std::runtime_error("bytes read != bytes in buffer");
