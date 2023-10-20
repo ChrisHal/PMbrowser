@@ -130,7 +130,7 @@ namespace hkLib {
 	char hkTreeNode::getChar(std::size_t offset) const
 	{
 		if (len < offset + sizeof(char)) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return Data[offset];
 	}
@@ -138,7 +138,7 @@ namespace hkLib {
 	const UserParamDescr hkTreeNode::getUserParamDescr(std::size_t offset) const
 	{
 		if (len < offset + UserParamDescr::Size) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return {
 			getString<UserParamDescr::SizeName>(offset),
@@ -149,7 +149,7 @@ namespace hkLib {
 	const std::string_view hkTreeNode::getString(std::size_t offset) const
 	{
 		if (len <= offset) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return std::string_view(Data + offset);
 	}
