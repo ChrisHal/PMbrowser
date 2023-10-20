@@ -338,8 +338,8 @@ namespace hkLib {
         /// Initialize tree from data buffered in memory
         /// </summary>
         /// <param name="id">id (pgf, pul, ...) of tree</param>
-        /// <param name="buffer">pointer to data stored in memory, must be permamnent for lifetime of hkTree</param>
-        /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
+        /// <param name="buffer">pointer to data stored in memory, must be permanent for lifetime of hkTree</param>
+        /// <param name="len">length in bytes of buffer (buffer contains the total of the tree)</param>
         /// <returns>true on success</returns>
         bool InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len);
         hkTreeNode& GetRootNode() { return RootNode; };

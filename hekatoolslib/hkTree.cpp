@@ -102,7 +102,7 @@ namespace hkLib {
 	bool hkTree::InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len)
 	{
 		ID = id;
-		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
+		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer); // we assume buffer is correctly aligned
 		isSwapped = false;
 		if (root->Magic == SwappedMagicNumber) {
 			isSwapped = true;
