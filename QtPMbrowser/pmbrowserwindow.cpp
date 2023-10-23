@@ -74,29 +74,26 @@ void PMbrowserWindow::populateTreeView()
     tree->setColumnCount(1);
     auto& pultree = datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
-    int i=0;
     for(auto& group : pultree.GetRootNode().Children) {
-        QString count=QString("%1").arg(++i), label;
+        QString count=QString("%1").arg(group.extractInt32(GrGroupCount)), label;
         label = qs_from_sv(group.getString(GrLabel));
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
         grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&group));
         grpitems.append(grpitem);
-        int j=0;
         for(auto& series : group.Children) {
-            QString label2 = QString("%1").arg(++j)+" "+qs_from_sv(series.getString(SeLabel));
+            QString label2 = QString("%1").arg(series.extractInt32(SeSeriesCount))+
+                " "+qs_from_sv(series.getString(SeLabel));
             auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
-            int k = 0;
             for(auto& sweep : series.Children) {
-                QString label3 = QString("sweep %1").arg(++k)+" "+qs_from_sv(sweep.getString(SwLabel));
+                QString label3 = QString("sweep %1").arg(sweep.extractInt32(SwSweepCount))
+                    +" "+qs_from_sv(sweep.getString(SwLabel));
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
-                int l = 0;
                 for(auto& trace : sweep.Children) {
-                    ++l;
-                    QString tracelabel = formTraceName(trace, l).c_str();
+                    QString tracelabel = formTraceName(trace, trace.extractInt32(TrTraceID)).c_str();
                     auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
