@@ -172,7 +172,7 @@ The Dialogs
 
 .. _export-dlg-label:
 
-Igor Export: 'Choose Path & Prefix' Dialog
+Export data: 'Choose Path & Prefix' Dialog
 ******************************************
 
 .. image::  Screenshot_exportDlg.png
@@ -186,7 +186,7 @@ General options
 
 	* *'path'* If multiple files are exported, this is the path they will be saved to. Use button *'choose...'* to call up a file dialog to choose the path (or enter a valid path manually).
 	
-	* *'prefix'* Exported waves will be prefixed with this text. If individual files are exported, they will have this prefix, too (since they will be named after the wave).
+	* *'prefix'* Exported waves will be prefixed with this text. If individual files are exported, they will have this prefix, too.
 
 Selection of export method
 --------------------------
@@ -197,22 +197,38 @@ of parameters to be exported as metadata.
 Export for Igor Pro
 +++++++++++++++++++
 
-	* Checkbox *'create pxp file'*
-		
-		All waves will be exported into a single packaged experiment file (:file:`pxp`). After clicking *'OK'*, a file dialog will show up that allows you to select a filename for the file to be created.
-
-	* Checkbox *'create folder structure'*
+* Checkbox *'create pxp file'*
 	
-		If you export as a :file:`pxp` file, select this to create datafolders within the :file:`pxp` file that match the tree structure. You can choose if the grouping level for traces should be *group* or *series*.
+	All waves will be exported into a single packaged experiment file (:file:`pxp`). After clicking *'OK'*, a file dialog will show up that allows you to
+	select a filename for the file to be created.
+
+* Checkbox *'create folder structure'*
+
+	If you export as a :file:`pxp` file, select this to create datafolders within the :file:`pxp`
+	file that match the tree structure. You can choose if the grouping level for traces should be *group* or *series*.
 
 Metadata will be included as wavenotes.
 
 Export NPY for Python / numpy + metadata as JSON
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-Each trace will be export as a :file:`.npy` file that can be read via ``numpy.load(<filename>)``. Metadata for
-each trace will be export in JSON format (:file:`.json`).
+* Checkbox *'gather sweeps'*
 
+	If *gather sweeps* **is not** selected, each trace will be exported as a :file:`.npy` file.
+	Metadata for each trace will be export in JSON format (:file:`.json`).
+
+	If *gather sweeps* **is** selected, for each *series* that is about to be exported,
+	all traces that are a (grand-)child of this series and that share the same trace ID
+	will be gathered in a single :file:`.npy` file as a 2D array. The first dimension
+	of this array is the trace index, the second dimension the *time* (or *x*) dimension of the trace.
+	This file will be accompanied by a JSON file
+	containing the metadata for all sweeps/traces in the :file:`.npy` file.
+
+	If for example a series has 10 sweeps that are to be exported and each
+	*sweep* has a *Vmon* and an *Imon* trace, for this series two
+	files will be created. One contains the 10 *Vmon* traces, the other contains the 10 *Imon* traces.
+
+:file:`.npy` files can be read via ``numpy.load(<filename>)``.
 Demo :program:`python` code showing how to use these files can be found in the Git repository
 (folder `demo <https://github.com/ChrisHal/PMbrowser/tree/master/demo>`_).
 
