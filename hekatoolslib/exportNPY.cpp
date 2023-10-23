@@ -177,7 +177,6 @@ namespace hkLib {
     void NPYExportTreeSweepsAsArray(std::istream& datafile, const hkTreeView& tree, const std::string_view& path,
         const std::string_view& prefix, bool createJSON)
     {
-        (void)createJSON;
         auto series_list = tree.GetViewListForLevel(hkTreeNode::LevelSeries);
         for (const auto* series : series_list) {
             // we need one array per Series and TraceID
