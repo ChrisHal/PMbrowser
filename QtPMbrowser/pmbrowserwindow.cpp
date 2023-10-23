@@ -397,19 +397,6 @@ void PMbrowserWindow::on_actionOpen_triggered()
     if (!filename.isEmpty()) {
         loadFile(filename);
     }
-    //QFileDialog dialog(this);
-    //dialog.setFileMode(QFileDialog::ExistingFile);
-    //dialog.setNameFilter("DAT-file (*.dat)");
-    //dialog.setViewMode(QFileDialog::Detail);
-    //if(QDir(lastloadpath).exists()) {
-    //    dialog.setDirectory(lastloadpath);
-    //}
-    //else {
-    //    dialog.setDirectory("./");
-    //}
-    //if (dialog.exec()) {
-    //    loadFile(dialog.selectedFiles().at(0));
-    //}
 }
 
 void PMbrowserWindow::on_actionClose_triggered()
