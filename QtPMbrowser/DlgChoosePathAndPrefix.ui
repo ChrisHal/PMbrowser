@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>359</width>
-    <height>279</height>
+    <height>304</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,36 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>path</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="3">
+      <widget class="QCheckBox" name="checkBox_pxp_export">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>all traces are stored in one file</string>
+       </property>
+       <property name="text">
+        <string>create pxp file</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>prefix</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditPath"/>
      </item>
@@ -36,30 +66,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="4">
-      <widget class="QRadioButton" name="radioButtonIgor">
-       <property name="text">
-        <string>Export for Igor Pro</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>path</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="pushButtonChoosePath">
-       <property name="text">
-        <string>choose...</string>
        </property>
       </widget>
      </item>
@@ -76,14 +82,7 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditPrefix">
-       <property name="toolTip">
-        <string>wavenames will be prefixed with this</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0" colspan="4">
+     <item row="9" column="0" colspan="4">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -95,26 +94,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item row="3" column="1" colspan="3">
-      <widget class="QCheckBox" name="checkBox_pxp_export">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>all traces are stored in one file</string>
-       </property>
-       <property name="text">
-        <string>create pxp file</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="2" colspan="2">
-      <widget class="QCheckBox" name="checkBox_create_datafolders">
-       <property name="text">
-        <string>create folder structure (only for pxp files)</string>
-       </property>
-      </widget>
      </item>
      <item row="5" column="3">
       <widget class="QComboBox" name="comboBoxLevel">
@@ -128,6 +107,26 @@
          <string>Series</string>
         </property>
        </item>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="4" column="2" colspan="2">
+      <widget class="QCheckBox" name="checkBox_create_datafolders">
+       <property name="text">
+        <string>create folder structure (only for pxp files)</string>
+       </property>
       </widget>
      </item>
      <item row="5" column="0" colspan="2">
@@ -150,6 +149,23 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0" colspan="4">
+      <widget class="QRadioButton" name="radioButtonIgor">
+       <property name="text">
+        <string>Export for Igor Pro</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="4">
+      <widget class="QRadioButton" name="radioButtonBIN">
+       <property name="text">
+        <string>Export raw binary + metadata as JSON</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="3">
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -163,33 +179,24 @@
        </property>
       </spacer>
      </item>
-     <item row="4" column="0" colspan="2">
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditPrefix">
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>prefix</string>
+        <string>wavenames will be prefixed with this</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="4">
-      <widget class="QRadioButton" name="radioButtonBIN">
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButtonChoosePath">
        <property name="text">
-        <string>Export raw binary + metadata as JSON</string>
+        <string>choose...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1" colspan="3">
+      <widget class="QCheckBox" name="checkBoxNPYarray">
+       <property name="text">
+        <string>gather sweeps (one file per series and trace kind)</string>
        </property>
       </widget>
      </item>

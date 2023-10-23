@@ -189,6 +189,7 @@ static hkLib::hkTreeNode* item2node(QTreeWidgetItem* item)
 hkLib::hkTreeView PMbrowserWindow::getVisibleNodes()
 {
     hkLib::hkTreeView tree;
+    tree.root.p_node = &(datfile->GetPulTree().GetRootNode());
     int Ngroup = ui->treePulse->topLevelItemCount();
     for (int groupcount = 0; groupcount < Ngroup; ++groupcount) {
         auto item_group = ui->treePulse->topLevelItem(groupcount);
@@ -578,18 +579,25 @@ void PMbrowserWindow::exportAllVisibleTraces()
             }
         }
         try {
-            // TODO: use getVisibleTraces and move the following to hekatoolslib
-            int N = ui->treePulse->topLevelItemCount();
-            for (int i = 0; i < N; ++i) {
-                if (export_type == ExportType::Igor && pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
-                }
-                else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
-                }
+            if(export_type==ExportType::NPYarray) {
+                auto tree = getVisibleNodes();
+                hkLib::NPYExportTreeSweepsAsArray(infile, tree, path.toStdString(),
+                    prefix.toStdString(), true);
             }
-            if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
-                WriteIgorProcedureRecord(outfile);
+            else {
+                // TODO: use getVisibleTraces and move the following to hekatoolslib
+                int N = ui->treePulse->topLevelItemCount();
+                for (int i = 0; i < N; ++i) {
+                    if (export_type == ExportType::Igor && pxp_export) {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
+                    }
+                    else {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
+                    }
+                }
+                if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
+                    WriteIgorProcedureRecord(outfile);
+                }
             }
         }
         catch (std::exception& e) {
