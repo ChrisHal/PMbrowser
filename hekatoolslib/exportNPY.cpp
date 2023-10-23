@@ -260,14 +260,7 @@ namespace hkLib {
                         formatParamListExportJSON(*sweep, parametersSweep, jsonfile);
                         jsonfile << "\n}";
                     }
-                    jsonfile << "]\n";
-                    /*
-                    formatParamListExportJSON(trace1, parametersTrace, jsonfile);
-                    jsonfile << ", \"sweep\": ";
-                    formatParamListExportJSON(*sweep, parametersSweep, jsonfile);
-
-                    */
-                    jsonfile << "\n}";
+                    jsonfile << "]\n}\n";
                     if (!jsonfile) {
                         throw std::runtime_error{ "error while writing JSON file" };
                     }
