@@ -139,7 +139,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, this->infile);
 }
 
-void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list)
+void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, std::vector<hkTreeNode*>& trace_list)
 {
     if (!item->isHidden()) {
         if (level < hkTreeNode::LevelTrace) {
@@ -150,11 +150,83 @@ void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVect
         }
         else {
             auto trace = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            trace_list.append(trace);
-            //ui->renderArea->renderTrace(trace, infile);
-            //ui->renderArea->repaint();
+            trace_list.push_back(trace);
         }
     }
+}
+
+void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vector<hkLib::hkTreeNode*>& trace_list)
+{
+    auto num_traces = static_cast<int>(trace_list.size());
+    QProgressDialog progress(info_text, "Abort", 0, num_traces, this);
+    QProgressBar* pbar = new QProgressBar(&progress);
+    pbar->setMaximum(num_traces);
+    pbar->setMinimum(0);
+    pbar->setFormat("%v/%m");
+    progress.setBar(pbar);
+    progress.setWindowModality(Qt::WindowModal);
+    for (int i = 0; i < num_traces; ++i) {
+        progress.setValue(i);
+        if (progress.wasCanceled()) {
+            break;
+        }
+        ui->renderArea->renderTrace(trace_list.at(i), infile);
+        ui->renderArea->repaint();
+#ifdef __APPLE__
+        // unfortunately, on macOS Qt doesn't support QWdiget::repaint
+        // This is a kind of work-around
+        QCoreApplication::processEvents();
+#endif
+    }
+    progress.setValue(num_traces);
+}
+
+static hkLib::hkTreeNode* item2node(QTreeWidgetItem* item)
+{
+    return item->data(0, Qt::UserRole).value<hkTreeNode*>();
+}
+
+hkLib::hkTreeView PMbrowserWindow::getVisibleNodes()
+{
+    hkLib::hkTreeView tree;
+    tree.root.p_node = &(datfile->GetPulTree().GetRootNode());
+    int Ngroup = ui->treePulse->topLevelItemCount();
+    for (int groupcount = 0; groupcount < Ngroup; ++groupcount) {
+        auto item_group = ui->treePulse->topLevelItem(groupcount);
+        if (!item_group->isHidden()) {
+            hkLib::hkNodeView group;
+            group.p_node = item2node(item_group);
+            int Nseries = item_group->childCount();
+            for (int series_count = 0; series_count < Nseries; ++series_count) {
+                auto item_series = item_group->child(series_count);
+                if (!item_series->isHidden()) {
+                    hkLib::hkNodeView series;
+                    series.p_node= item2node(item_series);
+                    int  Nsweeps = item_series->childCount();
+                    for (int sweep_count = 0; sweep_count < Nsweeps; ++sweep_count) {
+                        auto item_sweep = item_series->child(sweep_count);
+                        if (!item_sweep->isHidden()) {
+                            hkLib::hkNodeView sweep;
+                            sweep.p_node = item2node(item_sweep);
+                            int Ntraces = item_sweep->childCount();
+                            for (int trace_count = 0; trace_count < Ntraces; ++trace_count) {
+                                auto item_trace = item_sweep->child(trace_count);
+                                if (!item_trace -> isHidden()) {
+                                    hkLib::hkNodeView trace;
+                                    trace.p_node = item2node(item_trace);
+                                    sweep.children.emplace_back(std::move(trace));
+                                }
+                            }
+                            series.children.emplace_back(std::move(sweep));
+                        }
+                    }
+                    group.children.emplace_back(std::move(series));
+                }
+            }
+            tree.root.children.emplace_back(std::move(group));
+        }
+    }
+    return tree;
 }
 
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
@@ -505,20 +577,27 @@ void PMbrowserWindow::exportAllVisibleTraces()
                 QMessageBox::warning(this, QString("Error"), msg);
                 return;
             }
-//            WriteIgorPlatformRecord(outfile);
         }
         try {
-            int N = ui->treePulse->topLevelItemCount();
-            for (int i = 0; i < N; ++i) {
-                if (export_type == ExportType::Igor && pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
-                }
-                else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
-                }
+            if(export_type==ExportType::NPYarray) {
+                auto tree = getVisibleNodes();
+                hkLib::NPYExportTreeSweepsAsArray(infile, tree, path.toStdString(),
+                    prefix.toStdString(), true);
             }
-            if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
-                WriteIgorProcedureRecord(outfile);
+            else {
+                // TODO: use getVisibleTraces and move the following to hekatoolslib
+                int N = ui->treePulse->topLevelItemCount();
+                for (int i = 0; i < N; ++i) {
+                    if (export_type == ExportType::Igor && pxp_export) {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
+                    }
+                    else {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
+                    }
+                }
+                if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
+                    WriteIgorProcedureRecord(outfile);
+                }
             }
         }
         catch (std::exception& e) {
@@ -915,30 +994,9 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
         if (/*level >= hkTreeNode::LevelSeries &&*/ level < hkTreeNode::LevelTrace) {
             QString info = QString("Rendering child traces for '%1'.").arg(item->text(0));
             // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
-            QVector<hkTreeNode*> child_traces;
+            std::vector<hkTreeNode*> child_traces;
             collectChildTraces(item, level, child_traces);
-            int num_traces = child_traces.size();
-            QProgressDialog progress(info, "Abort", 0, num_traces, this);
-            QProgressBar* pbar = new QProgressBar(&progress);
-            pbar->setMaximum(num_traces);
-            pbar->setMinimum(0);
-            pbar->setFormat("%v/%m");
-            progress.setBar(pbar);
-            progress.setWindowModality(Qt::WindowModal);
-            for (int i = 0; i < num_traces; ++i) {
-                progress.setValue(i);
-                if (progress.wasCanceled()) {
-                    break;
-                }
-                ui->renderArea->renderTrace(child_traces.at(i), infile);
-                ui->renderArea->repaint();
-#ifdef __APPLE__
-                // unfortunately, on macOS Qt doesn't support QWdiget::repaint
-                // This is a kind of work-around
-                QCoreApplication::processEvents();
-#endif
-            }
-            progress.setValue(num_traces);
+            animateTraceList(info, child_traces);
         }
     }
 }

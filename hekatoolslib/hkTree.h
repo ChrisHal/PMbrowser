@@ -54,6 +54,7 @@ namespace hkLib {
     constexpr size_t stExtTrigger = 164, // in Stimulation record
         TrLabel = 4,
         TrTraceCount = 36,  // in Trace Record
+        TrTraceID = 36,  // in v. 100 this is called ID
         TrData = 40,
         TrDataPoints = 44,
         TrDataKind = 64,

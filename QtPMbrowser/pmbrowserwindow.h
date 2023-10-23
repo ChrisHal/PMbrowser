@@ -31,6 +31,7 @@
 #include <memory>
 #include "DatFile.h"
 #include "DlgChoosePathAndPrefix.h"
+#include <hkTreeView.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class PMbrowserWindow; }
@@ -81,7 +82,9 @@ private:
     void seriesSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* node);
     void sweepSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* node);
     void traceSelected(QTreeWidgetItem* item, hkLib::hkTreeNode* trace);
-    void collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkLib::hkTreeNode*>& trace_list);
+    void collectChildTraces(QTreeWidgetItem* item, int level, std::vector<hkLib::hkTreeNode*>& trace_list);
+    void animateTraceList(const QString& info_text, const std::vector<hkLib::hkTreeNode*>& trace_list);
+    hkLib::hkTreeView getVisibleNodes();
     void printAllParameters(QTreeWidgetItem* item);
     void printAllParameters(hkLib::hkTreeNode* node);
     void printAmplifierState(const hkLib::hkTreeNode* series);
