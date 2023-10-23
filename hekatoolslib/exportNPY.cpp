@@ -221,7 +221,57 @@ namespace hkLib {
                     throw std::runtime_error{ "could not create file " + filename };
                 }
                 writeNpyArray(outfile, data);
-                // TODO: write metadata to JSON file
+                if (createJSON) {
+                    std::filesystem::path filepath(filename);
+                    filepath.replace_extension("json");
+                    std::ofstream jsonfile(filepath);
+                    if (!jsonfile) {
+                        throw std::runtime_error{ "could not create JSON file" };
+                    }
+                    auto yunit = trace1.getString(TrYUnit);
+                    auto xunit = trace1.getString(TrXUnit);
+                    auto x0 = trace1.extractLongReal(TrXStart);
+                    auto deltax = trace1.extractLongReal(TrXInterval);
+                    jsonfile << std::scientific << "{\n\"x_0\": " << x0 << ",\n\"delta_x\": " << deltax
+                        << ",\n\"numpnts\": " << data.front().size() << ",\n\"unit_x\": \"" << xunit <<
+                        "\",\n\"unit_y\": \"" << yunit << "\","
+                        << std::defaultfloat;
+                    jsonfile << "\n\"series\": ";
+                    formatParamListExportJSON(*series->p_node, parametersSeries, jsonfile);
+                    jsonfile << ",\n\"group\": ";
+                    const auto group = series->p_node->getParent();
+                    formatParamListExportJSON(*group, parametersGroup, jsonfile);
+                    jsonfile << ",\n\"root\": ";
+                    const auto root = group->getParent();
+                    formatParamListExportJSON(*root, parametersRoot, jsonfile);
+                    jsonfile << ",\n\"sweeps\": [\n";
+                    bool is_first = true;
+                    for (auto trace : traces) {
+                        auto sweep = trace->getParent();
+                        if (is_first) {
+                            is_first = false;
+                        }
+                        else {
+                            jsonfile << ",\n";
+                        }
+                        jsonfile << "{\"trace\": ";
+                        formatParamListExportJSON(*trace, parametersTrace, jsonfile);
+                        jsonfile << ",\n\"sweep\": ";
+                        formatParamListExportJSON(*sweep, parametersSweep, jsonfile);
+                        jsonfile << "\n}";
+                    }
+                    jsonfile << "]\n";
+                    /*
+                    formatParamListExportJSON(trace1, parametersTrace, jsonfile);
+                    jsonfile << ", \"sweep\": ";
+                    formatParamListExportJSON(*sweep, parametersSweep, jsonfile);
+
+                    */
+                    jsonfile << "\n}";
+                    if (!jsonfile) {
+                        throw std::runtime_error{ "error while writing JSON file" };
+                    }
+                }
             }
         } // end series loop
     }
