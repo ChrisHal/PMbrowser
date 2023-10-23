@@ -24,7 +24,9 @@
 
 #include <istream>
 #include <filesystem>
+#include <string_view>
 #include "hkTree.h"
+#include "hkTreeView.h"
 
 namespace hkLib {
 
@@ -41,6 +43,10 @@ namespace hkLib {
 	/// <param name="createJSON">true if JSON metadata file should be created</param>
 	void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON);
 
+	void NPYExportTreeSweepsAsArray(std::istream& datafile, const hkTreeView& tree, const std::string_view& path,
+		const std::string_view& prefix, bool createJSON);
+
+	
 	/// <summary>
 	/// Export all trace in NPY format
 	/// mainly for testing purposes

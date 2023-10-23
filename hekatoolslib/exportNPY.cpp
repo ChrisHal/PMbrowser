@@ -45,42 +45,57 @@ namespace hkLib {
     constexpr std::size_t NPY_OFFSET_HEADER_LEN{ 8 }; // file offset to HEADER_LEN field
     constexpr std::size_t NPY_ALIGN{ 64 };
 
+    static void fixNpyHeader(std::ostream& os)
+    {
+        std::size_t offset = os.tellp();
+        ++offset; // leave room for '\n'
+        auto remainder = offset % NPY_ALIGN;
+        if (remainder != 0) {
+            // pad to multiple of NPY_ALIGN
+            os << std::string(NPY_ALIGN - remainder, ' ');
+        }
+        os << '\n';
+        uint16_t header_len = static_cast<uint16_t>(static_cast<int>(os.tellp()) - 10);
+        os.seekp(NPY_OFFSET_HEADER_LEN);
+        os.write(reinterpret_cast<const char*>(&header_len), sizeof(uint16_t));
+        os.seekp(0, std::ios::end);
+    }
+
     static std::ostream& writeNpy(std::ostream& os, const std::vector<double>& v, bool raw_only)
     {
         if (!raw_only) {
             os << NPY_MAGIC << NPY_VERSION_MAJOR << NPY_VERSION_MINOR << '\0' << '\0' <<
                 "{'descr': 'f8', 'fortran_order': False, 'shape': (" << v.size() << ",), }";
             // NOTE: 'f8': double in native byte order, '<f8': double in little endian byte order
-            std::size_t offset = os.tellp();
-            ++offset; // leave room for '\n'
-            auto remainder = offset % NPY_ALIGN;
-            if (remainder != 0) {
-                // pad to multiple of NPY_ALIGN
-                os << std::string(NPY_ALIGN - remainder, ' ');
-            }
-            os << '\n';
-            uint16_t header_len = static_cast<uint16_t>(static_cast<int>(os.tellp()) - 10);
-            os.seekp(NPY_OFFSET_HEADER_LEN);
-            os.write(reinterpret_cast<const char*>(&header_len), sizeof(uint16_t));
-            os.seekp(0, std::ios::end);
+            fixNpyHeader(os);
         }
         os.write(reinterpret_cast<const char*>(v.data()), v.size() * sizeof(double));
         return os;
     }
 
-    void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON = true)
+	static std::ostream& writeNpyArray(std::ostream& os, const std::vector<std::vector<double> >& v)
+	{
+        auto n_points = v.front().size();
+        auto n_traces = v.size();
+        os << NPY_MAGIC << NPY_VERSION_MAJOR << NPY_VERSION_MINOR << '\0' << '\0' <<
+			"{'descr': 'f8', 'fortran_order': False, 'shape': (" << n_traces << ", "
+			<< n_points << "), }";
+		// NOTE: 'f8': double in native byte order, '<f8': double in little endian byte order
+        fixNpyHeader(os);
+
+        for (auto& v2 : v) {
+            assert(v2.size() == n_points);
+            os.write(reinterpret_cast<const char*>(v2.data()), n_points * sizeof(double));
+        }
+		return os;
+	}
+
+    static std::vector<double> read_data(std::istream& datafile, const hkTreeNode& TrRecord)
     {
         assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
         auto dataformat = TrRecord.getChar(TrDataFormat);
-
-        auto yunit = TrRecord.getString(TrYUnit);
-        auto xunit = TrRecord.getString(TrXUnit);
-        auto x0 = TrRecord.extractLongReal(TrXStart);
-        auto deltax = TrRecord.extractLongReal(TrXInterval);
         auto trdatapoints = TrRecord.extractValue<uint32_t>(TrDataPoints);
-
         std::vector<double> tr_data(trdatapoints);
-
         switch (dataformat)
         {
         case DFT_int16:
@@ -100,6 +115,19 @@ namespace hkLib {
             break;
         }
 
+        return tr_data;
+    }
+
+    void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON = true)
+    {
+        assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
+        auto yunit = TrRecord.getString(TrYUnit);
+        auto xunit = TrRecord.getString(TrXUnit);
+        auto x0 = TrRecord.extractLongReal(TrXStart);
+        auto deltax = TrRecord.extractLongReal(TrXInterval);
+
+        auto tr_data = read_data(datafile, TrRecord);
+        
         std::ofstream outfile(filename, std::ios::binary | std::ios::out);
         if (!outfile)
         {
@@ -118,7 +146,7 @@ namespace hkLib {
                 throw std::runtime_error{ "could not create JSON file" };
             }
             jsonfile << std::scientific << "{ \"x_0\": " << x0 << ", \"delta_x\": " << deltax
-                << ", \"numpnts\": " << trdatapoints << ", \"unit_x\": \"" << xunit <<
+                << ", \"numpnts\": " << tr_data.size() << ", \"unit_x\": \"" << xunit <<
                 "\", \"unit_y\": \"" << yunit << "\", \"params\": { " <<
                 "\"trace\": " << std::defaultfloat;
             formatParamListExportJSON(TrRecord, parametersTrace, jsonfile);
@@ -139,6 +167,63 @@ namespace hkLib {
                 throw std::runtime_error{ "error while writing JSON file" };
             }
         }
+    }
+
+    static int GetTraceID(const hkTreeNode& n)
+    {
+        return n.extractInt32(TrTraceID);
+    }
+
+    void NPYExportTreeSweepsAsArray(std::istream& datafile, const hkTreeView& tree, const std::string_view& path,
+        const std::string_view& prefix, bool createJSON)
+    {
+        (void)createJSON;
+        auto series_list = tree.GetViewListForLevel(hkTreeNode::LevelSeries);
+        for (const auto* series : series_list) {
+            // we need one array per Series and TraceID
+            // containing all sweeps
+            // get range of trace IDs
+            int seriesID = series->p_node->extractInt32(SeSeriesCount);
+            int groupID = series->p_node->getParent()->extractInt32(GrGroupCount);
+            auto ID_min = std::numeric_limits<int>::max();
+            auto ID_max = std::numeric_limits<int>::min();
+            for (const auto& sweep : series->children) {
+                for (const auto& trace : sweep.children) {
+                    auto ID = GetTraceID(*trace.p_node);
+                    ID_min = std::min(ID_min, ID);
+                    ID_max = std::max(ID_max, ID);
+                }
+            }
+            for (auto i = ID_min; i <= ID_max; ++i) {
+                // gather traces
+                std::vector<const hkTreeNode*> traces;
+                for (const auto& sweep : series->children) {
+                    for (const auto& trace : sweep.children) {
+                        auto ID = GetTraceID(*trace.p_node);
+                        if (ID == i) {
+                            traces.push_back(trace.p_node);
+                        }
+                    }
+                }
+                std::vector<std::vector<double> > data;
+                data.reserve(traces.size());
+                for (const auto* p_trace : traces) {
+                    data.emplace_back(read_data(datafile, *p_trace));
+                }
+                const auto& trace1 = *traces.front();
+                std::string filename{ path };
+                filename += prefix;
+                filename += "_" + std::to_string(groupID) + "_" + std::to_string(seriesID) +
+                    "_" + formTraceName(trace1, i) + ".npy";
+                std::ofstream outfile(filename, std::ios::binary | std::ios::out);
+                if (!outfile)
+                {
+                    throw std::runtime_error{ "could not create file " + filename };
+                }
+                writeNpyArray(outfile, data);
+                // TODO: write metadata to JSON file
+            }
+        } // end series loop
     }
 
     void NPYExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)

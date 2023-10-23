@@ -47,14 +47,14 @@ static void collect_nodes(const hkNodeView& root, std::vector<const hkTreeNode*>
 }
 
 
-std::vector<const hkNodeView*> hkLib::hkTreeView::GetViewListForLevel(int level)
+std::vector<const hkNodeView*> hkLib::hkTreeView::GetViewListForLevel(int level) const
 {
     std::vector<const hkNodeView*> res;
     collect_views(root, res, level);
     return res;
 }
 
-std::vector<const hkTreeNode*> hkLib::hkTreeView::GetNodeListForLevel(int level)
+std::vector<const hkTreeNode*> hkLib::hkTreeView::GetNodeListForLevel(int level) const
 {
     std::vector<const hkTreeNode*> res;
     collect_nodes(root, res, level);
