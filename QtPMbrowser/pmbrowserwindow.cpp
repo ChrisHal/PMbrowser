@@ -1002,7 +1002,6 @@ void PMbrowserWindow::on_actionSelect_Parameters_triggered()
 {
     DlgSelectParameters dlg(this);
     if (dlg.exec()) {
-        dlg.storeParams();
         settings_modified = true;
     }
 }
@@ -1215,6 +1214,11 @@ void PMbrowserWindow::saveSettings()
     settings.setValue("filterStrTr", filterStrTr);
     settings.endGroup();
 
+    settings.beginGroup("params_root");
+    for (const auto& p : parametersRoot) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
     settings.beginGroup("params_group");
     for (const auto& p : parametersGroup) {
         settings.setValue(p.name, p.toInt());
@@ -1250,6 +1254,11 @@ void PMbrowserWindow::loadSettings()
 	filterStrTr = settings.value("filterStrTr", filterStrTr).toString();
     settings.endGroup();
 
+    settings.beginGroup("params_root");
+    for (auto& p : parametersRoot) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
     settings.beginGroup("params_group");
     for (auto& p : parametersGroup) {
         p.fromInt(settings.value(p.name, p.toInt()).toInt());

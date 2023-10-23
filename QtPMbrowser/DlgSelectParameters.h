@@ -36,6 +36,7 @@ class DlgSelectParameters : public QDialog
 public:
 	DlgSelectParameters(QWidget *parent = Q_NULLPTR);
 	~DlgSelectParameters();
+	void accept() override;
 	void storeParams();
 
 private:
@@ -68,20 +69,22 @@ private:
 	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
 		std::array<hkLib::PMparameter, Nrows>& ar)
 	{
+		assert(grid != nullptr);
 		for (int i = 0; i < static_cast<int>(ar.size()); ++i) {
 			auto chkExport = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget());
 			assert(chkExport);
-			ar[i].exportIBW = chkExport->isChecked();
+			ar.at(i).exportIBW = chkExport->isChecked();
 			auto chkPrint = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget());
 			assert(chkPrint);
-			ar[i].print = chkPrint->isChecked();
+			ar.at(i).print = chkPrint->isChecked();
 		}
 	}
 
-	QGridLayout *gridLayoutGrp{ new QGridLayout },
-		*gridLayoutSer{ new QGridLayout },
-		*gridLayoutSwp{ new QGridLayout },
-		*gridLayoutTr{ new QGridLayout };
+	QGridLayout* gridLayoutRoot{ new QGridLayout },
+		* gridLayoutGrp{ new QGridLayout },
+		* gridLayoutSer{ new QGridLayout },
+		* gridLayoutSwp{ new QGridLayout },
+		* gridLayoutTr{ new QGridLayout };
 
 	Ui::DlgSelectParameters *ui;
 };

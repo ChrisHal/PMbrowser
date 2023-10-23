@@ -25,11 +25,22 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
 
+	populateGrid(gridLayoutRoot, hkLib::parametersRoot);
+	populateGrid(gridLayoutGrp, hkLib::parametersGroup);
+	populateGrid(gridLayoutSer, hkLib::parametersSeries);
+	populateGrid(gridLayoutSwp, hkLib::parametersSweep);
+	populateGrid(gridLayoutTr, hkLib::parametersTrace);
+
 	auto w = new QWidget;
 	w->setLayout(gridLayoutGrp);
 	w->setBackgroundRole(QPalette::Base);
 	ui->scrollAreaGrp->setWidget(w); // this transfers ownership, doesn't it?
 	
+	w = new QWidget;
+	w->setLayout(gridLayoutRoot);
+	w->setBackgroundRole(QPalette::Base);
+	ui->scrollAreaRoot->setWidget(w);
+
 	w = new QWidget;
 	w->setLayout(gridLayoutSer);
 	w->setBackgroundRole(QPalette::Base);
@@ -44,36 +55,39 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	w->setLayout(gridLayoutTr);
 	w->setBackgroundRole(QPalette::Base); 
 	ui->scrollAreaTr->setWidget(w);
-	
-	populateGrid(gridLayoutGrp, hkLib::parametersGroup);
-	populateGrid(gridLayoutSer, hkLib::parametersSeries);
-	populateGrid(gridLayoutSwp, hkLib::parametersSweep);
-	populateGrid(gridLayoutTr, hkLib::parametersTrace);
 }
 
 DlgSelectParameters::~DlgSelectParameters()
 {
-	while (auto t = gridLayoutGrp->takeAt(0)) {
-		delete t->widget();
-		delete t;
-	}
-	while (auto t = gridLayoutSer->takeAt(0)) {
-		delete t->widget();
-		delete t;
-	}
-	while (auto t = gridLayoutSwp->takeAt(0)) {
-		delete t->widget();
-		delete t;
-	}
-	while (auto t = gridLayoutTr->takeAt(0)) {
-		delete t->widget();
-		delete t;
-	}
+	// Does the layout take ownership?
+	//while (auto t = gridLayoutGrp->takeAt(0)) {
+	//	delete t->widget();
+	//	delete t;
+	//}
+	//while (auto t = gridLayoutSer->takeAt(0)) {
+	//	delete t->widget();
+	//	delete t;
+	//}
+	//while (auto t = gridLayoutSwp->takeAt(0)) {
+	//	delete t->widget();
+	//	delete t;
+	//}
+	//while (auto t = gridLayoutTr->takeAt(0)) {
+	//	delete t->widget();
+	//	delete t;
+	//}
 	delete ui;
+}
+
+void DlgSelectParameters::accept()
+{
+	storeParams();
+	QDialog::accept();
 }
 
 void DlgSelectParameters::storeParams()
 {
+	readFromGrid(gridLayoutRoot, hkLib::parametersRoot);
 	readFromGrid(gridLayoutGrp, hkLib::parametersGroup);
 	readFromGrid(gridLayoutSer, hkLib::parametersSeries);
 	readFromGrid(gridLayoutSwp, hkLib::parametersSweep);
