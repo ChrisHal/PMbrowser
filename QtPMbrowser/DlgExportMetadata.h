@@ -29,15 +29,26 @@ class DlgExportMetadata : public QDialog
 {
 	Q_OBJECT
 
+public slots:
+    void copyToClipboard();
+
 public:
 	DlgExportMetadata(QWidget* parent = nullptr);
 	~DlgExportMetadata();
 	int getSelection() {
 		return selection;
 	}
+    bool doCopy() {
+        return m_doCopy;
+    }
+    bool useSystemLocale() {
+        return m_nativeEncoding;
+    }
 	void accept() override;
 
 private:
 	int selection;
 	Ui::DlgExportMetadata *ui;
+    bool m_doCopy{ false };
+    bool m_nativeEncoding{ false };
 };
