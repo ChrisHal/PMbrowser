@@ -88,8 +88,11 @@ void PMbrowserWindow::populateTreeView()
             auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             for(auto& sweep : series.Children) {
-                QString label3 = QString("sweep %1").arg(sweep.extractInt32(SwSweepCount))
-                    +" "+qs_from_sv(sweep.getString(SwLabel));
+                QString label3 = QString("sweep %1").arg(sweep.extractInt32(SwSweepCount));
+                auto sw_label = qs_from_sv(sweep.getString(SwLabel));
+                if (sw_label.length() > 0) {
+                    label3 += ' ' + sw_label;
+                }
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 for(auto& trace : sweep.Children) {
