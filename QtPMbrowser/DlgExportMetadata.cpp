@@ -18,6 +18,7 @@
 */
 
 #include <QSettings>
+#include <QPushButton>
 #include "DlgExportMetadata.h"
 #include "ui_DlgExportMetadata.h"
 
@@ -28,6 +29,8 @@ DlgExportMetadata::DlgExportMetadata(QWidget *parent)
 	ui->setupUi(this);
 	auto index = settings.value("DlgExportMetadata/selection", 3).toInt();
 	ui->comboBoxLevel->setCurrentIndex(index);
+
+    QObject::connect(ui->pushButtonCopy, &QPushButton::clicked, this, &DlgExportMetadata::copyToClipboard);
 }
 
 DlgExportMetadata::~DlgExportMetadata()
@@ -41,3 +44,8 @@ void DlgExportMetadata::accept(){
 	settings.setValue("DlgExportMetadata/selection", selection);
 	QDialog::accept();
 };
+
+void DlgExportMetadata::copyToClipboard() {
+    m_doCopy = true;
+    this->accept();
+}

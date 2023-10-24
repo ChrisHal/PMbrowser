@@ -19,6 +19,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
 #include <QApplication>
+#include <QGuiApplication>
+#include <QClipboard>
 #include <QSettings>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -810,20 +812,27 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
         else {
             ++selected; // first item in box is level 1
         }
-        auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
-            lastexportpath, "tab separated file (*.txt *.csv)");
-        if (export_file_name.length() == 0) return;
-        std::ofstream export_file(export_file_name.toStdString());
-        if (!export_file) {
-            QMessageBox::warning(this, "Error",
-                QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
-            return;
+        if (dlg.doCopy()) {
+            std::ostringstream s;
+            this->formatStimMetadataAsTableExport(s, selected);
+            QGuiApplication::clipboard()->setText(s.str().c_str());
         }
-        try {
-            this->formatStimMetadataAsTableExport(export_file, selected);
-        }
-        catch (const std::exception& e) {
-            QMessageBox::warning(this, "Error while exporting", e.what());
+        else {
+            auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
+                lastexportpath, "tab separated file (*.txt *.csv)");
+            if (export_file_name.length() == 0) return;
+            std::ofstream export_file(export_file_name.toStdString());
+            if (!export_file) {
+                QMessageBox::warning(this, "Error",
+                    QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
+                return;
+            }
+            try {
+                this->formatStimMetadataAsTableExport(export_file, selected);
+            }
+            catch (const std::exception& e) {
+                QMessageBox::warning(this, "Error while exporting", e.what());
+            }
         }
     }
 }
