@@ -41,10 +41,14 @@ public:
     bool doCopy() {
         return m_doCopy;
     }
+    bool useSystemLocale() {
+        return m_nativeEncoding;
+    }
 	void accept() override;
 
 private:
 	int selection;
 	Ui::DlgExportMetadata *ui;
     bool m_doCopy{ false };
+    bool m_nativeEncoding{ false };
 };

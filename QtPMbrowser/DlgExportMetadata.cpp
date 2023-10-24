@@ -29,7 +29,7 @@ DlgExportMetadata::DlgExportMetadata(QWidget *parent)
 	ui->setupUi(this);
 	auto index = settings.value("DlgExportMetadata/selection", 3).toInt();
 	ui->comboBoxLevel->setCurrentIndex(index);
-
+    ui->checkBoxSystemLocale->setChecked(settings.value("DlgExportMetadata/nativeEncoding", 0).toInt());
     QObject::connect(ui->pushButtonCopy, &QPushButton::clicked, this, &DlgExportMetadata::copyToClipboard);
 }
 
@@ -42,6 +42,8 @@ void DlgExportMetadata::accept(){
 	QSettings settings;
 	selection = ui->comboBoxLevel->currentIndex();
 	settings.setValue("DlgExportMetadata/selection", selection);
+    m_nativeEncoding = ui->checkBoxSystemLocale->isChecked();
+    settings.setValue("DlgExportMetadata/nativeEncoding", m_nativeEncoding);
 	QDialog::accept();
 };
 
