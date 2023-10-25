@@ -55,13 +55,16 @@ that pertain to exports to packed experiment files (also see :ref:`igor-export-i
 metadata as table
 +++++++++++++++++
 
-Export :index:`metadata <export; metadata>` as tab-delimited table.
+Export :index:`metadata <export; metadata>` as tab-delimited table. The table can be either copied to the clipboard
+or saved to file.
 Parameters marked for export (see :ref:`select-params-dlg-label` ) 
-will be included in export. Additionally to these parameters, the first four columns of the table will contain
+will be included in the export. In addition to these parameters, the first four columns of the table will contain
 the group, series, sweep, and trace counts.
-
 You can choose per which level of the pulse tree a table row should be 
 produced.
+
+You can decide if numbers should be formatted according to the system default. This is helpful if the table is to be
+imported into an application that expects such formatting, e.g. spreadsheet software.
 
 Select Parameters
 -----------------
