@@ -54,7 +54,7 @@ namespace hkLib {
     constexpr size_t stExtTrigger = 164, // in Stimulation record
         TrLabel = 4,
         TrTraceCount = 36,  // in Trace Record
-        TrTraceID = 36,  // in v. 100 this is called ID
+        TrTraceID = 36,  // in v. 1000 this is called ID
         TrData = 40,
         TrDataPoints = 44,
         TrDataKind = 64,
@@ -82,7 +82,7 @@ namespace hkLib {
         SeLabel = 4, //(*String32Type*)
         SeSeriesCount = 116,
         SeAmplStateFlag = 124, // flag > 0 => load local oldAmpState, otherwise load from .amp File
-        SeAmplStateRef = 128, // ref  = 0 => use local oldAmpState. Caution: This is a 1-based offset!
+        SeAmplStateRef = 128, // ref  == 0 => use local oldAmpState. Caution: This is a 1-based offset!
         SeTime = 136,
         SeOldAmpState = 472,
         GrLabel = 4,
@@ -101,7 +101,7 @@ namespace hkLib {
 
     /// stim tree
     // from channel record
-    constexpr size_t
+    constexpr std::size_t
         chLinkedChannel = 4, //int32
         chAdcChannel = 20, // (*INT16*)
         chAdcMode = 22, // (*BYTE*)
@@ -231,7 +231,7 @@ namespace hkLib {
         template<typename T> T extractValue(std::size_t offset) const
         {
             if (len < offset + sizeof(T)) {
-                throw std::out_of_range("offset to large while accessing tree node");
+                throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
         }
