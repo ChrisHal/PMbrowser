@@ -77,8 +77,8 @@ void PMbrowserWindow::populateTreeView()
     auto& pultree = datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
     for(auto& group : pultree.GetRootNode().Children) {
-        QString count=QString("%1").arg(group.extractInt32(GrGroupCount)), label;
-        label = qs_from_sv(group.getString(GrLabel));
+        QString count=QString("%1").arg(group.extractInt32(GrGroupCount));
+        QString label = qs_from_sv(group.getString(GrLabel));
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
