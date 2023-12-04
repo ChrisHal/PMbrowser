@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <cstddef>
 #include <cassert>
 #include <cstring>
 #include "DatFile.h"
@@ -102,7 +103,7 @@ namespace hkLib {
 	bool hkTree::InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len)
 	{
 		ID = id;
-		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer);
+		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer); // we assume buffer is correctly aligned
 		isSwapped = false;
 		if (root->Magic == SwappedMagicNumber) {
 			isSwapped = true;
@@ -114,11 +115,11 @@ namespace hkLib {
 		if (isSwapped) {
 			swapInPlace(root->nLevels);
 		}
-		for (unsigned i = 0; i < root->nLevels; ++i) {
+		for (std::size_t i = 0; i < root->nLevels; ++i) {
 			if (isSwapped) { swapInPlace(root->LevelSizes[i]); }
 			LevelSizes.push_back(root->LevelSizes[i]);
 		}
-		char* data = buffer + sizeof(uint32_t) * (2ull + root->nLevels); // start of first tree node
+		char* data = buffer + offsetof(TreeRoot, LevelSizes) + sizeof(uint32_t) * root->nLevels; // start of first tree node
 		LoadToNode(nullptr, RootNode, &data, 0);
 		if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 			throw std::runtime_error("bytes read != bytes in buffer");
@@ -129,7 +130,7 @@ namespace hkLib {
 	char hkTreeNode::getChar(std::size_t offset) const
 	{
 		if (len < offset + sizeof(char)) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return Data[offset];
 	}
@@ -137,7 +138,7 @@ namespace hkLib {
 	const UserParamDescr hkTreeNode::getUserParamDescr(std::size_t offset) const
 	{
 		if (len < offset + UserParamDescr::Size) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return {
 			getString<UserParamDescr::SizeName>(offset),
@@ -148,7 +149,7 @@ namespace hkLib {
 	const std::string_view hkTreeNode::getString(std::size_t offset) const
 	{
 		if (len <= offset) {
-			throw std::out_of_range("offset to large while accessing tree node");
+			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return std::string_view(Data + offset);
 	}

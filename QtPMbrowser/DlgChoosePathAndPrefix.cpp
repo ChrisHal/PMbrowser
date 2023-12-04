@@ -47,7 +47,12 @@ ui(new Ui::DlgChoosePathAndPrefix)
 	case ExportType::Igor:
 		ui->radioButtonIgor->setChecked(true);
 		break;
+	case ExportType::NPYarray:
+		ui->checkBoxNPYarray->setChecked(true);
+		ui->radioButtonNPY->setChecked(true);
+		break;
 	case ExportType::NPY:
+		ui->checkBoxNPYarray->setChecked(false);
 		ui->radioButtonNPY->setChecked(true);
 		break;
 	case ExportType::BIN:
@@ -99,7 +104,12 @@ void DlgChoosePathAndPrefix::accept()
 		export_type = ExportType::Igor;
 	}
 	else if (ui->radioButtonNPY->isChecked()) {
-		export_type = ExportType::NPY;
+		if (ui->checkBoxNPYarray->isChecked()) {
+			export_type = ExportType::NPYarray;
+		}
+		else {
+			export_type = ExportType::NPY;
+		}
 	}
 	else if (ui->radioButtonBIN->isChecked()) {
 		export_type = ExportType::BIN;

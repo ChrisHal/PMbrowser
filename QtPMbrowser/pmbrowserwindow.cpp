@@ -19,6 +19,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS // get rid of some unnecessary warnings
 #include <QApplication>
+#include <QGuiApplication>
+#include <QClipboard>
 #include <QSettings>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -74,29 +76,29 @@ void PMbrowserWindow::populateTreeView()
     tree->setColumnCount(1);
     auto& pultree = datfile->GetPulTree();
     QList<QTreeWidgetItem *> grpitems;
-    int i=0;
     for(auto& group : pultree.GetRootNode().Children) {
-        QString count=QString("%1").arg(++i), label;
-        label = qs_from_sv(group.getString(GrLabel));
+        QString count=QString("%1").arg(group.extractInt32(GrGroupCount));
+        QString label = qs_from_sv(group.getString(GrLabel));
         QStringList qsl;
         qsl.append(count+" "+label);
         QTreeWidgetItem* grpitem = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), qsl);
         grpitem->setData(0, Qt::UserRole, QVariant::fromValue(&group));
         grpitems.append(grpitem);
-        int j=0;
         for(auto& series : group.Children) {
-            QString label2 = QString("%1").arg(++j)+" "+qs_from_sv(series.getString(SeLabel));
+            QString label2 = QString("%1").arg(series.extractInt32(SeSeriesCount))+
+                " "+qs_from_sv(series.getString(SeLabel));
             auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
-            int k = 0;
             for(auto& sweep : series.Children) {
-                QString label3 = QString("sweep %1").arg(++k)+" "+qs_from_sv(sweep.getString(SwLabel));
+                QString label3 = QString("sweep %1").arg(sweep.extractInt32(SwSweepCount));
+                auto sw_label = qs_from_sv(sweep.getString(SwLabel));
+                if (sw_label.length() > 0) {
+                    label3 += ' ' + sw_label;
+                }
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
-                int l = 0;
                 for(auto& trace : sweep.Children) {
-                    ++l;
-                    QString tracelabel = formTraceName(trace, l).c_str();
+                    QString tracelabel = formTraceName(trace, trace.extractInt32(TrTraceID)).c_str();
                     auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
@@ -139,7 +141,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, this->infile);
 }
 
-void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVector<hkTreeNode*>& trace_list)
+void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, std::vector<hkTreeNode*>& trace_list)
 {
     if (!item->isHidden()) {
         if (level < hkTreeNode::LevelTrace) {
@@ -150,11 +152,83 @@ void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, QVect
         }
         else {
             auto trace = item->data(0, Qt::UserRole).value<hkTreeNode*>();
-            trace_list.append(trace);
-            //ui->renderArea->renderTrace(trace, infile);
-            //ui->renderArea->repaint();
+            trace_list.push_back(trace);
         }
     }
+}
+
+void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vector<hkLib::hkTreeNode*>& trace_list)
+{
+    auto num_traces = static_cast<int>(trace_list.size());
+    QProgressDialog progress(info_text, "Abort", 0, num_traces, this);
+    QProgressBar* pbar = new QProgressBar(&progress);
+    pbar->setMaximum(num_traces);
+    pbar->setMinimum(0);
+    pbar->setFormat("%v/%m");
+    progress.setBar(pbar);
+    progress.setWindowModality(Qt::WindowModal);
+    for (int i = 0; i < num_traces; ++i) {
+        progress.setValue(i);
+        if (progress.wasCanceled()) {
+            break;
+        }
+        ui->renderArea->renderTrace(trace_list.at(i), infile);
+        ui->renderArea->repaint();
+#ifdef __APPLE__
+        // unfortunately, on macOS Qt doesn't support QWdiget::repaint
+        // This is a kind of work-around
+        QCoreApplication::processEvents();
+#endif
+    }
+    progress.setValue(num_traces);
+}
+
+static hkLib::hkTreeNode* item2node(QTreeWidgetItem* item)
+{
+    return item->data(0, Qt::UserRole).value<hkTreeNode*>();
+}
+
+hkLib::hkTreeView PMbrowserWindow::getVisibleNodes()
+{
+    hkLib::hkTreeView tree;
+    tree.root.p_node = &(datfile->GetPulTree().GetRootNode());
+    int Ngroup = ui->treePulse->topLevelItemCount();
+    for (int groupcount = 0; groupcount < Ngroup; ++groupcount) {
+        auto item_group = ui->treePulse->topLevelItem(groupcount);
+        if (!item_group->isHidden()) {
+            hkLib::hkNodeView group;
+            group.p_node = item2node(item_group);
+            int Nseries = item_group->childCount();
+            for (int series_count = 0; series_count < Nseries; ++series_count) {
+                auto item_series = item_group->child(series_count);
+                if (!item_series->isHidden()) {
+                    hkLib::hkNodeView series;
+                    series.p_node= item2node(item_series);
+                    int  Nsweeps = item_series->childCount();
+                    for (int sweep_count = 0; sweep_count < Nsweeps; ++sweep_count) {
+                        auto item_sweep = item_series->child(sweep_count);
+                        if (!item_sweep->isHidden()) {
+                            hkLib::hkNodeView sweep;
+                            sweep.p_node = item2node(item_sweep);
+                            int Ntraces = item_sweep->childCount();
+                            for (int trace_count = 0; trace_count < Ntraces; ++trace_count) {
+                                auto item_trace = item_sweep->child(trace_count);
+                                if (!item_trace -> isHidden()) {
+                                    hkLib::hkNodeView trace;
+                                    trace.p_node = item2node(item_trace);
+                                    sweep.children.emplace_back(std::move(trace));
+                                }
+                            }
+                            series.children.emplace_back(std::move(sweep));
+                        }
+                    }
+                    group.children.emplace_back(std::move(series));
+                }
+            }
+            tree.root.children.emplace_back(std::move(group));
+        }
+    }
+    return tree;
 }
 
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
@@ -328,19 +402,6 @@ void PMbrowserWindow::on_actionOpen_triggered()
     if (!filename.isEmpty()) {
         loadFile(filename);
     }
-    //QFileDialog dialog(this);
-    //dialog.setFileMode(QFileDialog::ExistingFile);
-    //dialog.setNameFilter("DAT-file (*.dat)");
-    //dialog.setViewMode(QFileDialog::Detail);
-    //if(QDir(lastloadpath).exists()) {
-    //    dialog.setDirectory(lastloadpath);
-    //}
-    //else {
-    //    dialog.setDirectory("./");
-    //}
-    //if (dialog.exec()) {
-    //    loadFile(dialog.selectedFiles().at(0));
-    //}
 }
 
 void PMbrowserWindow::on_actionClose_triggered()
@@ -505,20 +566,27 @@ void PMbrowserWindow::exportAllVisibleTraces()
                 QMessageBox::warning(this, QString("Error"), msg);
                 return;
             }
-//            WriteIgorPlatformRecord(outfile);
         }
         try {
-            int N = ui->treePulse->topLevelItemCount();
-            for (int i = 0; i < N; ++i) {
-                if (export_type == ExportType::Igor && pxp_export) {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
-                }
-                else {
-                    exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
-                }
+            if(export_type==ExportType::NPYarray) {
+                auto tree = getVisibleNodes();
+                hkLib::NPYExportTreeSweepsAsArray(infile, tree, path.toStdString(),
+                    prefix.toStdString(), true);
             }
-            if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
-                WriteIgorProcedureRecord(outfile);
+            else {
+                // TODO: use getVisibleTraces and move the following to hekatoolslib
+                int N = ui->treePulse->topLevelItemCount();
+                for (int i = 0; i < N; ++i) {
+                    if (export_type == ExportType::Igor && pxp_export) {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, &outfile, create_datafolders, folder_level);
+                    }
+                    else {
+                        exportSubTree(ui->treePulse->topLevelItem(i), path, prefix, export_type, nullptr, false, 0);
+                    }
+                }
+                if (export_type == ExportType::Igor && pxp_export && create_datafolders) {
+                    WriteIgorProcedureRecord(outfile);
+                }
             }
         }
         catch (std::exception& e) {
@@ -736,6 +804,11 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
     }
     DlgExportMetadata dlg(this);
     if (dlg.exec()) {
+        std::locale old_locale;
+        if (dlg.useSystemLocale()) {
+            std::locale new_locale(""); // system default locale
+            old_locale = std::locale::global(new_locale);
+        }
         auto selected = dlg.getSelection();
         if (selected < 0)
         {
@@ -744,20 +817,31 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
         else {
             ++selected; // first item in box is level 1
         }
-        auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
-            lastexportpath, "tab separated file (*.txt *.csv)");
-        if (export_file_name.length() == 0) return;
-        std::ofstream export_file(export_file_name.toStdString());
-        if (!export_file) {
-            QMessageBox::warning(this, "Error",
-                QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
-            return;
+        if (dlg.doCopy()) {
+            std::ostringstream s;
+            this->formatStimMetadataAsTableExport(s, selected);
+            QGuiApplication::clipboard()->setText(s.str().c_str());
         }
-        try {
-            this->formatStimMetadataAsTableExport(export_file, selected);
+        else {
+            auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
+                lastexportpath, "tab separated file (*.txt *.csv)");
+            if (export_file_name.length() > 0) {
+                std::ofstream export_file(export_file_name.toStdString());
+                if (!export_file) {
+                    QMessageBox::warning(this, "Error",
+                        QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
+                    return;
+                }
+                try {
+                    this->formatStimMetadataAsTableExport(export_file, selected);
+                }
+                catch (const std::exception& e) {
+                    QMessageBox::warning(this, "Error while exporting", e.what());
+                }
+            }
         }
-        catch (const std::exception& e) {
-            QMessageBox::warning(this, "Error while exporting", e.what());
+        if (dlg.useSystemLocale()) {
+            std::locale::global(old_locale);
         }
     }
 }
@@ -915,30 +999,9 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
         if (/*level >= hkTreeNode::LevelSeries &&*/ level < hkTreeNode::LevelTrace) {
             QString info = QString("Rendering child traces for '%1'.").arg(item->text(0));
             // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
-            QVector<hkTreeNode*> child_traces;
+            std::vector<hkTreeNode*> child_traces;
             collectChildTraces(item, level, child_traces);
-            int num_traces = child_traces.size();
-            QProgressDialog progress(info, "Abort", 0, num_traces, this);
-            QProgressBar* pbar = new QProgressBar(&progress);
-            pbar->setMaximum(num_traces);
-            pbar->setMinimum(0);
-            pbar->setFormat("%v/%m");
-            progress.setBar(pbar);
-            progress.setWindowModality(Qt::WindowModal);
-            for (int i = 0; i < num_traces; ++i) {
-                progress.setValue(i);
-                if (progress.wasCanceled()) {
-                    break;
-                }
-                ui->renderArea->renderTrace(child_traces.at(i), infile);
-                ui->renderArea->repaint();
-#ifdef __APPLE__
-                // unfortunately, on macOS Qt doesn't support QWdiget::repaint
-                // This is a kind of work-around
-                QCoreApplication::processEvents();
-#endif
-            }
-            progress.setValue(num_traces);
+            animateTraceList(info, child_traces);
         }
     }
 }
@@ -947,7 +1010,6 @@ void PMbrowserWindow::on_actionSelect_Parameters_triggered()
 {
     DlgSelectParameters dlg(this);
     if (dlg.exec()) {
-        dlg.storeParams();
         settings_modified = true;
     }
 }
@@ -1160,6 +1222,11 @@ void PMbrowserWindow::saveSettings()
     settings.setValue("filterStrTr", filterStrTr);
     settings.endGroup();
 
+    settings.beginGroup("params_root");
+    for (const auto& p : parametersRoot) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
     settings.beginGroup("params_group");
     for (const auto& p : parametersGroup) {
         settings.setValue(p.name, p.toInt());
@@ -1195,6 +1262,11 @@ void PMbrowserWindow::loadSettings()
 	filterStrTr = settings.value("filterStrTr", filterStrTr).toString();
     settings.endGroup();
 
+    settings.beginGroup("params_root");
+    for (auto& p : parametersRoot) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
     settings.beginGroup("params_group");
     for (auto& p : parametersGroup) {
         p.fromInt(settings.value(p.name, p.toInt()).toInt());

@@ -195,6 +195,24 @@ namespace hkLib {
 		{ true,true,"seScanRate","", PMparameter::LongReal, 72}
 		} };
 
+
+	static std::string iso_8859_1_to_utf8(const std::string_view& str)
+	{
+		std::string strOut;
+		for (const char c : str)
+		{
+			const unsigned char ch = c;
+			if (ch < 0x80) {
+				strOut.push_back(c);
+			}
+			else {
+				strOut.push_back(static_cast<char>(0xc0 | ch >> 6));
+				strOut.push_back(static_cast<char>(0x80 | (ch & 0x3f)));
+			}
+		}
+		return strOut;
+	}
+
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 	{
 		try {
@@ -239,22 +257,22 @@ namespace hkLib {
 				ss << 1.0 / node.extractLongReal(offset);
 				break;
 			case StringType:
-				ss << node.getString(offset);
+				ss << iso_8859_1_to_utf8(node.getString(offset));
 				break;
 			case String8:
-				ss << node.getString<8>(offset);
+				ss << iso_8859_1_to_utf8(node.getString<8>(offset));
 				break;
 			case String16:
-				ss << node.getString<16>(offset);
+				ss << iso_8859_1_to_utf8(node.getString<16>(offset));
 				break;
 			case String32:
-				ss << node.getString<32>(offset);
+				ss << iso_8859_1_to_utf8(node.getString<32>(offset));
 				break;
 			case String80:
-				ss << node.getString<80>(offset);
+				ss << iso_8859_1_to_utf8(node.getString<80>(offset));
 				break;
 			case String400:
-				ss << node.getString<400>(offset);
+				ss << iso_8859_1_to_utf8(node.getString<400>(offset));
 				break;
 			case Boolean:
 				ss << std::boolalpha << bool(node.getChar(offset));

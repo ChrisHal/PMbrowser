@@ -54,6 +54,7 @@ namespace hkLib {
     constexpr size_t stExtTrigger = 164, // in Stimulation record
         TrLabel = 4,
         TrTraceCount = 36,  // in Trace Record
+        TrTraceID = 36,  // in v. 1000 this is called ID
         TrData = 40,
         TrDataPoints = 44,
         TrDataKind = 64,
@@ -81,7 +82,7 @@ namespace hkLib {
         SeLabel = 4, //(*String32Type*)
         SeSeriesCount = 116,
         SeAmplStateFlag = 124, // flag > 0 => load local oldAmpState, otherwise load from .amp File
-        SeAmplStateRef = 128, // ref  = 0 => use local oldAmpState. Caution: This is a 1-based offset!
+        SeAmplStateRef = 128, // ref  == 0 => use local oldAmpState. Caution: This is a 1-based offset!
         SeTime = 136,
         SeOldAmpState = 472,
         GrLabel = 4,
@@ -100,7 +101,7 @@ namespace hkLib {
 
     /// stim tree
     // from channel record
-    constexpr size_t
+    constexpr std::size_t
         chLinkedChannel = 4, //int32
         chAdcChannel = 20, // (*INT16*)
         chAdcMode = 22, // (*BYTE*)
@@ -230,7 +231,7 @@ namespace hkLib {
         template<typename T> T extractValue(std::size_t offset) const
         {
             if (len < offset + sizeof(T)) {
-                throw std::out_of_range("offset to large while accessing tree node");
+                throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
         }
@@ -338,13 +339,13 @@ namespace hkLib {
         /// Initialize tree from data buffered in memory
         /// </summary>
         /// <param name="id">id (pgf, pul, ...) of tree</param>
-        /// <param name="buffer">pointer to data stored in memory, must be permamnent for lifetime of hkTree</param>
-        /// <param name="len">length in bytes of tree data in file (this data contains the totoal of the tree)</param>
+        /// <param name="buffer">pointer to data stored in memory, must be permanent for lifetime of hkTree</param>
+        /// <param name="len">length in bytes of buffer (buffer contains the total of the tree)</param>
         /// <returns>true on success</returns>
         bool InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len);
         hkTreeNode& GetRootNode() { return RootNode; };
         std::size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
-        bool getIsSwapped() { return isSwapped; };
+        bool getIsSwapped() const { return isSwapped; };
         friend hkTreeNode;
     };
 }

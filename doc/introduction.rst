@@ -1,7 +1,7 @@
 .. _intro-label:
 
-What can :program:`PMbrowser` do?
----------------------------------
+What can :program:`PMbrowser` do for you?
+-----------------------------------------
 
 It can open bundled data files (:file:`.dat`) created by :program:`PATCHMASTER` or
 :program:`PATCHMASTER NEXT`.

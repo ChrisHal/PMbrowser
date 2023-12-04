@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2023 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -19,36 +19,27 @@
 
 #pragma once
 
-#include <QDialog>
-#include "ui_DlgExportMetadata.h"
-QT_BEGIN_NAMESPACE
-namespace Ui { class DlgExportMetadata; }
-QT_END_NAMESPACE
+#ifndef HKTREEVIEW_H
+#define HKTREEVIEW_H
 
-class DlgExportMetadata : public QDialog
-{
-	Q_OBJECT
+#include "hkTree.h"
 
-public slots:
-    void copyToClipboard();
+namespace hkLib {
+    struct hkNodeView {
+        const hkTreeNode* p_node{ nullptr };
+        std::vector<hkNodeView> children{};
+    };
 
-public:
-	DlgExportMetadata(QWidget* parent = nullptr);
-	~DlgExportMetadata();
-	int getSelection() {
-		return selection;
-	}
-    bool doCopy() {
-        return m_doCopy;
-    }
-    bool useSystemLocale() {
-        return m_nativeEncoding;
-    }
-	void accept() override;
+    struct hkTreeView {
+        hkNodeView root{};
+        /// <summary>
+        /// Get views to all nodes with specified level
+        /// </summary>
+        /// <param name="level">desired level</param>
+        /// <returns></returns>
+        std::vector<const hkNodeView*> GetViewListForLevel(int level) const;
+        std::vector<const hkTreeNode*> GetNodeListForLevel(int level) const;
+    };
+}
 
-private:
-	int selection;
-	Ui::DlgExportMetadata *ui;
-    bool m_doCopy{ false };
-    bool m_nativeEncoding{ false };
-};
+#endif // !HKTREEVIEW_H

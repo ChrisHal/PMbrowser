@@ -118,7 +118,7 @@ namespace hkLib {
 	/// <param name="TrRecord">trace record specifying the trace to be loaded</param>
 	/// <param name="trdatapoints">number of datapoints (also size of target buffer provided by caller)</param>
 	/// <param name="target">pointer to buffer allocated by caller, must have space for trdatapoints doubles</param>
-	template<typename T> void ReadScaleAndConvert(std::istream& datafile, hkTreeNode& TrRecord, std::size_t trdatapoints,
+	template<typename T> void ReadScaleAndConvert(std::istream& datafile, const hkTreeNode& TrRecord, std::size_t trdatapoints,
 		double* target)
 	{
 		static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
