@@ -50,12 +50,6 @@ target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_link_libraries(QtPMbrowser PRIVATE
-	    Qt6::DBus
-	)
-endif()
-
 target_link_libraries(QtPMbrowser PUBLIC hekatoolslib)
 
 configure_file(Config.h.in Config.h)
