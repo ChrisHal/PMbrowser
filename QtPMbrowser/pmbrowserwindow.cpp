@@ -69,7 +69,7 @@ Q_DECLARE_METATYPE(hkTreeNode*)
 
 
 static QString MakeSweepLabel(const hkLib::hkTreeNode& sweep_node) {
-    QString label = QString("sweep %1").arg(sweep_node.extractInt32(SwSweepCount));
+    QString label = QString("Sweep %1").arg(sweep_node.extractInt32(SwSweepCount));
     auto sw_label = qs_from_sv(sweep_node.getString(SwLabel));
     if (sw_label.length() > 0) {
         label += ' ' + sw_label;
@@ -101,7 +101,7 @@ void PMbrowserWindow::populateTreeView()
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 for(auto& trace : sweep.Children) {
-                    QString tracelabel = formTraceName(trace, trace.extractInt32(TrTraceID)).c_str();
+                    QString tracelabel{ QString::fromLatin1(formTraceName(trace, trace.extractInt32(TrTraceID))) };
                     auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
@@ -114,15 +114,9 @@ void PMbrowserWindow::populateTreeView()
 
 void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
 {
-    // figure out index
-    QTreeWidgetItem* sweepitem = item->parent();
-    QTreeWidgetItem* seriesitem = sweepitem->parent();
-    QTreeWidgetItem* groupitem = seriesitem->parent();
-    int indexseries = groupitem->indexOfChild(seriesitem) + 1,
-        indexsweep = seriesitem->indexOfChild(sweepitem) + 1,
-        indextrace = sweepitem->indexOfChild(item) + 1;
-    int indexgroup = ui->treePulse->indexOfTopLevelItem(groupitem) + 1;
-    QString tracename = QString("tr_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(indextrace);
+    int indextrace = trace->extractInt32(TrTraceID);
+    auto trace_label = formTraceName(*trace, indextrace);
+    QString tracename = QString("Trace ") + QLatin1StringView(trace_label);
     ui->textEdit->append(tracename);
 
     // Give holding V / I special treatment, since we want to distingushe CC / VC mode
@@ -135,7 +129,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
 
     // keep the following, since here we format it more nicely, with correct name and units
     // this is beyond what PMparmaters can do right now.
-    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(QString::fromStdString(yunit));
+    QString info = QString("%1=%2 %3").arg(prefix).arg(holding).arg(QLatin1StringView(yunit));
     std::string str;
     formatParamListPrint(*trace, parametersTrace, str);
     info.append("\n");
