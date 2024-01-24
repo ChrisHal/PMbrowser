@@ -94,7 +94,7 @@ Prerequisits
 ************
 
 You will need to install the usual build tools including :program:`cmake` and
-Qt-Library version 6.2 or newer. To build the documentation, you need :program:`sphinx` 
+Qt-Library version 6.4 or newer. To build the documentation, you need :program:`sphinx` 
 and :program:`sphinx_rtd_theme`. (Usually, these can be installed via :program:`pip`, 
 if :program:`python` is installed.)
 
