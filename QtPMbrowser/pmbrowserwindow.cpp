@@ -68,7 +68,14 @@ const QString appVersion(VERSION);
 Q_DECLARE_METATYPE(hkTreeNode*)
 
 
-
+static QString MakeSweepLabel(const hkLib::hkTreeNode& sweep_node) {
+    QString label = QString("sweep %1").arg(sweep_node.extractInt32(SwSweepCount));
+    auto sw_label = qs_from_sv(sweep_node.getString(SwLabel));
+    if (sw_label.length() > 0) {
+        label += ' ' + sw_label;
+    }
+    return label;
+}
 
 void PMbrowserWindow::populateTreeView()
 {
@@ -90,11 +97,7 @@ void PMbrowserWindow::populateTreeView()
             auto seriesitem = new QTreeWidgetItem(grpitem, QStringList(label2));
             seriesitem->setData(0, Qt::UserRole, QVariant::fromValue(&series));
             for(auto& sweep : series.Children) {
-                QString label3 = QString("sweep %1").arg(sweep.extractInt32(SwSweepCount));
-                auto sw_label = qs_from_sv(sweep.getString(SwLabel));
-                if (sw_label.length() > 0) {
-                    label3 += ' ' + sw_label;
-                }
+                QString label3 = MakeSweepLabel(sweep);
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 for(auto& trace : sweep.Children) {
@@ -233,13 +236,10 @@ hkLib::hkTreeView PMbrowserWindow::getVisibleNodes()
 
 void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     (void)item;
-    QString label = qs_from_sv(sweep->getString(SeLabel));
-    int32_t count = sweep->extractInt32(SwSweepCount);
-    QString txt = QString("Sweep %1 %2").arg(label).arg(count);
+    QString txt = MakeSweepLabel(*sweep) + '\n';
     std::string str;
     formatParamListPrint(*sweep, parametersSweep, str);
-    txt.append("\n");
-    txt.append(str.c_str());
+    txt.append(QUtf8StringView(str));
     ui->textEdit->append(txt);
 }
 
