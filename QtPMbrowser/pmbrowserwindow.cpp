@@ -234,7 +234,9 @@ void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     QString txt = MakeSweepLabel(*sweep) + '\n';
     std::string str;
     formatParamListPrint(*sweep, parametersSweep, str);
-    txt.append(QUtf8StringView(str));
+    // to restore compatibility with Qt6.4:
+    txt.append(QString::fromUtf8(str.data(), str.size()));
+    //txt.append(QUtf8StringView(str));
     ui->textEdit->append(txt);
 }
 
