@@ -101,7 +101,7 @@ void PMbrowserWindow::populateTreeView()
                 auto sweepitem = new QTreeWidgetItem(seriesitem, QStringList(label3));
                 sweepitem->setData(0, Qt::UserRole, QVariant::fromValue(&sweep));
                 for(auto& trace : sweep.Children) {
-                    QString tracelabel{ QString::fromLatin1(formTraceName(trace, trace.extractInt32(TrTraceID))) };
+                    QString tracelabel{ QString::fromUtf8(formTraceName(trace, trace.extractInt32(TrTraceID))) };
                     auto traceitem = new QTreeWidgetItem(sweepitem, QStringList(tracelabel));
                     traceitem->setData(0,Qt::UserRole, QVariant::fromValue(&trace)); // store pointer to trace for later use
                 }
@@ -117,7 +117,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     (void)item;
     int indextrace = trace->extractInt32(TrTraceID);
     auto trace_label = formTraceName(*trace, indextrace);
-    QString tracename = QString("Trace ") + QLatin1StringView(trace_label);
+    QString tracename = QString("Trace ") + QString::fromUtf8(trace_label.data(), trace_label.size());
     ui->textEdit->append(tracename);
 
     // Give holding V / I special treatment, since we want to distingushe CC / VC mode

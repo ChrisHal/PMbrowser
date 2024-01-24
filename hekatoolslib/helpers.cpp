@@ -90,6 +90,23 @@ namespace hkLib {
         return ((x & 0xff00U) >> 8U) | ((x & 0xffU) << 8U);
     }
 
+    std::string iso_8859_1_to_utf8(const std::string_view& str)
+    {
+        std::string strOut;
+        for (const char c : str)
+        {
+            const unsigned char ch = c;
+            if (ch < 0x80) {
+                strOut.push_back(c);
+            }
+            else {
+                strOut.push_back(static_cast<char>(0xc0 | ch >> 6));
+                strOut.push_back(static_cast<char>(0x80 | (ch & 0x3f)));
+            }
+        }
+        return strOut;
+    }
+
     hkSettings global_hkSettings{};
 
 
@@ -102,7 +119,7 @@ namespace hkLib {
     /// </summary>
     /// <param name="tr">tree node the must repesent a trace</param>
     /// <param name="count">trace count used for labeling</param>
-    /// <returns>trace name</returns>
+    /// <returns>trace name (in utf-8 format)</returns>
     std::string formTraceName(const hkTreeNode& tr, int count)
     {
         assert(tr.getLevel() == hkTreeNode::LevelTrace);
@@ -115,7 +132,7 @@ namespace hkLib {
             trace_ext << global_hkSettings.ext_Vmon;
         }
         else {
-            auto lable = tr.getString(TrLabel);
+            auto lable =  tr.getString(TrLabel);
             if (lable.empty()) {
                 if (datakind & IsLeak && !global_hkSettings.ext_Leak.empty()) {
                     trace_ext << global_hkSettings.ext_Leak;
@@ -125,7 +142,7 @@ namespace hkLib {
                 }
             }
             else {
-                trace_ext << lable;
+                trace_ext << hkLib::iso_8859_1_to_utf8(lable);
             }
         }
         return trace_ext.str();

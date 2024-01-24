@@ -196,23 +196,6 @@ namespace hkLib {
 		} };
 
 
-	static std::string iso_8859_1_to_utf8(const std::string_view& str)
-	{
-		std::string strOut;
-		for (const char c : str)
-		{
-			const unsigned char ch = c;
-			if (ch < 0x80) {
-				strOut.push_back(c);
-			}
-			else {
-				strOut.push_back(static_cast<char>(0xc0 | ch >> 6));
-				strOut.push_back(static_cast<char>(0x80 | (ch & 0x3f)));
-			}
-		}
-		return strOut;
-	}
-
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 	{
 		try {

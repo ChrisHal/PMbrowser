@@ -53,6 +53,8 @@ namespace hkLib {
 
     extern hkSettings global_hkSettings;
 
+    std::string iso_8859_1_to_utf8(const std::string_view& str);
+
     /// <summary>
     /// form canonical displayname for trace
     /// treat Vmon, Imon and to some extend Leak traces
