@@ -114,6 +114,7 @@ void PMbrowserWindow::populateTreeView()
 
 void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
 {
+    (void)item;
     int indextrace = trace->extractInt32(TrTraceID);
     auto trace_label = formTraceName(*trace, indextrace);
     QString tracename = QString("Trace ") + QLatin1StringView(trace_label);
