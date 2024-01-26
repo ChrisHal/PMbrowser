@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2023 Christian R. Halaszovich
+    Copyright 2020 - 2024 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -21,6 +21,8 @@
 #define TIME_HANDLING_H
 
 #pragma once
+
+#include <string>
 
 namespace hkLib {
  

@@ -1,5 +1,5 @@
 /*
-    Copyright 2023 Christian R. Halaszovich
+    Copyright 2023 - 2024 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -19,10 +19,9 @@
 
 // small tool to test npy file export
 
-#include<iostream>
-#include<fstream>
+#include <iostream>
+#include <fstream>
 #include <string>
-//#include<limits>
 #include "DatFile.h"
 #include "exportNPY.h"
 

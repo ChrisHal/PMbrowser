@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2023 Christian R. Halaszovich
+    Copyright 2020 - 2024 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -25,6 +25,7 @@
 #include <istream>
 #include <filesystem>
 #include <string_view>
+#include "DatFile.h"
 #include "hkTree.h"
 #include "hkTreeView.h"
 

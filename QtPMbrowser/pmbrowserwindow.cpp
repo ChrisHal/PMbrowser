@@ -38,7 +38,6 @@
 #include <iostream>
 #include <ctime>
 #include <cstring>
-#include <cmath>
 #include "pmbrowserwindow.h"
 #include "exportIBW.h"
 #include "exportNPY.h"

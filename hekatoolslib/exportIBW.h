@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2024 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -21,6 +21,8 @@
 #define EXPORT_IBW_H
 
 #pragma once
+
+#include <cstdint>
 
 namespace hkLib {
     struct PackedFileRecordHeader {

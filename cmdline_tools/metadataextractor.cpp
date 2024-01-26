@@ -20,7 +20,6 @@
 #include<iostream>
 #include<fstream>
 #include"DatFile.h"
-#include"PMparameters.h"
 
 using namespace hkLib;
 

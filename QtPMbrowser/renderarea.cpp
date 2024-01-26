@@ -24,8 +24,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QSizePolicy>
-#include <stdexcept>
-#include <limits>
+#include <QMessageBox>
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -33,9 +32,7 @@
 
 #include "DlgGraphSettings.h"
 #include "renderarea.h"
-#include "ui_renderarea.h"
 #include "DatFile.h"
-#include <QMessageBox>
 #include "DisplayTrace.h"
 #include "qstring_helper.h"
 
