@@ -26,6 +26,10 @@
 #include <cstdint>
 
 namespace hkLib {
+	using std::int16_t;
+	using std::int32_t;
+	using std::uint32_t;
+
 	constexpr auto NT_I32 = 0x20;		// 32 bit integer numbers.
 	constexpr auto NT_FP64 = 4;
 	constexpr auto NT_UNSIGNED = 0x40;	// Makes above signed integers unsigned.
@@ -61,11 +65,11 @@ namespace hkLib {
 		uint32_t modDate;					// DateTime of last modification.
 
 		int32_t npnts;						// Total number of points (multiply dimensions up to first zero).
-		short type;							// See types (e.g. NT_FP64) above. Zero for text waves.
-		short pad1;
+		int16_t type;							// See types (e.g. NT_FP64) above. Zero for text waves.
+		int16_t pad1;
 
 		char pad2[6];
-		short whVersion;					// Write 1. Ignore on read.
+		int16_t whVersion;					// Write 1. Ignore on read.
 		char bname[MAX_WAVE_NAME5 + 1];		// Name of wave plus trailing null.
 		char pad3[4];
 		uint32_t dFolder;		// Used in memory only. Write zero. Ignore on read.
@@ -76,19 +80,19 @@ namespace hkLib {
 		// or we work around it! I prefer to do so...
 		//double sfA[MAXDIMS];				// Index value for element e of dimension d = sfA[d]*e + sfB[d].
 		//double sfB[MAXDIMS];
-		char sfA[sizeof(double) * MAXDIMS];
-		char sfB[sizeof(double) * MAXDIMS];
+		char sfA[MAXDIMS][sizeof(double)];
+		char sfB[MAXDIMS][sizeof(double)];
 
 		// SI units
 		char dataUnits[MAX_UNIT_CHARS + 1];			// Natural data units go here - null if none.
 		char dimUnits[MAXDIMS][MAX_UNIT_CHARS + 1];	// Natural dimension units go here - null if none.
 
-		short fsValid;						// TRUE if full scale values have meaning.
+		int16_t fsValid;						// TRUE if full scale values have meaning.
 		char pad4[2];
 		// The next 2 are out of aligment,too:
 		//double topFullScale, botFullScale;	// The max and max full scale value for wave.
 		// tweak aligment:
-		char topFullScale[8], botFullScale[8];
+		char topFullScale[sizeof(double)], botFullScale[sizeof(double)];
 		char pad5[40];
 		unsigned char platform;				// 0=unspecified, 1=Macintosh, 2=Windows; Added for Igor Pro 5.5.
 		unsigned char pad6[91];
