@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2022 Christian R. Halaszovich
+	Copyright 2020 - 2024 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QPalette>
 #include <QGridLayout>
+#include <vector>
 #include "PMparameters.h"
 #include "ui_DlgSelectParameters.h"
 
@@ -33,6 +34,11 @@ class DlgSelectParameters : public QDialog
 {
 	Q_OBJECT
 
+		struct chk_row {
+		QCheckBox do_export, do_print;
+		QLabel label;
+	};
+
 public:
 	DlgSelectParameters(QWidget *parent = Q_NULLPTR);
 	~DlgSelectParameters();
@@ -41,19 +47,23 @@ public:
 
 private:
 	static constexpr int chkbox_width = 40;
-	template<std::size_t Nrows> void populateGrid(QGridLayout* grid,
+	template<std::size_t Nrows> QGridLayout* createGrid(std::vector<chk_row>& v,
 		const std::array<hkLib::PMparameter, Nrows>& ar)
 	{
+		auto grid = new QGridLayout;
+		//v.resize(Nrows);
 		for (int i = 0; i < int(ar.size()); ++i) {
-			auto chk1 = new QCheckBox();// ("export");
+			auto& row = v.at(i);
+			auto* chk1 = &row.do_export;
 			chk1->setChecked(ar[i].exportIBW);
 			chk1->setMinimumWidth(chkbox_width);
 			chk1->setMaximumWidth(chkbox_width);
-			auto chk2 = new QCheckBox();// ("print");
+			auto* chk2 = &row.do_print;
 			chk2->setChecked(ar[i].print);
 			chk2->setMinimumWidth(chkbox_width);
 			chk2->setMaximumWidth(chkbox_width);
-			auto lb = new QLabel(ar[i].name);
+			auto* lb = &row.label;
+			lb->setText(ar[i].name);
 			grid->addWidget(chk1, i, 0);// , Qt::AlignLeft | Qt::AlignVCenter);
 			grid->addWidget(chk2, i, 1);// , Qt::AlignLeft | Qt::AlignVCenter);
 			grid->addWidget(lb, i, 2);// , Qt::AlignLeft | Qt::AlignVCenter);
@@ -64,27 +74,23 @@ private:
 		grid->setColumnStretch(1, 0);
 		grid->setColumnStretch(2, 1);
 		grid->setHorizontalSpacing(1);
+		return grid;
 	}
 
-	template<std::size_t Nrows> void readFromGrid(QGridLayout* grid,
+	template<std::size_t Nrows> void readSelections(const std::vector<chk_row>& v,
 		std::array<hkLib::PMparameter, Nrows>& ar)
 	{
-		assert(grid != nullptr);
-		for (int i = 0; i < static_cast<int>(ar.size()); ++i) {
-			auto chkExport = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 0)->widget());
-			assert(chkExport);
-			ar.at(i).exportIBW = chkExport->isChecked();
-			auto chkPrint = qobject_cast<QCheckBox*>(grid->itemAtPosition(i, 1)->widget());
-			assert(chkPrint);
-			ar.at(i).print = chkPrint->isChecked();
+		for (std::size_t i = 0; i < ar.size(); ++i) {
+			ar.at(i).exportIBW = v.at(i).do_export.isChecked();
+			ar.at(i).print = v.at(i).do_print.isChecked();
 		}
 	}
 
-	QGridLayout* gridLayoutRoot{ new QGridLayout },
-		* gridLayoutGrp{ new QGridLayout },
-		* gridLayoutSer{ new QGridLayout },
-		* gridLayoutSwp{ new QGridLayout },
-		* gridLayoutTr{ new QGridLayout };
+	std::vector<chk_row> v_root{ hkLib::parametersRoot.size() },
+		v_grp{ hkLib::parametersGroup.size() },
+		v_ser{ hkLib::parametersSeries.size() },
+		v_swp{ hkLib::parametersSweep.size() },
+		v_tr{ hkLib::parametersTrace.size() };
 
 	Ui::DlgSelectParameters *ui;
 };
