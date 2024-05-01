@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2022 Christian R. Halaszovich
+	Copyright 2020 - 2024 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -25,57 +25,40 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
 
-	populateGrid(gridLayoutRoot, hkLib::parametersRoot);
-	populateGrid(gridLayoutGrp, hkLib::parametersGroup);
-	populateGrid(gridLayoutSer, hkLib::parametersSeries);
-	populateGrid(gridLayoutSwp, hkLib::parametersSweep);
-	populateGrid(gridLayoutTr, hkLib::parametersTrace);
+	//populateGrid(gridLayoutRoot, hkLib::parametersRoot);
+	//populateGrid(gridLayoutGrp, hkLib::parametersGroup);
+	//populateGrid(gridLayoutSer, hkLib::parametersSeries);
+	//populateGrid(gridLayoutSwp, hkLib::parametersSweep);
+	//populateGrid(gridLayoutTr, hkLib::parametersTrace);
 
 	auto w = new QWidget;
-	w->setLayout(gridLayoutGrp);
+	w->setLayout(createGrid(v_root, hkLib::parametersRoot));
 	w->setBackgroundRole(QPalette::Base);
 	ui->scrollAreaGrp->setWidget(w); // this transfers ownership, doesn't it?
 	
 	w = new QWidget;
-	w->setLayout(gridLayoutRoot);
+	w->setLayout(createGrid(v_grp, hkLib::parametersGroup));
 	w->setBackgroundRole(QPalette::Base);
 	ui->scrollAreaRoot->setWidget(w);
 
 	w = new QWidget;
-	w->setLayout(gridLayoutSer);
+	w->setLayout(createGrid(v_ser, hkLib::parametersSeries));
 	w->setBackgroundRole(QPalette::Base);
 	ui->scrollAreaSer->setWidget(w);
 	
 	w = new QWidget;
-	w->setLayout(gridLayoutSwp);
+	w->setLayout(createGrid(v_swp, hkLib::parametersSweep));
 	w->setBackgroundRole(QPalette::Base); 
 	ui->scrollAreaSwp->setWidget(w);
 	
 	w = new QWidget;
-	w->setLayout(gridLayoutTr);
+	w->setLayout(createGrid(v_tr, hkLib::parametersTrace));
 	w->setBackgroundRole(QPalette::Base); 
 	ui->scrollAreaTr->setWidget(w);
 }
 
 DlgSelectParameters::~DlgSelectParameters()
 {
-	// Does the layout take ownership?
-	//while (auto t = gridLayoutGrp->takeAt(0)) {
-	//	delete t->widget();
-	//	delete t;
-	//}
-	//while (auto t = gridLayoutSer->takeAt(0)) {
-	//	delete t->widget();
-	//	delete t;
-	//}
-	//while (auto t = gridLayoutSwp->takeAt(0)) {
-	//	delete t->widget();
-	//	delete t;
-	//}
-	//while (auto t = gridLayoutTr->takeAt(0)) {
-	//	delete t->widget();
-	//	delete t;
-	//}
 	delete ui;
 }
 
@@ -87,9 +70,9 @@ void DlgSelectParameters::accept()
 
 void DlgSelectParameters::storeParams()
 {
-	readFromGrid(gridLayoutRoot, hkLib::parametersRoot);
-	readFromGrid(gridLayoutGrp, hkLib::parametersGroup);
-	readFromGrid(gridLayoutSer, hkLib::parametersSeries);
-	readFromGrid(gridLayoutSwp, hkLib::parametersSweep);
-	readFromGrid(gridLayoutTr, hkLib::parametersTrace);
+	readSelections(v_root, hkLib::parametersRoot);
+	readSelections(v_grp, hkLib::parametersGroup);
+	readSelections(v_ser, hkLib::parametersSeries);
+	readSelections(v_swp, hkLib::parametersSweep);
+	readSelections(v_tr, hkLib::parametersTrace);
 }
