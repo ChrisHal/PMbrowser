@@ -26,6 +26,7 @@
 #include <ostream>
 #include <vector>
 #include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <algorithm>
@@ -234,8 +235,22 @@ namespace hkLib {
                 throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
-        }
-
+        };
+        /// <summary>
+        /// tries to extract a value from record data, swaps bytes if needed
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="offset"></param>
+        /// <returns>std::optional containing value if offset is valid</returns>
+        template<typename T> std::optional<T> extractValueOpt(std::size_t offset) const
+        {
+            if (len < offset + sizeof(T)) {
+                return std::nullopt;
+            }
+            else {
+                return extractValueNoCheck<T>(offset);
+            }
+        };
         /// <summary>
         /// extract a value from record data, swaps bytes if needed,
         /// return default value
@@ -268,11 +283,11 @@ namespace hkLib {
         }
         char getChar(std::size_t offset) const;
         const std::string_view getString(std::size_t offset) const;
-        const UserParamDescr getUserParamDescr(std::size_t offset) const;
+        const std::optional<UserParamDescr> getUserParamDescr(std::size_t offset) const;
         template<std::size_t N> const std::string_view getString(std::size_t offset) const
         {
             if (len < offset + N) {
-                throw std::out_of_range("offset to large while accessing tree node");
+                return "n/a";
             }
             const auto* p = Data + offset;
             if (p[N - 1]) {

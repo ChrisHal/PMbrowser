@@ -135,15 +135,18 @@ namespace hkLib {
 		return Data[offset];
 	}
 
-	const UserParamDescr hkTreeNode::getUserParamDescr(std::size_t offset) const
+	const std::optional<UserParamDescr> hkTreeNode::getUserParamDescr(std::size_t offset) const
 	{
 		if (len < offset + UserParamDescr::Size) {
-			throw std::out_of_range("offset too large while accessing tree node");
+			//throw std::out_of_range("offset too large while accessing tree node");
+			return std::nullopt;
 		}
-		return {
-			getString<UserParamDescr::SizeName>(offset),
-			getString<UserParamDescr::SizeUnit>(offset + UserParamDescr::SizeName)
-		};
+		else {
+			return { UserParamDescr{
+				getString<UserParamDescr::SizeName>(offset),
+				getString<UserParamDescr::SizeUnit>(offset + UserParamDescr::SizeName) }
+			};
+		}
 	}
 
 	const std::string_view hkTreeNode::getString(std::size_t offset) const
