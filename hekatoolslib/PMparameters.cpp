@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <array>
 #include <cassert>
+#include "hkTree.h"
 #include "PMparameters.h"
 #include "time_handling.h"
 #include "DatFile.h"
@@ -198,47 +199,113 @@ namespace hkLib {
 
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 	{
+		bool data_na{ false };
 		try {
 			switch (data_type) {
 			case Byte:
-				ss << int(node.getChar(offset));
+			{
+				auto c = node.extractValueOpt<char>(offset);
+				if (c) {
+					ss << int(*c);
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
-			case Int16:
-				ss << node.extractValue<std::int16_t>(offset);
+			case Int16: {
+				auto v = node.extractValueOpt<std::int16_t>(offset);
+				if (v) {
+					ss << *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
-			case UInt16:
-				ss << node.extractUInt16(offset);
+			case UInt16: {
+				auto v = node.extractValueOpt<std::uint16_t>(offset);
+				if (v) {
+					ss << *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case Set16: {
-				auto t = node.extractValue<std::uint16_t>(offset);
-				ss << 'b';
-				std::uint16_t u = 1U << 15;
-				while (u) {
-					if (t & u) {
-						ss << '1';
+				auto t = node.extractValueOpt<std::uint16_t>(offset);
+				if (!t) { data_na = true; }
+				else {
+					ss << 'b';
+					std::uint16_t u = 1U << 15;
+					while (u) {
+						if (*t & u) {
+							ss << '1';
+						}
+						else {
+							ss << '0';
+						}
+						u >>= 1;
 					}
-					else {
-						ss << '0';
-					}
-					u >>= 1;
 				}
 			}
 					  break;
 			case Int32:
-				ss << node.extractInt32(offset);
+			{
+				auto v = node.extractValueOpt<std::int32_t>(offset);
+				if (v) {
+					ss << *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case UInt32:
-				ss << node.extractValue<std::uint32_t>(offset);
+			{
+				auto v = node.extractValueOpt<std::uint32_t>(offset);
+				if (v) {
+					ss << *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case LongReal:
-				ss << node.extractLongReal(offset);
+			{
+				auto v = node.extractValueOpt<double>(offset);
+				if (v) {
+					ss << *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case DateTime:
-				ss << formatPMtimeUTC(node.extractLongReal(offset));
+			{
+				auto v = node.extractValueOpt<double>(offset);
+				if (v) {
+					ss << formatPMtimeUTC(*v);
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case InvLongReal:
-				ss << 1.0 / node.extractLongReal(offset);
-				break;
+			{
+				auto v = node.extractValueOpt<double>(offset);
+				if (v) {
+					ss << 1.0 / *v;
+				}
+				else {
+					data_na = true;
+				}
+			}
+			break;
 			case StringType:
 				ss << iso_8859_1_to_utf8(node.getString(offset));
 				break;
@@ -260,28 +327,58 @@ namespace hkLib {
 			case Boolean:
 				ss << std::boolalpha << bool(node.getChar(offset));
 				break;
-			case LongReal2:
-				ss << '(' << node.extractLongReal(offset) << ','
-					<< node.extractLongReal(offset + 8) << ')';
+			case LongReal2: {
+				auto a = node.extractValueOpt<double>(offset);
+				auto b = node.extractValueOpt<double>(offset + 8);
+				if (a && b) {
+					ss << '(' << *a << ','
+						<< *b << ')';
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
-			case LongReal4:
+			case LongReal4: {
 				ss << "(";
 				for (std::size_t i = 0; i < 4; ++i) {
-					ss << node.extractLongReal(offset + 8 * i) << ",";
+					auto v = node.extractValueOpt<double>(offset + 8 * i);
+					if (v) {
+						ss << *v << ",";
+					}
+					else {
+						ss << "n/a";
+						break;
+					}
 				}
 				ss << ")";
+			}
 				break;
 			case LongReal8:
 				ss << "(";
 				for (std::size_t i = 0; i < 8; ++i) {
-					ss << node.extractLongReal(offset + 8 * i) << ",";
+					auto v = node.extractValueOpt<double>(offset + 8 * i);
+					if (v) {
+						ss << *v << ",";
+					}
+					else {
+						ss << "n/a";
+						break;
+					}
 				}
 				ss << ")";
 				break;
 			case LongReal16:
 				ss << "(";
 				for (std::size_t i = 0; i < 16; ++i) {
-					ss << node.extractLongReal(offset + 8 * i) << ",";
+					auto v = node.extractValueOpt<double>(offset + 8 * i);
+					if (v) {
+						ss << *v << ",";
+					}
+					else {
+						ss << "n/a";
+						break;
+					}
 				}
 				ss << ")";
 				break;
@@ -317,6 +414,9 @@ namespace hkLib {
 			(void)e;
 			ss << "n/a";
 		}
+		if (data_na) {
+			ss << "n/a";
+		};
 	}
 
 	void PMparameter::format(const hkTreeNode& node, std::ostream& ss) const

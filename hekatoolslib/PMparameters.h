@@ -86,7 +86,14 @@ namespace hkLib {
 		template<std::size_t N>void formatUserParamDesc(const hkTreeNode& node, std::size_t offset, std::ostream& ss) const {
 			ss << "(name,unit):[";
 			for (std::size_t i = 0; i < N; ++i) {
-				ss << node.getUserParamDescr(offset + i * UserParamDescr::Size) << ';';
+				auto d = node.getUserParamDescr(offset + i * UserParamDescr::Size);
+				if (d) {
+					ss << *d << ';';
+				}
+				else {
+					ss << "n/a";
+					break;
+				}
 			}
 			ss << ']';
 		}
