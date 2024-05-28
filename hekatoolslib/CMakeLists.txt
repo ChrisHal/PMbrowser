@@ -1,3 +1,5 @@
+project(QtPMbrowser LANGUAGES CXX)
+
 add_library(hekatoolslib STATIC
            "DatFile.cpp" "DatFile.h"
            "exportIBW.cpp" "exportIBW.h"
