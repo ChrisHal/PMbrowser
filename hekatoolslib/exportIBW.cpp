@@ -136,9 +136,9 @@ namespace hkLib {
 		cksum = Checksum(reinterpret_cast<char*>(&wh), cksum, numbytes_wh);
 		bh.checksum = -cksum;
 
-		outfile.write((char*)&bh, sizeof(bh));
-		outfile.write((char*)&wh, numbytes_wh);
-		outfile.write((char*)target.get(), sizeof(double) * trdatapoints);
+		outfile.write(reinterpret_cast<char*>(&bh), sizeof(bh));
+		outfile.write(reinterpret_cast<char*>(&wh), numbytes_wh);
+		outfile.write(reinterpret_cast<char*>(target.get()), sizeof(double) * trdatapoints);
 		outfile.write(note.data(), note.size());
 	}
 
@@ -149,8 +149,8 @@ namespace hkLib {
 		PlatformInfo pli{ 2, 2, {0}, {0} };
 		//double igorVersion = 5.00;
 		//std::memcpy(pli.igorVersion, &igorVersion, sizeof(double));
-		outfile.write((char*)&pfrh, sizeof(PackedFileRecordHeader));
-		outfile.write((char*)&pli, sizeof(PlatformInfo));
+		outfile.write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
+		outfile.write(reinterpret_cast<char*>(&pli), sizeof(PlatformInfo));
 	}
 
 	void WriteIgorProcedureRecord(std::ostream& outfile)
@@ -159,13 +159,13 @@ namespace hkLib {
 		constexpr auto history_txt = "// pxp file created by PMbrowser\r"
 			"// Use \"Macros\" --> \"Display Waves\" to create graphs\r"sv;
 		PackedFileRecordHeader pfhr{ kHistoryRecord,0, int32_t(history_txt.size()) };
-		outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+		outfile.write(reinterpret_cast<char*>(&pfhr), sizeof(PackedFileRecordHeader));
 		outfile.write(history_txt.data(), history_txt.size());
 		pfhr = { kProcedureRecord,0, int32_t(Igor_ipf.size()) };
-		outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+		outfile.write(reinterpret_cast<char*>(&pfhr), sizeof(PackedFileRecordHeader));
 		outfile.write(Igor_ipf.data(), Igor_ipf.size());
 		pfhr = { kGetHistoryRecord,0,0 };
-		outfile.write((char*)&pfhr, sizeof(PackedFileRecordHeader));
+		outfile.write(reinterpret_cast<char*>(&pfhr), sizeof(PackedFileRecordHeader));
 	}
 
 	void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)

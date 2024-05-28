@@ -437,7 +437,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
                 PackedFileRecordHeader pfrh{ kDataFolderStartRecord,0,32 };
                 char buf[32]{};
                 item->text(0).toStdString().copy(buf, 31);
-                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 poutfile->write(buf, 32);
             }
         }
@@ -446,7 +446,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         }
         if (export_type == ExportType::Igor && new_datafolder) {
             PackedFileRecordHeader pfrh{ kDataFolderEndRecord,0,0 };
-            poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+            poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
         }
     }
     else {
@@ -482,12 +482,12 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
                 PackedFileRecordHeader pfrh{};
                 pfrh.recordType = kWaveRecord;
                 size_t offset_record = poutfile->tellp();
-                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 ExportTrace(infile, *traceentry, *poutfile, wavename.toStdString());
                 size_t offset_end = poutfile->tellp();
                 pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_record);
-                poutfile->write((char*)&pfrh, sizeof(PackedFileRecordHeader));
+                poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_end);
             }
         }

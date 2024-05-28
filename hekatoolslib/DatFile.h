@@ -134,13 +134,13 @@ namespace hkLib {
 
 		auto source = std::make_unique<T[]>(trdatapoints);
 		if (interleavesize == 0) {
-			datafile.read((char*)source.get(), sizeof(T) * trdatapoints);
+			datafile.read(reinterpret_cast<char*>(source.get()), sizeof(T) * trdatapoints);
 		}
 		else { // it's interleaved data
 			assert(interleaveskip >= interleavesize);
 			std::size_t bytesremaining = sizeof(T) * trdatapoints;
 			int bytestoskip = interleaveskip - interleavesize; // interleaveskip is from block-start to block-start!
-			char* p = (char*)source.get();
+			char* p = reinterpret_cast<char*>(source.get());
 			while (bytesremaining > 0) {
 				auto bytestoread = std::min(bytesremaining, std::size_t(interleavesize));
 				datafile.read(p, bytestoread);
