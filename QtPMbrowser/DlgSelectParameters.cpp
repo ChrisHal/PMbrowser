@@ -25,12 +25,6 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
 
-	//populateGrid(gridLayoutRoot, hkLib::parametersRoot);
-	//populateGrid(gridLayoutGrp, hkLib::parametersGroup);
-	//populateGrid(gridLayoutSer, hkLib::parametersSeries);
-	//populateGrid(gridLayoutSwp, hkLib::parametersSweep);
-	//populateGrid(gridLayoutTr, hkLib::parametersTrace);
-
 	auto w = new QWidget;
 	w->setLayout(createGrid(v_root, hkLib::parametersRoot));
 	w->setBackgroundRole(QPalette::Base);
