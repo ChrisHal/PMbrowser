@@ -77,6 +77,15 @@ private:
 		return grid;
 	}
 
+	template<std::size_t Nrows> void setScrollArea(QScrollArea* area,
+		std::vector<chk_row>& v,
+		const std::array<hkLib::PMparameter, Nrows>& ar) {
+		auto w = new QWidget;
+		w->setLayout(createGrid(v, ar));
+		w->setBackgroundRole(QPalette::Base);
+		area->setWidget(w);
+	}
+
 	template<std::size_t Nrows> void readSelections(const std::vector<chk_row>& v,
 		std::array<hkLib::PMparameter, Nrows>& ar)
 	{
