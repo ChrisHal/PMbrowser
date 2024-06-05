@@ -28,12 +28,12 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	auto w = new QWidget;
 	w->setLayout(createGrid(v_root, hkLib::parametersRoot));
 	w->setBackgroundRole(QPalette::Base);
-	ui->scrollAreaGrp->setWidget(w); // this transfers ownership, doesn't it?
+	ui->scrollAreaRoot->setWidget(w); // this transfers ownership, doesn't it?
 	
 	w = new QWidget;
 	w->setLayout(createGrid(v_grp, hkLib::parametersGroup));
 	w->setBackgroundRole(QPalette::Base);
-	ui->scrollAreaRoot->setWidget(w);
+	ui->scrollAreaGrp->setWidget(w);
 
 	w = new QWidget;
 	w->setLayout(createGrid(v_ser, hkLib::parametersSeries));
