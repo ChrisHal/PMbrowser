@@ -235,7 +235,7 @@ namespace hkLib {
                 throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
-        };
+        }
         /// <summary>
         /// tries to extract a value from record data, swaps bytes if needed
         /// </summary>
@@ -250,7 +250,7 @@ namespace hkLib {
             else {
                 return extractValueNoCheck<T>(offset);
             }
-        };
+        }
         /// <summary>
         /// extract a value from record data, swaps bytes if needed,
         /// return default value
