@@ -17,6 +17,7 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "ui_DlgSelectParameters.h"
 #include "DlgSelectParameters.h"
 
 DlgSelectParameters::DlgSelectParameters(QWidget *parent)

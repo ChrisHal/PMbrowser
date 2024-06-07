@@ -21,10 +21,10 @@
 
 #include <QWidget>
 #include <QString>
-#include "ui_DlgChoosePathAndPrefix.h"
+#include <QDialog>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class PMbrowserWindow; }
+namespace Ui { class DlgChoosePathAndPrefix; }
 QT_END_NAMESPACE
 
 enum class ExportType {

@@ -24,9 +24,9 @@
 #include <QLabel>
 #include <QPalette>
 #include <QGridLayout>
+#include <QScrollArea>
 #include <vector>
 #include "PMparameters.h"
-#include "ui_DlgSelectParameters.h"
 
 namespace Ui { class DlgSelectParameters; }
 

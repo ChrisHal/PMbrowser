@@ -17,9 +17,9 @@
 	along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <QDialog>
 #include <QFileDialog>
 #include <QSettings>
+#include "ui_DlgChoosePathAndPrefix.h"
 #include "DlgChoosePathAndPrefix.h"
 
 DlgChoosePathAndPrefix::DlgChoosePathAndPrefix(QWidget* parent, const QString& Path) : QDialog(parent), path(Path),

@@ -20,7 +20,7 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_DlgExportMetadata.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class DlgExportMetadata; }
 QT_END_NAMESPACE
