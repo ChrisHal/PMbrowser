@@ -197,6 +197,13 @@ Selection of export method
 All methods export additional metadata. See :ref:`select-params-dlg-label` for details on selection
 of parameters to be exported as metadata.
 
+Note on multi-file exports from flatpaks
+----------------------------------------
+
+If you have installed :program:`PMbrowser` as a flatpak, there is a caveat:
+Due to restrictions imposed by flatpak's sandbox, export methods that produce multiple files can only be used within the :file:`Documents` folder (or subfolders thereof).
+If you export to a single :file:`.pxp` file, this restriction does not apply.
+
 Export for Igor Pro
 +++++++++++++++++++
 
@@ -252,7 +259,7 @@ or via the *Filter...* button.
 The filtering is based on *perl* style `regular expressions <https://perldoc.perl.org/perlre>`_. Only elements that match the given expression
 will remain visible, all other elements will be hidden.
 
-The expression ``.*`` will match any name, therfore you can use it to display all nodes of a given category.
+The expression ``.*`` will match any name, therefore you can use it to display all nodes of a given category.
 
 See section :ref:`new-user-filtering-label` from the :ref:`new-user-tour-label` for an example how to use this feature.
 
