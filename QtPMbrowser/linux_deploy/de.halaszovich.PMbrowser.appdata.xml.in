@@ -28,7 +28,7 @@
 	<releases>
 		<release version="${CMAKE_PROJECT_VERSION}" type="stable" date="${my_current_day}">
 			<description>
-				${LINUX_RELEASE_DESCRIPTION>
+				${LINUX_RELEASE_DESCRIPTION}
 			</description>
 		</release>
 	</releases>
