@@ -16,6 +16,7 @@
 	<url type="homepage">https://www.halaszovich.de/pmbrowser/html/index.html</url>
 	<screenshots>
 		<screenshot type="default">
+			<caption>The PMbrowser main window.</caption>
 			<image>https://www.halaszovich.de/pmbrowser/html/_images/Screenshot_tour_step2.png</image>
 		</screenshot>
 	</screenshots>
@@ -25,6 +26,10 @@
 	</provides>
 	<content_rating type="oars-1.0" />
 	<releases>
-		<release version="${CMAKE_PROJECT_VERSION}" date="${my_current_day}" />
+		<release version="${CMAKE_PROJECT_VERSION}" type="stable" date="${my_current_day}">
+			<description>
+				${LINUX_RELEASE_DESCRIPTION>
+			</description>
+		</release>
 	</releases>
 </component>
