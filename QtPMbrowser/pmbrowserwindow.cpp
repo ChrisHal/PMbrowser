@@ -793,17 +793,6 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     }
 }
 
-class locale_manager {
-    std::locale old_locale{};
-public:
-    void setLocale(const char* name){
-        old_locale = std::locale::global(std::locale(name));
-    }
-    ~locale_manager() {
-        std::locale::global(old_locale);
-    }
-};
-
 void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
 {
     if (!assertDatFileOpen()) {
@@ -812,7 +801,7 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
     DlgExportMetadata dlg(this);
     if (dlg.exec()) {
         try {
-            locale_manager lm;
+            hkLib::locale_manager lm;
             if (dlg.useSystemLocale()) {
                 lm.setLocale(""); // set default locale
             }
