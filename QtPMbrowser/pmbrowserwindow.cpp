@@ -811,43 +811,43 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
     }
     DlgExportMetadata dlg(this);
     if (dlg.exec()) {
-        locale_manager lm;
-        if (dlg.useSystemLocale()) {
-            lm.setLocale(""); // set default locale
-        }
-        else {
-            lm.setLocale("C");
-        }
-        auto selected = dlg.getSelection();
-        if (selected < 0)
-        {
-            selected = hkTreeNode::LevelTrace;
-        }
-        else {
-            ++selected; // first item in box is level 1
-        }
-        if (dlg.doCopy()) {
-            std::ostringstream s;
-            this->formatStimMetadataAsTableExport(s, selected);
-            QGuiApplication::clipboard()->setText(s.str().c_str());
-        }
-        else {
-            auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
-                lastexportpath, "tab separated file (*.txt *.csv)");
-            if (export_file_name.length() > 0) {
-                std::ofstream export_file(export_file_name.toStdString());
-                if (!export_file) {
-                    QMessageBox::warning(this, "Error",
-                        QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
-                    return;
-                }
-                try {
+        try {
+            locale_manager lm;
+            if (dlg.useSystemLocale()) {
+                lm.setLocale(""); // set default locale
+            }
+            else {
+                lm.setLocale("C");
+            }
+            auto selected = dlg.getSelection();
+            if (selected < 0)
+            {
+                selected = hkTreeNode::LevelTrace;
+            }
+            else {
+                ++selected; // first item in box is level 1
+            }
+            if (dlg.doCopy()) {
+                std::ostringstream s;
+                this->formatStimMetadataAsTableExport(s, selected);
+                QGuiApplication::clipboard()->setText(s.str().c_str());
+            }
+            else {
+                auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
+                    lastexportpath, "tab separated file (*.txt *.csv)");
+                if (export_file_name.length() > 0) {
+                    std::ofstream export_file(export_file_name.toStdString());
+                    if (!export_file) {
+                        QMessageBox::warning(this, "Error",
+                            QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
+                        return;
+                    }
                     this->formatStimMetadataAsTableExport(export_file, selected);
                 }
-                catch (const std::exception& e) {
-                    QMessageBox::warning(this, "Error while exporting", e.what());
-                }
             }
+        }
+        catch (const std::exception& e) {
+            QMessageBox::warning(this, "Error while exporting", e.what());
         }
     }
 }
