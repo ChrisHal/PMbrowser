@@ -68,5 +68,17 @@ namespace hkLib {
     /// <param name="count">count of trace (starting from 1)</param>
     /// <returns>string containing canonical trace-name</returns>
     std::string formTraceName(const hkTreeNode& tr, int count);
+
+
+    class locale_manager {
+        std::locale old_locale{};
+    public:
+        void setLocale(const char* name) {
+            old_locale = std::locale::global(std::locale(name));
+        }
+        ~locale_manager() {
+            std::locale::global(old_locale);
+        }
+    };
 }
 #endif // !HELPERS_H

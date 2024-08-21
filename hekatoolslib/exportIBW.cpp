@@ -64,6 +64,8 @@ namespace hkLib {
 
 	std::string MakeWaveNote(hkTreeNode& TrRecord)
 	{
+		locale_manager lm;
+		lm.setLocale("C"); // always use C locale for Igor wavenotes
 		std::stringstream note;
 		formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent()->getParent(), parametersRoot, note);
 		formatParamListExportIBW(*TrRecord.getParent()->getParent()->getParent(), parametersGroup, note);
