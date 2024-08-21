@@ -793,6 +793,17 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
     }
 }
 
+class locale_manager {
+    std::locale old_locale{};
+public:
+    void setLocale(const char* name){
+        old_locale = std::locale::global(std::locale(name));
+    }
+    ~locale_manager() {
+        std::locale::global(old_locale);
+    }
+};
+
 void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
 {
     if (!assertDatFileOpen()) {
@@ -800,10 +811,12 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
     }
     DlgExportMetadata dlg(this);
     if (dlg.exec()) {
-        std::locale old_locale;
+        locale_manager lm;
         if (dlg.useSystemLocale()) {
-            std::locale new_locale(""); // system default locale
-            old_locale = std::locale::global(new_locale);
+            lm.setLocale(""); // set default locale
+        }
+        else {
+            lm.setLocale("C");
         }
         auto selected = dlg.getSelection();
         if (selected < 0)
@@ -835,9 +848,6 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
                     QMessageBox::warning(this, "Error while exporting", e.what());
                 }
             }
-        }
-        if (dlg.useSystemLocale()) {
-            std::locale::global(old_locale);
         }
     }
 }
