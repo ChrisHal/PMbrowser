@@ -91,7 +91,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	configure_file(linux_deploy/${MY_APP_ID}.appdata.xml.in ${MY_APP_ID}.appdata.xml)
 	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${MY_APP_ID}.desktop" DESTINATION
 	"${CMAKE_INSTALL_DATADIR}/applications")
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${MY_APP_ID}.appdata.xml" DESTINATION "${CMAKE_INSTALL_DATADIR}/metainfo")
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${MY_APP_ID}.appdata.xml" DESTINATION "${CMAKE_INSTALL_DATADIR}/metainfo" RENAME "${MY_APP_ID}.metainfo.xml")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux_deploy/halaszovich-pmbrowser256.png"  DESTINATION
 	"${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps" RENAME ${MY_APP_ID}.png)
 endif()
