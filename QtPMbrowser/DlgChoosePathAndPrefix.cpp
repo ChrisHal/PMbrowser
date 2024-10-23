@@ -60,9 +60,9 @@ ui(new Ui::DlgChoosePathAndPrefix)
 		break;
 	}
 	QObject::connect(ui->pushButtonChoosePath, SIGNAL(clicked()), this, SLOT(choosePath()));
-	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::stateChanged,
+	QObject::connect(ui->checkBox_pxp_export, &QCheckBox::checkStateChanged,
 		this, &DlgChoosePathAndPrefix::stateExportPXPchanged);
-	QObject::connect(ui->checkBox_create_datafolders, &QCheckBox::stateChanged,
+	QObject::connect(ui->checkBox_create_datafolders, &QCheckBox::checkStateChanged,
 		this, &DlgChoosePathAndPrefix::stateCreateFoldersChanged);
 }
 

@@ -63,8 +63,8 @@ RenderArea::RenderArea(QWidget* parent) :
     QObject::connect(&btnAutoScale, &QPushButton::clicked, this, &RenderArea::autoScale);
     QObject::connect(&btnVertShrink, &QPushButton::clicked, this, &RenderArea::verticalShrink);
     QObject::connect(&btnHrzShrink, &QPushButton::clicked, this, &RenderArea::horizontalShrink);
-    QObject::connect(&chkAutoScale, &QCheckBox::stateChanged, this, &RenderArea::toggleDoAutoscale2);
-    QObject::connect(&chkOverlay, &QCheckBox::stateChanged, this, &RenderArea::toggleOverlay);
+    QObject::connect(&chkAutoScale, &QCheckBox::checkStateChanged, this, &RenderArea::toggleDoAutoscale2);
+    QObject::connect(&chkOverlay, &QCheckBox::checkStateChanged, this, &RenderArea::toggleOverlay);
 
 
     //auto btnstyle = p_btnstyle.get();
