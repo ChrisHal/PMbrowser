@@ -364,6 +364,7 @@ namespace hkLib {
         hkTreeNode& GetRootNode() { return RootNode; };
         std::size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
         bool getIsSwapped() const { return isSwapped; };
+        bool isValid();
         friend hkTreeNode;
     };
 }

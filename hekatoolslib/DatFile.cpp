@@ -97,6 +97,10 @@ void DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("error processing tree");
         }
     }
+    // make reasonably certain we succeded at loading and file is valid:
+    if (lenDat == 0) throw std::runtime_error("no data in file");
+    if (!PulTree.isValid()) throw std::runtime_error("no valid Pulse tree in file");
+    if (!PgfTree.isValid())throw std::runtime_error("no valid Pgf in file");
 }
 
 std::string DatFile::getFileDate() const

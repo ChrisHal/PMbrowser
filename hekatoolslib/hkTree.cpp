@@ -127,6 +127,11 @@ namespace hkLib {
 		return true;
 	}
 
+	bool hkTree::isValid()
+	{
+		return LevelSizes.size()!=0 && !RootNode.Data.empty();
+	}
+
 	char hkTreeNode::getChar(std::size_t offset) const
 	{
 		if (Data.size() < offset + sizeof(char)) {
