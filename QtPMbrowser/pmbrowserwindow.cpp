@@ -1051,29 +1051,22 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 {
     assert(series->getLevel() == hkTreeNode::LevelSeries);
     hkTreeNode amprecord;
-    amprecord.len = AmplifierStateSize;
-    //auto buffer = std::make_unique<char[]>(amprecord.len);
-    //amprecord.Data = buffer.get();
     amprecord.isSwapped = series->getIsSwapped();
     auto ampstateflag = series->extractInt32(SeAmplStateFlag),
         ampstateref = series->extractInt32(SeAmplStateRef);
     if (ampstateflag > 0 || ampstateref == 0) {
         // use local amp state record
-        amprecord.Data = series->Data + SeOldAmpState;
-        //std::memcpy(buffer.get(), series->Data + SeOldAmpState, amprecord.len);
+        amprecord.Data = series->Data.subspan(SeOldAmpState, AmplifierStateSize);
         std::string s;
         formatParamList(amprecord, parametersAmpplifierState, s);
         ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
     }
     else {
-        // auto secount = series->extractInt32(SeSeriesCount);
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
-        const auto& ampse = amproot.Children.at(size_t(ampstateref) - 1); // Is this correct? Or seCount?
+        const auto& ampse = amproot.Children.at(static_cast<std::size_t>(ampstateref) - 1); // Is this correct? Or seCount?
         for(const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
-            amprecord.Data = series->Data + SeOldAmpState;
-                //std::memcpy(buffer.get(), ampre.Data + AmAmplifierState, amprecord.len);
-            //amprecord.Data = ampre.Data.get() + AmAmplifierState;
+            amprecord.Data = ampre.Data.subspan(AmAmplifierState, AmplifierStateSize);
             std::string s;
             formatParamList(amprecord, parametersAmpplifierState, s);
             ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));

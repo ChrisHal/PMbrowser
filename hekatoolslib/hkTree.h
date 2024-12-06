@@ -36,6 +36,7 @@
 #include <cstring>
 #include <cstdint>
 #include <cstddef>
+#include <span>
 
 namespace hkLib {
 
@@ -206,7 +207,7 @@ namespace hkLib {
         {
             static_assert(std::is_arithmetic_v<T>, "must be arithmetic type");
             T t{};
-            auto src = Data + offset;
+            auto src = Data.data() + offset;
             if (!isSwapped) {
                 std::copy(src, src + sizeof t, reinterpret_cast<char*>(&t));
             }
@@ -216,7 +217,7 @@ namespace hkLib {
             return t;
         }
     public:
-        hkTreeNode() : Parent{ nullptr }, Data{ nullptr }, len{ 0 }, Children{}, level{ -1 }, isSwapped{ false } {};
+        hkTreeNode() : Parent{ nullptr }, Data{ }, Children{}, level{ -1 }, isSwapped{ false } {};
         hkTreeNode(hkTreeNode&&) = default;
         hkTreeNode(const hkTreeNode&) = delete;
         hkTreeNode& operator=(const hkTreeNode&) = delete;
@@ -231,7 +232,7 @@ namespace hkLib {
         /// <returns>extracted value</returns>
         template<typename T> T extractValue(std::size_t offset) const
         {
-            if (len < offset + sizeof(T)) {
+            if (Data.size() < offset + sizeof(T)) {
                 throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
@@ -244,7 +245,7 @@ namespace hkLib {
         /// <returns>std::optional containing value if offset is valid</returns>
         template<typename T> std::optional<T> extractValueOpt(std::size_t offset) const
         {
-            if (len < offset + sizeof(T)) {
+            if (Data.size() < offset + sizeof(T)) {
                 return std::nullopt;
             }
             else {
@@ -262,7 +263,7 @@ namespace hkLib {
         /// <returns>extracted value or default value</returns>
         template<typename T> T extractValue(std::size_t offset, T defaultValue) const noexcept
         {
-            if (len < offset + sizeof(T)) {
+            if (Data.size() < offset + sizeof(T)) {
                 return defaultValue;
             }
             return extractValueNoCheck<T>(offset);
@@ -286,10 +287,10 @@ namespace hkLib {
         const std::optional<UserParamDescr> getUserParamDescr(std::size_t offset) const;
         template<std::size_t N> const std::string_view getString(std::size_t offset) const
         {
-            if (len < offset + N) {
+            if (Data.size() < offset + N) {
                 return "n/a";
             }
-            const auto* p = Data + offset;
+            const auto* p = Data.data() + offset;
             if (p[N - 1]) {
                 // in theory, string is not zero terminated
                 // unfortunately, some PM version mess this up
@@ -315,9 +316,9 @@ namespace hkLib {
 
     public:
         hkTreeNode* Parent;
-        //std::unique_ptr<char[]> Data;
-        const char* Data;
-        std::size_t len; //!< Length (in bytes) of data
+        //const char* Data;
+        //std::size_t len; //!< Length (in bytes) of data
+        std::span<char> Data;
         std::vector<hkTreeNode> Children;
         int level;
         bool isSwapped;
