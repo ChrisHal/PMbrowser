@@ -66,6 +66,7 @@ namespace hkLib {
 			nLevels,	//!< number of tree levels
 			LevelSizes[1];	//!< variable length array (nLevels entries with size of level data in bytes)
 	};
+    constexpr auto TreeRootHeaderSize = offsetof(TreeRoot,LevelSizes);
 
 	void hkLib::hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, char* data_end, int level)
 	{
@@ -103,27 +104,28 @@ namespace hkLib {
 
 	bool hkTree::InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len)
 	{
-		if (len < sizeof(TreeRoot)) throw std::runtime_error("invalid TreeRoot (too few bytes in file)");
+        if (len < TreeRootHeaderSize) throw std::runtime_error("invalid TreeRoot (too few bytes in file)");
 		ID = id;
-		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer); // we assume buffer is correctly aligned
+        TreeRoot root;
+        std::memcpy(&root, buffer, TreeRootHeaderSize);
 		isSwapped = false;
-		if (root->Magic == SwappedMagicNumber) {
+        if (root.Magic == SwappedMagicNumber) {
 			isSwapped = true;
 		}
-		else if (root->Magic != MagicNumber) {
+        else if (root.Magic != MagicNumber) {
 			throw std::runtime_error("magic number does not match, wrong filetype?");
 		}
-		LevelSizes.clear();
-		if (isSwapped) {
-			swapInPlace(root->nLevels);
+        if (isSwapped) {
+            swapInPlace(root.nLevels);
 		}
-		const auto root_bytes = offsetof(TreeRoot, LevelSizes) + sizeof(std::uint32_t) * root->nLevels;
+        const auto root_bytes = TreeRootHeaderSize + sizeof(std::uint32_t) * root.nLevels;
 		if (len < root_bytes) throw std::runtime_error("invalid TreeRoot (too few bytes in file)");
-		for (std::size_t i = 0; i < root->nLevels; ++i) {
-			if (isSwapped) { swapInPlace(root->LevelSizes[i]); }
-			LevelSizes.push_back(root->LevelSizes[i]);
-		}
-		char* data = buffer + root_bytes; // start of first tree node
+        LevelSizes.resize(root.nLevels);
+        std::memcpy(LevelSizes.data(), buffer + TreeRootHeaderSize, sizeof(std::uint32_t) * root.nLevels);
+        if(isSwapped){
+            for(auto& l : LevelSizes) swapInPlace(l);
+        }
+        char* data = buffer + root_bytes; // start of first tree node
 		LoadToNode(nullptr, RootNode, &data, buffer + len, 0);
 		if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 			throw std::runtime_error("bytes read != bytes in buffer");
