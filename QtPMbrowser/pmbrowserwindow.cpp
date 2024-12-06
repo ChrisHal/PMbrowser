@@ -1180,21 +1180,9 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
 
 void PMbrowserWindow::closeEvent(QCloseEvent* event)
 {
-    if (settings_modified || ui->renderArea->isSettingsModified()) {
-        auto res = QMessageBox::question(this, "Save Settings",
-            "Some settings have bee modified.\nDo you want to save them?",
-            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
-        if (res == QMessageBox::Cancel) {
-            event->ignore();
-        }
-        else {
-            if (res == QMessageBox::Yes) {
-                saveSettings();
-                ui->renderArea->saveSettings();
-            }
-            event->accept();
-        }
-    }
+	saveSettings();
+	ui->renderArea->saveSettings();
+	event->accept();
 }
 
 
