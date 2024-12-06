@@ -77,7 +77,7 @@ namespace hkLib {
 		node.Data = std::span(*pdata, size);
 		*pdata += size;
 		std::uint32_t nchildren;
-		if (*pdata + sizeof(std::uint32_t) >= data_end) throw std::runtime_error("not enough data");
+        if (*pdata + sizeof(std::uint32_t) > data_end) throw std::runtime_error("not enough data");
 		std::memcpy(&nchildren, *pdata, sizeof(std::uint32_t));
 		if (isSwapped) { swapInPlace(nchildren); }
 		*pdata += sizeof(std::uint32_t);
