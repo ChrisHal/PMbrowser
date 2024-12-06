@@ -70,12 +70,12 @@ namespace hkLib {
 	void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
 	{
 		node.tree = this;
-		auto size = static_cast<unsigned>(LevelSizes.at(level));
+		auto size = static_cast<std::size_t>(LevelSizes.at(level));
 		node.level = level;
-		node.len = size;
+		//node.len = size;
 		node.isSwapped = isSwapped;
 		node.Parent = parent;
-		node.Data = *pdata;
+		node.Data = std::span( *pdata, size );
 		*pdata += size;
 		uint32_t nchildren;
 		std::memcpy(&nchildren, *pdata, sizeof(uint32_t));
@@ -129,7 +129,7 @@ namespace hkLib {
 
 	char hkTreeNode::getChar(std::size_t offset) const
 	{
-		if (len < offset + sizeof(char)) {
+		if (Data.size() < offset + sizeof(char)) {
 			throw std::out_of_range("offset too large while accessing tree node");
 		}
 		return Data[offset];
@@ -137,7 +137,7 @@ namespace hkLib {
 
 	const std::optional<UserParamDescr> hkTreeNode::getUserParamDescr(std::size_t offset) const
 	{
-		if (len < offset + UserParamDescr::Size) {
+		if (Data.size() < offset + UserParamDescr::Size) {
 			//throw std::out_of_range("offset too large while accessing tree node");
 			return std::nullopt;
 		}
@@ -151,10 +151,10 @@ namespace hkLib {
 
 	const std::string_view hkTreeNode::getString(std::size_t offset) const
 	{
-		if (len <= offset) {
+		if (Data.size() <= offset) {
 			throw std::out_of_range("offset too large while accessing tree node");
 		}
-		return std::string_view(Data + offset);
+		return std::string_view(Data.data() + offset);
 	}
 
 	std::ostream& operator<<(std::ostream& os, const UserParamDescr& p)

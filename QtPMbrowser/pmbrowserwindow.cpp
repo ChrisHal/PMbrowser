@@ -604,28 +604,28 @@ void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_
             const auto tli = ui->treePulse->topLevelItem(i);
             if (tli->isHidden()) continue;
             const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
-            auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+            auto gpr_count = grp.extractValue<std::int32_t>(GrGroupCount);
             std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
             int Nse = tli->childCount();
             for (int j = 0; j < Nse; ++j) { // level: series
                 const auto se_item = tli->child(j);
                 if (se_item->isHidden()) continue;
                 const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+                auto se_count = series.extractValue<std::int32_t>(SeSeriesCount);
                 std::string se_entry = formatParamListExportTable(series, parametersSeries);
                 int M = se_item->childCount();
                 for (int k = 0; k < M; ++k) { // level: sweep
                     const auto sw_item = se_item->child(k);
                     if (sw_item->isHidden()) continue;
                     const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                    auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                    auto sw_count = sweep.extractValue<std::int32_t>(SwSweepCount);
                     std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
                     int Nsw = sw_item->childCount();
                     for (int l = 0; l < Nsw; ++l) { // level: trace
                         const auto tr_item = sw_item->child(l);
                         if (tr_item->isHidden()) continue;
                         const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                        auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                        auto tr_count = trace.extractValue<std::int32_t>(TrTraceCount);
                         std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
                         os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
                             << tr_count <<
@@ -1051,29 +1051,22 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 {
     assert(series->getLevel() == hkTreeNode::LevelSeries);
     hkTreeNode amprecord;
-    amprecord.len = AmplifierStateSize;
-    //auto buffer = std::make_unique<char[]>(amprecord.len);
-    //amprecord.Data = buffer.get();
     amprecord.isSwapped = series->getIsSwapped();
     auto ampstateflag = series->extractInt32(SeAmplStateFlag),
         ampstateref = series->extractInt32(SeAmplStateRef);
     if (ampstateflag > 0 || ampstateref == 0) {
         // use local amp state record
-        amprecord.Data = series->Data + SeOldAmpState;
-        //std::memcpy(buffer.get(), series->Data + SeOldAmpState, amprecord.len);
+        amprecord.Data = series->Data.subspan(SeOldAmpState, AmplifierStateSize);
         std::string s;
         formatParamList(amprecord, parametersAmpplifierState, s);
         ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
     }
     else {
-        // auto secount = series->extractInt32(SeSeriesCount);
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
-        const auto& ampse = amproot.Children.at(size_t(ampstateref) - 1); // Is this correct? Or seCount?
+        const auto& ampse = amproot.Children.at(static_cast<std::size_t>(ampstateref) - 1); // Is this correct? Or seCount?
         for(const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
-            amprecord.Data = series->Data + SeOldAmpState;
-                //std::memcpy(buffer.get(), ampre.Data + AmAmplifierState, amprecord.len);
-            //amprecord.Data = ampre.Data.get() + AmAmplifierState;
+            amprecord.Data = ampre.Data.subspan(AmAmplifierState, AmplifierStateSize);
             std::string s;
             formatParamList(amprecord, parametersAmpplifierState, s);
             ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));
