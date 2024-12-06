@@ -1179,7 +1179,8 @@ void PMbrowserWindow::dropEvent(QDropEvent* event)
                     auto filename = url.toLocalFile();
                     if (filename.endsWith(".dat")) {
                         loadFile(filename);
-                        event->acceptProposedAction();
+                        // check file has been loaded:
+                        if(datfile) event->acceptProposedAction();
                     }
                 }
             }
