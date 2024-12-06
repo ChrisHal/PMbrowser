@@ -79,6 +79,7 @@ void DatFile::InitFromStream(std::istream& infile)
         if (std::strcmp(item.Extension, ExtDat) == 0) {
             offsetDat = item.Start;
             lenDat = item.Length;
+            if (offsetDat < 0 || lenDat <= 0) throw std::runtime_error("invalid data offset or length");
         }
         else if (std::strcmp(item.Extension, ExtPul) == 0) {
             // process pulse tree
@@ -97,6 +98,10 @@ void DatFile::InitFromStream(std::istream& infile)
             throw std::runtime_error("error processing tree");
         }
     }
+    // make reasonably certain we succeded at loading and file is valid:
+    if (lenDat == 0) throw std::runtime_error("no data in file");
+    if (!PulTree.isValid()) throw std::runtime_error("no valid Pulse tree in file");
+    if (!PgfTree.isValid())throw std::runtime_error("no valid Pgf in file");
 }
 
 std::string DatFile::getFileDate() const

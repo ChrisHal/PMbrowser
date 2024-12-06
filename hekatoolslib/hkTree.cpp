@@ -62,34 +62,35 @@ namespace hkLib {
 	/// header of tree as stored in file
 	/// </summary>
 	struct TreeRoot {
-		uint32_t Magic, //!< magic nummber MagicNumber or SwappedMagicNumber
+		std::uint32_t Magic, //!< magic nummber MagicNumber or SwappedMagicNumber
 			nLevels,	//!< number of tree levels
 			LevelSizes[1];	//!< variable length array (nLevels entries with size of level data in bytes)
 	};
 
-	void hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, int level)
+	void hkLib::hkTree::LoadToNode(hkTreeNode* parent, hkTreeNode& node, char** pdata, char* data_end, int level)
 	{
 		node.tree = this;
 		auto size = static_cast<std::size_t>(LevelSizes.at(level));
 		node.level = level;
-		//node.len = size;
 		node.isSwapped = isSwapped;
 		node.Parent = parent;
-		node.Data = std::span( *pdata, size );
+		node.Data = std::span(*pdata, size);
 		*pdata += size;
-		uint32_t nchildren;
-		std::memcpy(&nchildren, *pdata, sizeof(uint32_t));
+		std::uint32_t nchildren;
+		if (*pdata + sizeof(std::uint32_t) >= data_end) throw std::runtime_error("not enough data");
+		std::memcpy(&nchildren, *pdata, sizeof(std::uint32_t));
 		if (isSwapped) { swapInPlace(nchildren); }
-		*pdata += sizeof(uint32_t);
+		*pdata += sizeof(std::uint32_t);
 		node.Children.resize(nchildren);
 		for (auto& child : node.Children) {
-			LoadToNode(&node, child, pdata, level + 1);
+			LoadToNode(&node, child, pdata, data_end, level + 1);
 		}
 	}
 
 	bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, unsigned int len)
 	{
 		assert(!!infile);
+		if (offset <= 0 || len == 0) throw std::runtime_error("invalid tree data offset or length");
 		Data = std::make_unique<char[]>(len);
 		infile.seekg(offset).read(Data.get(), len);
 		if (!infile) {
@@ -102,6 +103,7 @@ namespace hkLib {
 
 	bool hkTree::InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len)
 	{
+		if (len < sizeof(TreeRoot)) throw std::runtime_error("invalid TreeRoot (too few bytes in file)");
 		ID = id;
 		TreeRoot* root = reinterpret_cast<TreeRoot*>(buffer); // we assume buffer is correctly aligned
 		isSwapped = false;
@@ -115,16 +117,23 @@ namespace hkLib {
 		if (isSwapped) {
 			swapInPlace(root->nLevels);
 		}
+		const auto root_bytes = offsetof(TreeRoot, LevelSizes) + sizeof(std::uint32_t) * root->nLevels;
+		if (len < root_bytes) throw std::runtime_error("invalid TreeRoot (too few bytes in file)");
 		for (std::size_t i = 0; i < root->nLevels; ++i) {
 			if (isSwapped) { swapInPlace(root->LevelSizes[i]); }
 			LevelSizes.push_back(root->LevelSizes[i]);
 		}
-		char* data = buffer + offsetof(TreeRoot, LevelSizes) + sizeof(uint32_t) * root->nLevels; // start of first tree node
-		LoadToNode(nullptr, RootNode, &data, 0);
+		char* data = buffer + root_bytes; // start of first tree node
+		LoadToNode(nullptr, RootNode, &data, data + len, 0);
 		if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 			throw std::runtime_error("bytes read != bytes in buffer");
 		}
 		return true;
+	}
+
+	bool hkTree::isValid()
+	{
+		return LevelSizes.size()!=0 && !RootNode.Data.empty();
 	}
 
 	char hkTreeNode::getChar(std::size_t offset) const
