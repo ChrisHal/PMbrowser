@@ -604,28 +604,28 @@ void PMbrowserWindow::formatStimMetadataAsTableExport(std::ostream& os, int max_
             const auto tli = ui->treePulse->topLevelItem(i);
             if (tli->isHidden()) continue;
             const auto& grp = *(tli->data(0, Qt::UserRole).value<hkTreeNode*>());
-            auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+            auto gpr_count = grp.extractValue<std::int32_t>(GrGroupCount);
             std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
             int Nse = tli->childCount();
             for (int j = 0; j < Nse; ++j) { // level: series
                 const auto se_item = tli->child(j);
                 if (se_item->isHidden()) continue;
                 const auto& series = *(se_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+                auto se_count = series.extractValue<std::int32_t>(SeSeriesCount);
                 std::string se_entry = formatParamListExportTable(series, parametersSeries);
                 int M = se_item->childCount();
                 for (int k = 0; k < M; ++k) { // level: sweep
                     const auto sw_item = se_item->child(k);
                     if (sw_item->isHidden()) continue;
                     const auto& sweep = *(sw_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                    auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                    auto sw_count = sweep.extractValue<std::int32_t>(SwSweepCount);
                     std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
                     int Nsw = sw_item->childCount();
                     for (int l = 0; l < Nsw; ++l) { // level: trace
                         const auto tr_item = sw_item->child(l);
                         if (tr_item->isHidden()) continue;
                         const auto& trace = *(tr_item->data(0, Qt::UserRole).value<hkTreeNode*>());
-                        auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                        auto tr_count = trace.extractValue<std::int32_t>(TrTraceCount);
                         std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
                         os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
                             << tr_count <<

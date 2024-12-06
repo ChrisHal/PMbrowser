@@ -126,16 +126,16 @@ void DatFile::formatStimMetadataAsTableExport(std::ostream& os, int max_level)
     auto& rootnode = GetPulTree().GetRootNode();
     metadataCreateTableHeader(os);
     for (const auto& grp : rootnode.Children) {
-        auto gpr_count = grp.extractValue<int32_t>(GrGroupCount);
+        auto gpr_count = grp.extractValue<std::int32_t>(GrGroupCount);
         std::string grp_entry = formatParamListExportTable(grp, parametersGroup);
         for (const auto& series : grp.Children) {
-            auto se_count = series.extractValue<int32_t>(SeSeriesCount);
+            auto se_count = series.extractValue<std::int32_t>(SeSeriesCount);
             std::string se_entry = formatParamListExportTable(series, parametersSeries);
             for (const auto& sweep : series.Children) {
-                auto sw_count = sweep.extractValue<int32_t>(SwSweepCount);
+                auto sw_count = sweep.extractValue<std::int32_t>(SwSweepCount);
                 std::string sw_entry = formatParamListExportTable(sweep, parametersSweep);
                 for (const auto& trace : sweep.Children) {
-                    auto tr_count = trace.extractValue<int32_t>(TrTraceCount);
+                    auto tr_count = trace.extractValue<std::int32_t>(TrTraceCount);
                     std::string tr_entry = formatParamListExportTable(trace, parametersTrace);
                     os << gpr_count << '\t' << se_count << '\t' << sw_count << '\t'
                         << tr_count  <<
@@ -162,10 +162,10 @@ double DatFile::getTraceHolding(const hkTreeNode& trace, std::string& unit)
     }
     if (std::isnan(holding)) {
         // we can also try to get this info from the stim tree (usuful for old files):
-        auto linkedDAchannel = trace.extractValue<int32_t>(TrLinkDAChannel) - 1;
+        auto linkedDAchannel = trace.extractValue<std::int32_t>(TrLinkDAChannel) - 1;
         assert(linkedDAchannel >= 0);
         const auto& sweep_record = *trace.getParent();
-        int stim_index = sweep_record.extractValue<int32_t>(SwStimCount) - 1;
+        int stim_index = sweep_record.extractValue<std::int32_t>(SwStimCount) - 1;
         const auto& stim_node = GetPgfTree().GetRootNode().Children.at(stim_index);
         const auto& channel0_record = stim_node.Children.at(linkedDAchannel);
         int linked_channel = channel0_record.extractInt32(chLinkedChannel) - 1;
