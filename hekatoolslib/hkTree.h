@@ -216,6 +216,10 @@ namespace hkLib {
             }
             return t;
         }
+        template<typename T> bool checkOffset(std::size_t offset) const noexcept
+        {
+            return (Data.size() >= offset + sizeof(T));
+        }
     public:
         hkTreeNode() : Parent{ nullptr }, Data{ }, Children{}, level{ -1 }, isSwapped{ false } {};
         hkTreeNode(hkTreeNode&&) = default;
@@ -232,7 +236,7 @@ namespace hkLib {
         /// <returns>extracted value</returns>
         template<typename T> T extractValue(std::size_t offset) const
         {
-            if (Data.size() < offset + sizeof(T)) {
+            if (!checkOffset<T>(offset)) {
                 throw std::out_of_range("offset too large while accessing tree node");
             }
             return extractValueNoCheck<T>(offset);
@@ -245,7 +249,7 @@ namespace hkLib {
         /// <returns>std::optional containing value if offset is valid</returns>
         template<typename T> std::optional<T> extractValueOpt(std::size_t offset) const
         {
-            if (Data.size() < offset + sizeof(T)) {
+            if (!checkOffset<T>(offset)) {
                 return std::nullopt;
             }
             else {
@@ -263,7 +267,7 @@ namespace hkLib {
         /// <returns>extracted value or default value</returns>
         template<typename T> T extractValue(std::size_t offset, T defaultValue) const noexcept
         {
-            if (Data.size() < offset + sizeof(T)) {
+            if (!checkOffset<T>(offset)) {
                 return defaultValue;
             }
             return extractValueNoCheck<T>(offset);
@@ -287,14 +291,14 @@ namespace hkLib {
         const std::optional<UserParamDescr> getUserParamDescr(std::size_t offset) const;
         template<std::size_t N> const std::string_view getString(std::size_t offset) const
         {
-            if (Data.size() < offset + N) {
+            if (!checkOffset<char[N]>(offset)) {
                 return "n/a";
             }
             const auto* p = Data.data() + offset;
             if (p[N - 1]) {
                 // in theory, string is not zero terminated
                 // unfortunately, some PM version mess this up
-                // by not prperly zero-initializing the cahr array
+                // by not prperly zero-initializing the char array
                 return std::string_view(p, std::min(std::strlen(p), N));
             }
             else {
@@ -316,8 +320,6 @@ namespace hkLib {
 
     public:
         hkTreeNode* Parent;
-        //const char* Data;
-        //std::size_t len; //!< Length (in bytes) of data
         std::span<char> Data;
         std::vector<hkTreeNode> Children;
         int level;
