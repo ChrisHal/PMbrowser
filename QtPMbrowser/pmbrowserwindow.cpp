@@ -1150,14 +1150,16 @@ void PMbrowserWindow::openPreferences()
 
 void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
 {
-    auto mimedata = event->mimeData();
-    if (mimedata->hasUrls()) {
-        auto urls = mimedata->urls();
-        auto& url = urls[0];
-        if (url.isLocalFile()) {
-            auto filename = url.toLocalFile();
-            if (filename.endsWith(".dat")) {
-                event->acceptProposedAction();
+    if (event->dropAction() == Qt::CopyAction) {
+        auto mimedata = event->mimeData();
+        if (mimedata->hasUrls()) {
+            auto urls = mimedata->urls();
+            auto& url = urls[0];
+            if (url.isLocalFile()) {
+                auto filename = url.toLocalFile();
+                if (filename.endsWith(".dat")) {
+                    event->acceptProposedAction();
+                }
             }
         }
     }
@@ -1165,14 +1167,17 @@ void PMbrowserWindow::dragEnterEvent(QDragEnterEvent* event)
 
 void PMbrowserWindow::dropEvent(QDropEvent* event)
 {
-    auto mimedata = event->mimeData();
-    if (mimedata->hasUrls()) {
-        auto urls = mimedata->urls();
-        auto& url = urls[0];
-        if (url.isLocalFile()) {
-            auto filename = url.toLocalFile();
-            if (filename.endsWith(".dat")) {
-                loadFile(filename);
+    if (event->dropAction() == Qt::CopyAction) {
+        auto mimedata = event->mimeData();
+        if (mimedata->hasUrls()) {
+            auto urls = mimedata->urls();
+            auto& url = urls[0];
+            if (url.isLocalFile()) {
+                auto filename = url.toLocalFile();
+                if (filename.endsWith(".dat")) {
+                    loadFile(filename);
+                    event->acceptProposedAction();
+                }
             }
         }
     }
