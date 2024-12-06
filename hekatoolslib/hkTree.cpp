@@ -124,7 +124,7 @@ namespace hkLib {
 			LevelSizes.push_back(root->LevelSizes[i]);
 		}
 		char* data = buffer + root_bytes; // start of first tree node
-		LoadToNode(nullptr, RootNode, &data, data + len, 0);
+		LoadToNode(nullptr, RootNode, &data, buffer + len, 0);
 		if (data - buffer != static_cast<std::ptrdiff_t>(len)) {
 			throw std::runtime_error("bytes read != bytes in buffer");
 		}
