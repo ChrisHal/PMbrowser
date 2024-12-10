@@ -22,14 +22,16 @@
 #include "DlgExportMetadata.h"
 #include "ui_DlgExportMetadata.h"
 
-DlgExportMetadata::DlgExportMetadata(QWidget *parent)
-	: QDialog(parent), selection{ }, ui(new Ui::DlgExportMetadata())
+DlgExportMetadata::DlgExportMetadata(PMbrowserWindow* parent)
+    : QDialog(parent), selection{}, ui(new Ui::DlgExportMetadata()), pmbrowserwindow{ parent }
 {
 	QSettings settings;
 	ui->setupUi(this);
 	auto index = settings.value("DlgExportMetadata/selection", 3).toInt();
 	ui->comboBoxLevel->setCurrentIndex(index);
     ui->checkBoxSystemLocale->setChecked(settings.value("DlgExportMetadata/nativeEncoding", 0).toInt());
+    QObject::connect(ui->pushButtonSlectParamters, &QPushButton::clicked,
+        pmbrowserwindow, &PMbrowserWindow::on_actionSelect_Parameters_triggered);
     QObject::connect(ui->pushButtonCopy, &QPushButton::clicked, this, &DlgExportMetadata::copyToClipboard);
 }
 
@@ -38,7 +40,7 @@ DlgExportMetadata::~DlgExportMetadata()
 	delete ui;
 }
 
-void DlgExportMetadata::accept(){
+void DlgExportMetadata::accept() {
 	QSettings settings;
 	selection = ui->comboBoxLevel->currentIndex();
 	settings.setValue("DlgExportMetadata/selection", selection);
