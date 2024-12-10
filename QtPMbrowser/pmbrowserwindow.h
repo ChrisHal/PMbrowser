@@ -61,11 +61,13 @@ private slots:
     void prepareTreeContextMenu(const QPoint& pos);
     void on_treePulse_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int column);
-    void on_actionSelect_Parameters_triggered();
     void on_actionPrint_All_Params_triggered();
     void on_menuGraph_aboutToShow();
     void openHelp();
     void openPreferences();
+
+public slots:
+    void on_actionSelect_Parameters_triggered();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;

@@ -71,6 +71,7 @@ void DatFile::InitFromStream(std::istream& infile)
     nitems = std::min(nitems, 12); // make sure malformed files do not cause out of bounds read
     for (int i = 0; i < nitems; ++i) {
         auto& item = bh->BundleItems[i];
+        if (item.Length == 0) continue;
         if (isSwapped) {
             swapInPlace(item.Length);
             swapInPlace(item.Start);

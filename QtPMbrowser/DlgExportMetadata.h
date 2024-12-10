@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QDialog>
+#include <pmbrowserwindow.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DlgExportMetadata; }
@@ -33,7 +34,7 @@ public slots:
     void copyToClipboard();
 
 public:
-	DlgExportMetadata(QWidget* parent = nullptr);
+    DlgExportMetadata(PMbrowserWindow* parent);
 	~DlgExportMetadata();
 	int getSelection() {
 		return selection;
@@ -48,7 +49,8 @@ public:
 
 private:
 	int selection;
-	Ui::DlgExportMetadata *ui;
+    Ui::DlgExportMetadata* ui;
+    PMbrowserWindow* pmbrowserwindow;
     bool m_doCopy{ false };
     bool m_nativeEncoding{ false };
 };
