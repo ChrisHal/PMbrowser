@@ -72,6 +72,6 @@ namespace hkLib {
 
     std::string formatPMtimeUTC(double t)
     {
-        return formatPMtime(t, "%FT%T UTC");
+        return formatPMtime(t, "%FT%T");
     }
 }
