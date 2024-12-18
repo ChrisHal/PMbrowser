@@ -17,8 +17,8 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
 #include <QGuiApplication>
+#include <QClipboard>
 #include <QToolTip>
 #include <QMenu>
 #include <QDebug>

@@ -19,15 +19,18 @@
 
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <ctime>
 #include <cstring>
 #include <string>
 #include "time_handling.h"
 
 constexpr std::time_t EPOCHDIFF_MAC_UNIX = 2082844800;
-constexpr double JanFirst1990MACTime = 1580970496.0; //1580947200.0; // better value?
-constexpr auto HIGH_DWORD = 4294967296.0;
+
+// the following values are from file format documentation
+// Strangly, the actual time difference in time_t seconds
+// is 126144000, but PM seems to caculate with the given difference.
+constexpr double JanFirst1990MACTime = 1580970496.0;
+constexpr auto HIGH_DWORD = 4294967296.0; // = 2^32
 
 namespace hkLib {
     /// <summary>
@@ -42,7 +45,7 @@ namespace hkLib {
         if (t < 0.0) {
             t += HIGH_DWORD; // why is this necessary?
         }
-        return std::time_t(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
+        return static_cast<std::time_t>(std::floor(t)) - EPOCHDIFF_MAC_UNIX;
     }
 
     constexpr std::size_t BUFF_SIZE = 128;
