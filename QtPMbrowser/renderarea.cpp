@@ -821,9 +821,20 @@ void RenderArea::shiftByPixel(QPoint shift)
         update();
     }
     if (shift.y() != 0) {
-        auto dy = -(currentYscale->y_max - currentYscale->y_min) / height() * double(shift.y());
-        currentYscale->y_max += dy;
-        currentYscale->y_min += dy;
+        if (shift_all_y_scales) {
+            for (auto& ys : yScales) {
+                //shift each y scale
+                auto dy = -(ys.y_max - ys.y_min) / height() * double(shift.y());
+                ys.y_max += dy;
+                ys.y_min += dy;
+            }
+        }
+        else {
+            auto& ys = *currentYscale;
+            auto dy = -(ys.y_max - ys.y_min) / height() * double(shift.y());
+            ys.y_max += dy;
+            ys.y_min += dy;
+        }
         update();
     }
 }
@@ -833,6 +844,7 @@ void RenderArea::loadSettings()
     QSettings s;
     s.beginGroup("renderarea");
     do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    shift_all_y_scales = s.value("shift_all_y_scales", int(shift_all_y_scales)).toInt();
     show_grid_horz = s.value("show_grid_horz", int(show_grid_horz)).toInt();
     show_grid_vert = s.value("show_grid_vert", int(show_grid_vert)).toInt();
     background_traces_hidden = !s.value("overlay", 1).toInt();
@@ -850,6 +862,7 @@ void RenderArea::saveSettings()
     QSettings s;
     s.beginGroup("renderarea");
     s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("shift_all_y_scales", int(shift_all_y_scales));
     s.setValue("show_grid_horz", int(show_grid_horz));
     s.setValue("show_grid_vert", int(show_grid_vert));
     s.setValue("overlay", int(!background_traces_hidden));
