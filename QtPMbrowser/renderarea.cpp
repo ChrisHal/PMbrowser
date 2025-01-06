@@ -17,8 +17,8 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
 #include <QGuiApplication>
+#include <QClipboard>
 #include <QToolTip>
 #include <QMenu>
 #include <QDebug>
@@ -49,7 +49,7 @@ RenderArea::RenderArea(QWidget* parent) :
     xTrace{}, yTrace{}, tracebuffer{}, background_traces_hidden{ false },
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
-    y_min{}, y_max{}, a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
+    a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
     do_autoscale_on_load{ true }, isTraceDragging{ false }, isPinching{false},
     isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
     settings_modified{ false }
@@ -145,17 +145,21 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
                     "x- and y-trace: numbers of datapoints\nnot equal\n(required for YX-mode)");
             }
             else {
+                const double y_min = currentYscale->y_min;
+                const double y_max = currentYscale->y_max;
                 setScaling(x_min, x_max, y_min, y_max);
                 drawGrid(painter, show_grid_horz, show_grid_vert);
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
                     painter.setPen(color_bktrace);
                     for (auto trace : std::as_const(tracebuffer)) {
+                        priv_Scale ys = yScales[trace->getYUnit()];
+                        setScaling(x_min, x_max, ys.y_min, ys.y_max);
                         trace->render(painter, this);
                     }
                     painter.setPen(color_trace);
                 }
-
+                setScaling(x_min, x_max, y_min, y_max);
                 yTrace.render(painter, this);
 
                 font = painter.font();
@@ -228,15 +232,15 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
                 QPointF(zero_point.x(), static_cast<double>(height())));
         }
     }
-    if (horizontal && y_min < y_max) {
+    if (horizontal && currentYscale->y_min < currentYscale->y_max) {
         double d_width = width();
-        double horz_step = std::pow(10.0, std::floor(std::log10(y_max - y_min)));
+        double horz_step = std::pow(10.0, std::floor(std::log10(currentYscale->y_max - currentYscale->y_min)));
         if (info.length() > 0) {
             info.append(" | ");
         }
         info.append(QString("y: %L1/div").arg(horz_step));
-        int horz_divs = static_cast<int>((y_max - y_min) / horz_step) + 1;
-        auto line_0 = std::ceil(y_min / horz_step) * horz_step;
+        int horz_divs = static_cast<int>((currentYscale->y_max - currentYscale->y_min) / horz_step) + 1;
+        auto line_0 = std::ceil(currentYscale->y_min / horz_step) * horz_step;
         painter.setPen(penDashed);
         for (int i = 0; i < horz_divs; ++i) {
             double y = line_0 + i * horz_step;
@@ -244,7 +248,7 @@ void RenderArea::drawGrid(QPainter& painter, bool horizontal, bool vertical)
             auto py = scaleToQPF(0.0, y).y();
             painter.drawLine(QPointF(0.0, py), QPointF(d_width, py));
         }
-        if (y_min < 0.0 && y_max>0.0) {
+        if (currentYscale->y_min < 0.0 && currentYscale->y_max>0.0) {
             // draw zero line
             painter.setPen(penSolid);
             painter.drawLine(QPointF(0.0, zero_point.y()),
@@ -476,8 +480,8 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
             scaleFromPixToXY(selStart.x(), selStart.y(), xs, ys);
             x_min = std::min(x, xs);
             x_max = std::max(x, xs);
-            y_min = std::min(y, ys);
-            y_max = std::max(y, ys);
+            currentYscale->y_min = std::min(y, ys);
+            currentYscale->y_max = std::max(y, ys);
         }
         update();
         event->accept();
@@ -541,15 +545,14 @@ static void find_min_max(std::vector<double>::const_iterator first,
     double& min_val, double& max_val)
 {
     min_val = max_val = *first;
-    auto p = first;
-    for (; p != last; ++p) {
-        if (!std::isnan(*p)) {
-            min_val = max_val = *p;
+    for (; first != last; ++first) {
+        if (!std::isnan(*first)) {
+            min_val = max_val = *first;
             break;
         }
     }
-    for (; p != last; ++p) {
-        auto val = *p;
+    for (; first != last; ++first) {
+        auto val = *first;
         if (!std::isnan(val)) {
             min_val = std::min(min_val, val);
             max_val = std::max(max_val, val);
@@ -571,16 +574,16 @@ void RenderArea::autoScale()
         x_min = yTrace.x0;
         x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
     }
-    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), y_min, y_max);
+    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
     update();
 }
 
 void RenderArea::verticalShrink()
 {
-    double nymin = 1.5 * y_min - 0.5 * y_max,
-        nymax = 1.5 * y_max - 0.5 * y_min;
-    y_min = nymin;
-    y_max = nymax;
+    double nymin = 1.5 * currentYscale->y_min - 0.5 * currentYscale->y_max,
+        nymax = 1.5 * currentYscale->y_max - 0.5 * currentYscale->y_min;
+    currentYscale->y_min = nymin;
+    currentYscale->y_max = nymax;
     update();
 }
 
@@ -650,11 +653,11 @@ void RenderArea::copyToClipboard()
 void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
-    dlg.setValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
+    dlg.setValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
         show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
     if (dlg.exec()) {
         settings_modified = true;
-        dlg.getValues(do_autoscale_on_load, x_min, x_max, y_min, y_max, numtraces,
+        dlg.getValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
             show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
@@ -673,40 +676,36 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 {
     x_min = x_center - (x_center - x_min) / factor;
     x_max = x_center + (x_max - x_center) / factor;
-    y_min = y_center - (y_center - y_min) / factor;
-    y_max = y_center + (y_max - y_center) / factor;
+    currentYscale->y_min = y_center - (y_center - currentYscale->y_min) / factor;
+    currentYscale->y_max = y_center + (currentYscale->y_max - y_center) / factor;
     update();
 }
 
 void RenderArea::renderTrace(hkLib::hkTreeNode* TrRecord, std::istream& infile)
 {
     using namespace hkLib;
-    if (yTrace.isValid()) {
-        tracebuffer.enqueue(new DisplayTrace(std::move(yTrace)));
-        while (tracebuffer.size() > numtraces) {
-            delete tracebuffer.dequeue();
-        }
-    }
+    DisplayTrace newYtrace{};
     char dataformat = TrRecord->getChar(TrDataFormat);
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     clipped = tracedatakind & ClipBit;
-    yTrace.y_unit = qs_from_sv(TrRecord->getString<8>(TrYUnit));
-    yTrace.x_unit = qs_from_sv(TrRecord->getString<8>(TrXUnit));
-    yTrace.x0 = TrRecord->extractLongReal(TrXStart), yTrace.deltax = TrRecord->extractLongReal(TrXInterval);
+    newYtrace.y_unit = qs_from_sv(TrRecord->getString<8>(TrYUnit));
+    newYtrace.x_unit = qs_from_sv(TrRecord->getString<8>(TrXUnit));
+    newYtrace.x0 = TrRecord->extractLongReal(TrXStart);
+    newYtrace.deltax = TrRecord->extractLongReal(TrXInterval);
     ndatapoints = TrRecord->extractValue<uint32_t>(TrDataPoints);
-    yTrace.data.resize(ndatapoints);
+    newYtrace.data.resize(ndatapoints);
 	try {
 		if (dataformat == DFT_int16) {
-			ReadScaleAndConvert<int16_t>(infile, *TrRecord, ndatapoints, yTrace.data.data());
+			ReadScaleAndConvert<int16_t>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
 		}
 		else if (dataformat == DFT_int32) {
-			ReadScaleAndConvert<int32_t>(infile, *TrRecord, ndatapoints, yTrace.data.data());
+			ReadScaleAndConvert<int32_t>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
 		}
 		else if (dataformat == DFT_float) {
-			ReadScaleAndConvert<float>(infile, *TrRecord, ndatapoints, yTrace.data.data());
+			ReadScaleAndConvert<float>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
 		}
 		else if (dataformat == DFT_double) {
-			ReadScaleAndConvert<double>(infile, *TrRecord, ndatapoints, yTrace.data.data());
+			ReadScaleAndConvert<double>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
 		}
 		else {
 			QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
@@ -714,10 +713,11 @@ void RenderArea::renderTrace(hkLib::hkTreeNode* TrRecord, std::istream& infile)
 		}
 	}
 	catch (const std::exception& e) {
-		yTrace.data.clear();
+//        newYtrace.data.clear();
 		QMessageBox::warning(nullptr, "File Error", e.what());
 		return;
 	}
+    addTrace(std::move(newYtrace));
     if (do_autoscale_on_load) { autoScale(); }
     else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
@@ -732,6 +732,7 @@ void RenderArea::addTrace(DisplayTrace&& dt)
         }
     }
     yTrace = std::move(dt);
+    currentYscale = &yScales[yTrace.getYUnit()];
     if (do_autoscale_on_load) { autoScale(); }
     setMouseTracking(true);
     update();
@@ -803,7 +804,7 @@ QPointF RenderArea::scaleToQPF(double x, double y)
 void RenderArea::scaleFromPixToXY(double px, double py, double& x, double& y)
 {
     x = x_min + px / double(width()) * (x_max - x_min);
-    y = y_max - (py - button_row_height) / double(height() - button_row_height) * (y_max - y_min);
+    y = currentYscale->y_max - (py - button_row_height) / double(height() - button_row_height) * (currentYscale->y_max - currentYscale->y_min);
 }
 
 void RenderArea::scaleFromPixToXY(const QPointF& p, double& x, double& y)
@@ -820,9 +821,20 @@ void RenderArea::shiftByPixel(QPoint shift)
         update();
     }
     if (shift.y() != 0) {
-        auto dy = -(y_max - y_min) / height() * double(shift.y());
-        y_max += dy;
-        y_min += dy;
+        if (shift_all_y_scales) {
+            for (auto& ys : yScales) {
+                //shift each y scale
+                auto dy = -(ys.y_max - ys.y_min) / height() * double(shift.y());
+                ys.y_max += dy;
+                ys.y_min += dy;
+            }
+        }
+        else {
+            auto& ys = *currentYscale;
+            auto dy = -(ys.y_max - ys.y_min) / height() * double(shift.y());
+            ys.y_max += dy;
+            ys.y_min += dy;
+        }
         update();
     }
 }
@@ -832,6 +844,7 @@ void RenderArea::loadSettings()
     QSettings s;
     s.beginGroup("renderarea");
     do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    shift_all_y_scales = s.value("shift_all_y_scales", int(shift_all_y_scales)).toInt();
     show_grid_horz = s.value("show_grid_horz", int(show_grid_horz)).toInt();
     show_grid_vert = s.value("show_grid_vert", int(show_grid_vert)).toInt();
     background_traces_hidden = !s.value("overlay", 1).toInt();
@@ -849,6 +862,7 @@ void RenderArea::saveSettings()
     QSettings s;
     s.beginGroup("renderarea");
     s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("shift_all_y_scales", int(shift_all_y_scales));
     s.setValue("show_grid_horz", int(show_grid_horz));
     s.setValue("show_grid_vert", int(show_grid_vert));
     s.setValue("overlay", int(!background_traces_hidden));
