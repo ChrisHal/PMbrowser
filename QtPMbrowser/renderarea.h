@@ -133,6 +133,7 @@ private:
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
     QQueue<DisplayTrace*> tracebuffer;
     bool background_traces_hidden;
+    bool shift_all_y_scales{ true };
     bool clipped; // Amp. was clipping
     double x_min, x_max;
     priv_Scale* currentYscale{};
