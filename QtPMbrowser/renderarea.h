@@ -21,6 +21,7 @@
 #define RENDERAREA_H
 
 #include <QtGlobal>
+#include <QMap>
 #include <QWidget>
 #include <QVector>
 #include <QQueue>
@@ -123,6 +124,8 @@ private:
 
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
     QCheckBox chkAutoScale, chkOverlay;
+    struct priv_Scale { double y_min{}; double y_max{}; };
+    QMap <QString, priv_Scale> yScales{};
     QGridLayout* my_layout{};
     int button_row_height{};
 
@@ -131,7 +134,8 @@ private:
     QQueue<DisplayTrace*> tracebuffer;
     bool background_traces_hidden;
     bool clipped; // Amp. was clipping
-    double x_min, x_max, y_min, y_max;
+    double x_min, x_max;
+    priv_Scale* currentYscale{};
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;
