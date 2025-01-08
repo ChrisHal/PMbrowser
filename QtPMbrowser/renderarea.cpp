@@ -97,6 +97,8 @@ RenderArea::RenderArea(QWidget* parent) :
     //chkOverlay.setStyle(btnstyle);
     chkOverlay.setToolTip("overlay traces");
 
+    currentYscale = &yScales["A"];
+
 }
 
 RenderArea::~RenderArea()
@@ -654,11 +656,11 @@ void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
     dlg.setValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
-        show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
+        show_grid_horz, show_grid_vert, shift_all_y_scales, color_grid, color_trace, color_bktrace);
     if (dlg.exec()) {
         settings_modified = true;
         dlg.getValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
-            show_grid_horz, show_grid_vert, color_grid, color_trace, color_bktrace);
+            show_grid_horz, show_grid_vert, shift_all_y_scales, color_grid, color_trace, color_bktrace);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
             delete tracebuffer.dequeue();

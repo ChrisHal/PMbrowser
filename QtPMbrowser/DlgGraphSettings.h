@@ -37,10 +37,11 @@ public:
 	~DlgGraphSettings();
 	void setValues(bool autoscale, double xmin, double xmax,
 		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert,
+        bool shift_all_y_scales,
         QColor color_grid, QColor color_trace, QColor color_bktrace);
 	void getValues(bool& autoscale, double& xmin, double& xmax,
 		double& ymin, double& ymax, int& numtraces,
-        bool& grid_horz, bool& gird_vert,
+        bool& grid_horz, bool& gird_vert, bool& shift_all_y_scales,
         QColor& color_grid, QColor& color_trace, QColor& color_bktrace);
 
 private:
