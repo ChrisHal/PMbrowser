@@ -97,6 +97,8 @@ RenderArea::RenderArea(QWidget* parent) :
     //chkOverlay.setStyle(btnstyle);
     chkOverlay.setToolTip("overlay traces");
 
+    currentYscale = &yScales["A"];
+
 }
 
 RenderArea::~RenderArea()
