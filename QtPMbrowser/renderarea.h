@@ -72,8 +72,8 @@ public:
     bool isXYmode() { return xTrace.isValid(); };
 
     bool YtraceHasX() { return (yTrace.isValid() && yTrace.has_x_trace()); };
-    bool isSettingsModified() { return settings_modified; };
-    bool isAutoscaleEnabled() { return do_autoscale_on_load; };
+    bool isSettingsModified() const { return settings_modified; };
+    bool isAutoscaleEnabled() const { return do_autoscale_on_load; };
     void saveSettings();
     void loadSettings();
 
