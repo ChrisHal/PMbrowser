@@ -56,7 +56,8 @@ metadata as table
 +++++++++++++++++
 
 Export :index:`metadata <export; metadata>` as tab-delimited table. The table can be either copied to the clipboard
-or saved to file.
+or saved to a file.
+
 Parameters marked for export (see :ref:`select-params-dlg-label` ) 
 will be included in the export. In addition to these parameters, the first four columns of the table will contain
 the group, series, sweep, and trace counts.
@@ -289,6 +290,8 @@ can be set using the context menu of the **tree-view**. By default, the referenc
 'Setting and Ranges' Dialog
 ***************************
 
-Here you can configure the display area: axis ranges, *autoscale on load*, if grid lines should be displayed, colors
-used for drawing traces and grid
+Here you can configure the display area: axis ranges, *autoscale on load*, if grid lines should be displayed,
+if panning / dragging (see :ref:`graph-panning-lable`)
+should affect all Y scales or only the scale pertaining to the data unit of the currently selected trace,
+colors used for drawing traces and grid
 and the number of overlay traces to be kept in the internal display buffer.
