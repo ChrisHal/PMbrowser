@@ -197,6 +197,7 @@ namespace hkLib {
 		{ true,true,"seScanRate","", PMparameter::LongReal, 72}
 		} };
 
+	constexpr char list_seperator{ ';' };
 
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 	{
@@ -332,7 +333,7 @@ namespace hkLib {
 				auto a = node.extractValueOpt<double>(offset);
 				auto b = node.extractValueOpt<double>(offset + 8);
 				if (a && b) {
-					ss << '(' << *a << ','
+					ss << '(' << *a << list_seperator
 						<< *b << ')';
 				}
 				else {
@@ -345,7 +346,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 4; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
@@ -360,7 +361,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 8; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
@@ -374,7 +375,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 16; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
