@@ -25,13 +25,23 @@
 int main(int argc, char *argv[])
 {
     //QApplication::setStyle("fusion");
-    std::locale::global(std::locale("")); // use system locale
     QApplication a(argc, argv);
     QCoreApplication::setOrganizationName("CRHalaszovichMD");
     QCoreApplication::setOrganizationDomain("halaszovich.de");
     QCoreApplication::setApplicationName("PM browser");
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QApplication::setWindowIcon(QIcon(QString(":/myappico.ico"))); // sets icon in OS X dock
+
+    {
+        QSettings settings;
+        const bool use_C_locale = settings.value("Preferences/use_C_locale", false).toBool();
+        if (use_C_locale) {
+            QLocale::setDefault(QLocale::c());
+        }
+        else {
+            std::locale::global(std::locale("")); // use system locale
+        }
+    }
     PMbrowserWindow w;
     w.show();
     if (argc > 1) {
