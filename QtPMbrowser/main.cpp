@@ -17,6 +17,7 @@
     along with PMbrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <locale>
 #include "pmbrowserwindow.h"
 #include <QApplication>
 #include <QSettings>
@@ -24,6 +25,7 @@
 int main(int argc, char *argv[])
 {
     //QApplication::setStyle("fusion");
+    std::locale::global(std::locale("")); // use system locale
     QApplication a(argc, argv);
     QCoreApplication::setOrganizationName("CRHalaszovichMD");
     QCoreApplication::setOrganizationDomain("halaszovich.de");
