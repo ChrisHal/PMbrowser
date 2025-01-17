@@ -180,7 +180,7 @@ void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vect
     progress.setValue(num_traces);
 }
 
-static hkLib::hkTreeNode* item2node(const QTreeWidgetItem* item)
+static const hkLib::hkTreeNode* item2node(const QTreeWidgetItem* item)
 {
     return item->data(0, Qt::UserRole).value<hkTreeNode*>();
 }
