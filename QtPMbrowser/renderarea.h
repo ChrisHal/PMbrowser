@@ -48,7 +48,7 @@ public:
     explicit RenderArea(QWidget *parent = nullptr);
     ~RenderArea();
     bool noData() { return !yTrace.isValid(); };
-    void renderTrace(hkLib::hkTreeNode* trace, std::istream& infile);
+    void renderTrace(const hkLib::hkTreeNode* trace, std::istream& infile);
     void addTrace(DisplayTrace&& dt);
 
     /// <summary>

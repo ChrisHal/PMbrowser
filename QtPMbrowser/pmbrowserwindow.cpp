@@ -111,7 +111,7 @@ void PMbrowserWindow::populateTreeView()
     tree->expandAll();
 }
 
-void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
+void PMbrowserWindow::traceSelected(const QTreeWidgetItem* item, const hkTreeNode* trace)
 {
     (void)item;
     int indextrace = trace->extractInt32(TrTraceID);
@@ -138,7 +138,7 @@ void PMbrowserWindow::traceSelected(QTreeWidgetItem* item, hkTreeNode* trace)
     ui->renderArea->renderTrace(trace, this->infile);
 }
 
-void PMbrowserWindow::collectChildTraces(QTreeWidgetItem* item, int level, std::vector<hkTreeNode*>& trace_list)
+void PMbrowserWindow::collectChildTraces(const QTreeWidgetItem* item, int level, std::vector<hkTreeNode*>& trace_list)
 {
     if (!item->isHidden()) {
         if (level < hkTreeNode::LevelTrace) {
@@ -180,7 +180,7 @@ void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vect
     progress.setValue(num_traces);
 }
 
-static hkLib::hkTreeNode* item2node(QTreeWidgetItem* item)
+static hkLib::hkTreeNode* item2node(const QTreeWidgetItem* item)
 {
     return item->data(0, Qt::UserRole).value<hkTreeNode*>();
 }
@@ -228,7 +228,7 @@ hkLib::hkTreeView PMbrowserWindow::getVisibleNodes()
     return tree;
 }
 
-void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
+void PMbrowserWindow::sweepSelected(const QTreeWidgetItem* item, const hkTreeNode* sweep) {
     (void)item;
     QString txt = MakeSweepLabel(*sweep) + '\n';
     std::string str;
@@ -239,7 +239,7 @@ void PMbrowserWindow::sweepSelected(QTreeWidgetItem* item, hkTreeNode* sweep) {
     ui->textEdit->append(txt);
 }
 
-void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
+void PMbrowserWindow::seriesSelected(const QTreeWidgetItem* item, const hkTreeNode* series)
 {
     (void)item;
     QString label = qs_from_sv(series->getString(SeLabel));
@@ -252,7 +252,7 @@ void PMbrowserWindow::seriesSelected(QTreeWidgetItem* item, hkTreeNode* series)
     ui->textEdit->append(txt);
 }
 
-void PMbrowserWindow::groupSelected(QTreeWidgetItem* item, hkTreeNode* group)
+void PMbrowserWindow::groupSelected(const QTreeWidgetItem* item, const hkTreeNode* group)
 {
     (void)item;
     QString label = qs_from_sv(group->getString(GrLabel));
@@ -1009,12 +1009,12 @@ void PMbrowserWindow::on_actionSelect_Parameters_triggered()
     }
 }
 
-void ::PMbrowserWindow::printAllParameters(QTreeWidgetItem* item)
+void ::PMbrowserWindow::printAllParameters(const QTreeWidgetItem* item)
 {
     printAllParameters(item->data(0, Qt::UserRole).value<hkTreeNode*>());
 }
 
-void ::PMbrowserWindow::printAllParameters(hkTreeNode* n)
+void ::PMbrowserWindow::printAllParameters(const hkTreeNode* n)
 {
     std::string s;
     QString lb;
