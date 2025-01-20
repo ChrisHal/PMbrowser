@@ -52,7 +52,7 @@ page: https://github.com/ChrisHal/PMbrowser/releases . Use the command `sudo dpk
 to install.
 
 Your distribution needs to provide packages for the Qt libraries, version 6. If it does not, you can
-use the selfcontained *AppImage* (see :ref:`appimage`) or the flatpak (see :ref:`flatpak`).
+use the flatpak (see :ref:`flatpak`).
 
 Documentation will be installed in :file:`/usr/share/doc/QtPMbrowser` by default.
 The executable :file:`QtPMbrowser` in :file:`/usr/bin` .
