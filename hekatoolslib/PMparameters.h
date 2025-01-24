@@ -99,7 +99,7 @@ namespace hkLib {
 		}
 	};
 
-	extern std::array<PMparameter, 34>parametersTrace;
+    extern std::array<PMparameter, 35>parametersTrace;
 	extern std::array<PMparameter, 18>parametersSweep;
 	extern std::array<PMparameter, 15>parametersSeries;
 	extern std::array<PMparameter, 5>parametersGroup;

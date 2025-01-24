@@ -48,11 +48,12 @@ namespace hkLib {
 	};
 
 
-	std::array<PMparameter, 34> parametersTrace{ {
+    std::array<PMparameter, 35> parametersTrace{ {
 		{false,false,"TrMark","",PMparameter::Int32,0},
 		{false,false,"TrLabel","",PMparameter::String32,4},
 		{false,false,"TraceID","",PMparameter::Int32,36},
-		{false,false,"Holding","V|A",PMparameter::LongReal,408},
+        {false,false,"DataPoints","",PMparameter::Int32,44},
+        {false,false,"Holding","V|A",PMparameter::LongReal,408},
 		{false,false,"Internal Solution","",PMparameter::Int32,48},
 		{false,false,"Leak traces","",PMparameter::Int32,60},
 		{false,false,"TrDataKind","",PMparameter::Set16,64},
