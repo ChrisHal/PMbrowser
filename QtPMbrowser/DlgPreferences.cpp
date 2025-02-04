@@ -36,6 +36,7 @@ DlgPreferences::DlgPreferences(QWidget *parent)
 	else ui->radioButtonCustomExt->setChecked(true);
 	ui->lineEditVmon->setText(settings.value("Vmon", "Vmon").toString());
 	ui->lineEditImon->setText(settings.value("Imon", "Imon").toString());
+	ui->checkBoxSysLocale->setChecked(!settings.value("use_C_locale", false).toBool());
 
 	settings.endGroup();
 }
@@ -56,6 +57,7 @@ void DlgPreferences::accept()
 	settings.setValue("selectionButton", selection);
 	settings.setValue("Vmon", ui->lineEditVmon->text());
 	settings.setValue("Imon", ui->lineEditImon->text());
+	settings.setValue("use_C_locale", !ui->checkBoxSysLocale->isChecked());
 	settings.endGroup();
 	switch (selection) {
 	case 0:

@@ -140,6 +140,8 @@ namespace hkLib {
         }
 
         if (createJSON) {
+            locale_manager lm;
+            lm.setLocale("C");
             filename.replace_extension("json");
             std::ofstream jsonfile(filename);
             if (!jsonfile) {
@@ -221,6 +223,8 @@ namespace hkLib {
                 }
                 writeNpyArray(outfile, data);
                 if (createJSON) {
+                    locale_manager lm;
+                    lm.setLocale("C");
                     std::filesystem::path filepath(filename);
                     filepath.replace_extension("json");
                     std::ofstream jsonfile(filepath);

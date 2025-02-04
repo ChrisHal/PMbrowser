@@ -16,6 +16,8 @@ autoscale
 
 Select autoscale from the context menue of the **graph area** or use the keyboard shortcut `Ctrl+A`.
 
+.. _graph-panning-lable:
+
 panning
 -------
 

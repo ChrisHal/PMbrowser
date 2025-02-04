@@ -21,6 +21,7 @@
 #include <sstream>
 #include <iomanip>
 #include <array>
+#include <algorithm>
 #include <cassert>
 #include "hkTree.h"
 #include "PMparameters.h"
@@ -47,11 +48,12 @@ namespace hkLib {
 	};
 
 
-	std::array<PMparameter, 34> parametersTrace{ {
+    std::array<PMparameter, 35> parametersTrace{ {
 		{false,false,"TrMark","",PMparameter::Int32,0},
 		{false,false,"TrLabel","",PMparameter::String32,4},
 		{false,false,"TraceID","",PMparameter::Int32,36},
-		{false,false,"Holding","V|A",PMparameter::LongReal,408},
+        {false,false,"DataPoints","",PMparameter::Int32,44},
+        {false,false,"Holding","V|A",PMparameter::LongReal,408},
 		{false,false,"Internal Solution","",PMparameter::Int32,48},
 		{false,false,"Leak traces","",PMparameter::Int32,60},
 		{false,false,"TrDataKind","",PMparameter::Set16,64},
@@ -196,6 +198,7 @@ namespace hkLib {
 		{ true,true,"seScanRate","", PMparameter::LongReal, 72}
 		} };
 
+	constexpr char list_seperator{ ';' };
 
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
 	{
@@ -331,7 +334,7 @@ namespace hkLib {
 				auto a = node.extractValueOpt<double>(offset);
 				auto b = node.extractValueOpt<double>(offset + 8);
 				if (a && b) {
-					ss << '(' << *a << ','
+					ss << '(' << *a << list_seperator
 						<< *b << ')';
 				}
 				else {
@@ -344,7 +347,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 4; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
@@ -359,7 +362,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 8; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
@@ -373,7 +376,7 @@ namespace hkLib {
 				for (std::size_t i = 0; i < 16; ++i) {
 					auto v = node.extractValueOpt<double>(offset + 8 * i);
 					if (v) {
-						ss << *v << ",";
+						ss << *v << list_seperator;
 					}
 					else {
 						ss << "n/a";
@@ -454,27 +457,55 @@ namespace hkLib {
 		return tmp;
 	}
 
-	void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss) const
+    constexpr auto format_json_needs_quotes = std::to_array({
+        PMparameter::Set16, // for bitfields
+        PMparameter::DateTime, // weird PowerMod date
+        PMparameter::StringType,
+        PMparameter::String8, // String of length 8
+        PMparameter::String16,
+        PMparameter::String32,
+        PMparameter::String80,
+        PMparameter::String400,
+        PMparameter::Boolean,
+        PMparameter::LongReal2, // array of 2 doubles
+        PMparameter::LongReal4, // array of 4 doubles
+        PMparameter::LongReal8,	// array of 8 double
+        PMparameter::LongReal16,  // 16 double
+        PMparameter::RecordingMode,
+        PMparameter::AmpModeName,
+        PMparameter::UserParamDesc4, // 4x UserParamDesc
+        PMparameter::UserParamDesc2,
+        PMparameter::UserParamDesc8
+    });
+
+
+    void PMparameter::formatJSON(const hkTreeNode& node, std::ostream& ss, bool include_unit) const
 	{
-		ss << '"' << name << "\": \"";
+        const bool do_quotes = include_unit || (std::find(format_json_needs_quotes.begin(),
+                                         format_json_needs_quotes.end(), data_type)!=
+                               format_json_needs_quotes.end());
+        ss << '"' << name << "\": ";
+        if(do_quotes) ss << '"';
 		std::stringstream tmp;
 		formatValueOnly(node, tmp);
 		ss << JSONescapeQuotes(tmp.str());
-		// hack to choose correctly for holding voltage or current
-		if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
-		{
-			int recording_mode = node.getChar(TrRecordingMode);
-			if (recording_mode == CClamp) {
-				ss << " A";
-			}
-			else {
-				ss << " V";
-			}
-		}
-		else {
-			if (unit[0]) { ss << ' ' << JSONescapeQuotes(unit); }
-		}
-		ss << '"';
+        if(include_unit) {
+            // hack to choose correctly for holding voltage or current
+            if (node.getLevel() == hkTreeNode::LevelTrace && std::strcmp("V|A", unit) == 0)
+            {
+                int recording_mode = node.getChar(TrRecordingMode);
+                if (recording_mode == CClamp) {
+                    ss << " A";
+                }
+                else {
+                    ss << " V";
+                }
+            }
+            else {
+                if (unit[0]) { ss << ' ' << JSONescapeQuotes(unit); }
+            }
+        }
+        if(do_quotes) ss << '"';
 	}
 
 	void PMparameter::format(const hkTreeNode& node, std::string& s) const

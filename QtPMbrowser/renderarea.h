@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2022, 2025 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -48,7 +48,7 @@ public:
     explicit RenderArea(QWidget *parent = nullptr);
     ~RenderArea();
     bool noData() { return !yTrace.isValid(); };
-    void renderTrace(hkLib::hkTreeNode* trace, std::istream& infile);
+    void renderTrace(const hkLib::hkTreeNode* trace, std::istream& infile);
     void addTrace(DisplayTrace&& dt);
 
     /// <summary>

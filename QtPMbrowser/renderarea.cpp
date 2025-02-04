@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2022 Christian R. Halaszovich
+    Copyright 2020 - 2022, 2025 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -683,7 +683,7 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
     update();
 }
 
-void RenderArea::renderTrace(hkLib::hkTreeNode* TrRecord, std::istream& infile)
+void RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& infile)
 {
     using namespace hkLib;
     DisplayTrace newYtrace{};
