@@ -21,6 +21,7 @@
 #include "pmbrowserwindow.h"
 #include <QApplication>
 #include <QSettings>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -39,8 +40,9 @@ int main(int argc, char *argv[])
             QLocale::setDefault(QLocale::c());
         }
         else {
-            std::locale::global(std::locale("")); // use system locale
+            std::locale::global(std::locale(QLocale::system().name().toUtf8())); // use system locale
         }
+        qDebug() << std::locale().name();
     }
     PMbrowserWindow w;
     w.show();
