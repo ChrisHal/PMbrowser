@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 def getMeta(npy_filename):
     json_filename=os.path.splitext(npy_filename)[0]+".json"
-    with open(json_filename, "r", encoding='latin1') as f:
+    with open(json_filename, "r", encoding='utf8') as f:
         meta=json.load(f)
     return meta
 
