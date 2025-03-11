@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(QtPMbrowser VERSION 2.4.3 LANGUAGES CXX)
-set(MY_COPYRIGHT "2020 - 2024 Christian R. Halaszovich")
+set(MY_COPYRIGHT "2020 - 2025 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "<p>This is a bugfix release.</p>")
 
 set(CMAKE_CXX_STANDARD 20)

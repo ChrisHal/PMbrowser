@@ -51,7 +51,7 @@ namespace hkLib {
 			LongReal2, // array of 2 doubles
 			LongReal4, // array of 4 doubles
 			LongReal8,	// array of 8 double
-			LongReal16,  // 8 double
+            LongReal16,  // 16 double
 			RecordingMode,
 			RelativeTime,
 			AmpModeName,
@@ -67,7 +67,7 @@ namespace hkLib {
 
 		void format(const hkTreeNode& node, std::string& s) const;
 		void format(const hkTreeNode& node, std::ostream& ss) const;
-		void formatJSON(const hkTreeNode& node, std::ostream& ss) const;
+        void formatJSON(const hkTreeNode& node, std::ostream& ss, bool include_unit = false) const;
 		void formatValueOnly(const hkTreeNode& node, std::ostream& ss) const;
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace hkLib {
 		}
 	};
 
-	extern std::array<PMparameter, 34>parametersTrace;
+    extern std::array<PMparameter, 35>parametersTrace;
 	extern std::array<PMparameter, 18>parametersSweep;
 	extern std::array<PMparameter, 15>parametersSeries;
 	extern std::array<PMparameter, 5>parametersGroup;

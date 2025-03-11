@@ -1,23 +1,15 @@
+# This Python file uses the following encoding: utf-8
 import os.path
 import sys
 import json
 import glob
 import numpy as np
-import matplotlib.pyplot as plt
 
 def getMeta(npy_filename):
     json_filename=os.path.splitext(npy_filename)[0]+".json"
     with open(json_filename, "r", encoding='utf8') as f:
         meta=json.load(f)
     return meta
-
-def createX(meta):
-    x0=meta['x_0']
-    deltax=meta['delta_x']
-    numpnts=meta['numpnts']
-    lastx=x0+deltax*numpnts
-    x=np.linspace(x0,lastx,numpnts)
-    return x
 
 def getNpyBasename(npy_filename):
     return os.path.basename(os.path.splitext(npy_filename)[0])
@@ -31,7 +23,7 @@ class TraceKey:
         self.series=int(c[2])
         self.sweep=int(c[3])
         self.trace=c[4]
-        
+
     def __lt__(self, other):
         if(self.prefix<other.prefix):
             return True
@@ -54,28 +46,23 @@ class TraceKey:
         return False
 
 if __name__ == '__main__':
-    if(len(sys.argv)<2):
+    if(len(sys.argv)<4):
         print("""
-usage: plot_traces <pattern1>.npy [<pattern2>.npy ...]
-example: plot_traces "PM_1_*V*.npy" "PM_2_*Vm.npy"
+usage: calc_mean <1st point> <last point> <file1>.npy [additional files ...]
+example: calc_mean 0 100 PM_1_1_1_Imon.npy
         """,file=sys.stderr)
         sys.exit(-1)
-    fig, ax = plt.subplots()
+    p1=int(sys.argv[1])
+    p2=int(sys.argv[2])
     filelist=[]
-    for index in range(1,len(sys.argv)): 
+    for index in range(3,len(sys.argv)):
         filelist+=glob.glob(sys.argv[index])
     if(len(filelist)==0):
         print("no matching files found",file=sys.stderr)
         sys.exit(-1)
     filelist.sort(key=TraceKey)
-    for npy_filename in filelist: 
+    for npy_filename in filelist:
         basename=os.path.basename(os.path.splitext(npy_filename)[0])
         meta=getMeta(npy_filename)
-        x_w=createX(meta)
         y_w=np.load(npy_filename)
-        ax.plot(x_w,y_w,label=basename)
-    ax.legend()
-    ax.set_xlabel('['+meta['unit_x']+']')
-    ax.set_ylabel('['+meta['unit_y']+']')
-    plt.show()
-
+        print(basename, meta['params']['sweep']['Rel. Sweep Time'], np.mean(y_w[p1:p2]), sep='\t')
