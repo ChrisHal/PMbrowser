@@ -39,9 +39,8 @@ int main(int argc, char *argv[])
         if (use_C_locale) {
             QLocale::setDefault(QLocale::c());
         }
-        else {
-            std::locale::global(std::locale(QLocale::system().name().toUtf8())); // use system locale
-        }
+        QLocale loc;
+        std::locale::global(std::locale(loc.name().toUtf8()));
         qDebug() << std::locale().name();
     }
     PMbrowserWindow w;
