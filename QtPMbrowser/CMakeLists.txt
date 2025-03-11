@@ -5,6 +5,11 @@ project(QtPMbrowser LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(MACOSX_BUNDLE_BUNDLE_NAME "PM browser")
+set(MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
+set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}")
+set(MACOSX_BUNDLE_COPYRIGHT "${MY_COPYRIGHT}")
+
 # Set up AUTOMOC and some sensible defaults for runtime execution
 # When using Qt 6.3, you can replace the code block below with
 
