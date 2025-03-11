@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2024 Christian R. Halaszovich
+    Copyright 2020 - 2025 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -803,7 +803,8 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
         try {
             hkLib::locale_manager lm;
             if (dlg.useSystemLocale()) {
-                lm.setLocale(""); // set default locale
+                // for macOS, we need to jump to some hoops
+                lm.setLocale(QLocale::system().name().toUtf8());
             }
             else {
                 lm.setLocale("C");
