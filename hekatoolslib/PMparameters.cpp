@@ -48,7 +48,7 @@ namespace hkLib {
 	};
 
 
-    std::array<PMparameter, 35> parametersTrace{ {
+    std::array<PMparameter, 36> parametersTrace{ {
 		{false,false,"TrMark","",PMparameter::Int32,0},
 		{false,false,"TrLabel","",PMparameter::String32,4},
 		{false,false,"TraceID","",PMparameter::Int32,36},
@@ -57,6 +57,7 @@ namespace hkLib {
 		{false,false,"Internal Solution","",PMparameter::Int32,48},
 		{false,false,"Leak traces","",PMparameter::Int32,60},
 		{false,false,"TrDataKind","",PMparameter::Set16,64},
+		{false,false,"Clipping","",PMparameter::Set16_Bit5,64},
 		{false,false,"UseXStart","",PMparameter::Boolean,66},
 		{false,true,"Recording Mode","",PMparameter::RecordingMode,68},
 		{false,false,"XStart","s",PMparameter::LongReal,112},
@@ -329,6 +330,17 @@ namespace hkLib {
 				break;
 			case Boolean:
 				ss << std::boolalpha << bool(node.getChar(offset));
+				break;
+			case Set16_Bit5: {
+				auto v = node.extractValueOpt<std::uint16_t>(offset);
+				if (v) {
+					bool b = (*v) & (1u << 5);
+					ss << std::boolalpha << b;
+				}
+				else {
+					data_na = true;
+				}
+			}
 				break;
 			case LongReal2: {
 				auto a = node.extractValueOpt<double>(offset);

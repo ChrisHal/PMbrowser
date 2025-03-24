@@ -47,6 +47,7 @@ namespace hkLib {
 			String80,
 			String400,
 			Boolean,
+			Set16_Bit5, // check if bit 5 is set
 			InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
 			LongReal2, // array of 2 doubles
 			LongReal4, // array of 4 doubles
@@ -99,7 +100,7 @@ namespace hkLib {
 		}
 	};
 
-    extern std::array<PMparameter, 35>parametersTrace;
+    extern std::array<PMparameter, 36>parametersTrace;
 	extern std::array<PMparameter, 18>parametersSweep;
 	extern std::array<PMparameter, 15>parametersSeries;
 	extern std::array<PMparameter, 5>parametersGroup;
