@@ -9,6 +9,7 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "PM browser")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}")
 set(MACOSX_BUNDLE_COPYRIGHT "${MY_COPYRIGHT}")
+set(MACOSX_BUNDLE_ICON_FILE PMbrowser.icns)
 
 # Set up AUTOMOC and some sensible defaults for runtime execution
 # When using Qt 6.3, you can replace the code block below with
@@ -21,6 +22,10 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 # qt_standard_project_setup()
+
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/PMbrowser.icns")
+set_source_files_properties(${app_icon_macos} PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources")
 
 qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
  	DisplayTrace.cpp DisplayTrace.h
@@ -39,6 +44,7 @@ qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
 
 	QtPMbrowser.qrc
 	${PROJECT_BINARY_DIR}/QtPMbrowser.rc
+	${app_icon_macos}
 
     DlgChoosePathAndPrefix.ui
 	DlgGraphSettings.ui
