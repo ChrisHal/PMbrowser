@@ -129,9 +129,13 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
     painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
     font.setPixelSize(24);
+    if(button_row_height<0){
+        QWidget* w=my_layout->itemAtPosition(0,0)->widget();
+        assert(w!=nullptr);
+        button_row_height = w->frameGeometry().bottom();
+    }
     painter.setFont(font);
     if (noData()) {
-        button_row_height = my_layout->cellRect(0, 0).height() + 1;
         painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter, "no data to display");
     }
     else {

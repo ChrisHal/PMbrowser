@@ -127,7 +127,7 @@ private:
     struct priv_Scale { double y_min{}; double y_max{}; };
     QMap <QString, priv_Scale> yScales{};
     QGridLayout* my_layout{};
-    int button_row_height{};
+    int button_row_height{-1};
 
     size_t ndatapoints;
     DisplayTrace xTrace, yTrace; // TODO at least yTrace should be a pointer?
