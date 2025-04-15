@@ -70,12 +70,14 @@ void DlgGraphSettings::selectBkTraceColor()
 	}
 }
 
-void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, double ymin, double ymax,
+void DlgGraphSettings::setValues(bool autoscale, bool global_autoscale,
+    double xmin, double xmax, double ymin, double ymax,
 	int numtraces, bool grid_horz, bool grid_vert, bool shift_all_y_scales,
 	QColor color_grid, QColor color_trace, QColor color_bktrace)
 {
 	QLocale loc{};
 	ui.checkBoxEnableAutoscale->setChecked(autoscale);
+    ui.checkBoxGlobalAutoscale->setChecked(global_autoscale);
 	ui.checkBoxHorzGrid->setChecked(grid_horz);
 	ui.checkBoxVertGrid->setChecked(grid_vert);
 	ui.checkBoxShiftAllYScales->setChecked(shift_all_y_scales);
@@ -92,12 +94,14 @@ void DlgGraphSettings::setValues(bool autoscale, double xmin, double xmax, doubl
 	ui.widgetColorBkTrace->setPalette(QPalette(m_color_bktrace));
 }
 
-void DlgGraphSettings::getValues(bool& autoscale, double& xmin, double& xmax, double& ymin, double& ymax,
+void DlgGraphSettings::getValues(bool& autoscale, bool& global_autoscale,
+    double& xmin, double& xmax, double& ymin, double& ymax,
 	int& numtraces, bool& grid_horz, bool& grid_vert, bool& shift_all_y_scales,
 	QColor& color_grid, QColor& color_trace, QColor& color_bktrace)
 {
 	QLocale loc{};
 	autoscale = ui.checkBoxEnableAutoscale->isChecked();
+    global_autoscale = ui.checkBoxGlobalAutoscale->isChecked();
 	grid_horz = ui.checkBoxHorzGrid->isChecked();
 	grid_vert = ui.checkBoxVertGrid->isChecked();
 	shift_all_y_scales = ui.checkBoxShiftAllYScales->isChecked();
