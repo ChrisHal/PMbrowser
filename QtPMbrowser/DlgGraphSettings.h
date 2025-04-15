@@ -35,11 +35,11 @@ private slots:
 public:
 	DlgGraphSettings(QWidget *parent = Q_NULLPTR);
 	~DlgGraphSettings();
-	void setValues(bool autoscale, double xmin, double xmax,
+    void setValues(bool autoscale, bool global_autoscale, double xmin, double xmax,
 		double ymin, double ymax, int numtraces, bool grid_horz, bool gird_vert,
         bool shift_all_y_scales,
         QColor color_grid, QColor color_trace, QColor color_bktrace);
-	void getValues(bool& autoscale, double& xmin, double& xmax,
+    void getValues(bool& autoscale, bool& global_autoscale, double& xmin, double& xmax,
 		double& ymin, double& ymax, int& numtraces,
         bool& grid_horz, bool& gird_vert, bool& shift_all_y_scales,
         QColor& color_grid, QColor& color_trace, QColor& color_bktrace);

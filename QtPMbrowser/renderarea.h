@@ -140,6 +140,7 @@ private:
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
     bool do_autoscale_on_load;
+    bool global_autoscale;
     bool show_grid_horz{ true }, show_grid_vert{ true };
     bool isTraceDragging, isPinching;
     // for marquee zoom function:

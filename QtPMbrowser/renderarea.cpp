@@ -50,7 +50,8 @@ RenderArea::RenderArea(QWidget* parent) :
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
-    do_autoscale_on_load{ true }, isTraceDragging{ false }, isPinching{false},
+    do_autoscale_on_load{ true }, global_autoscale{false},
+    isTraceDragging{ false }, isPinching{false},
     isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
     settings_modified{ false }
 {
@@ -565,18 +566,51 @@ static void find_min_max(std::vector<double>::const_iterator first,
 void RenderArea::autoScale()
 {
     if (noData()) return;
-    if (isXYmode()) {
-        find_min_max(xTrace.data.cbegin(), xTrace.data.cend(), x_min, x_max);
+
+    double g_x_min{std::numeric_limits<double>::max()},
+        g_x_max{std::numeric_limits<double>::min()},
+        g_y_min{std::numeric_limits<double>::max()},
+        g_y_max{std::numeric_limits<double>::min()};
+    // first find min/max for x
+    if(isXYmode()){
+        find_min_max(xTrace.data.cbegin(), xTrace.data.cend(), g_x_min, g_x_max);
     }
     else if (yTrace.has_x_trace()) {
-        find_min_max(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend(), x_min, x_max);
+        find_min_max(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend(), g_x_min, g_x_max);
     }
     else
     {
-        x_min = yTrace.x0;
-        x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
+        g_x_min = yTrace.x0;
+        g_x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
     }
-    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
+    if(global_autoscale){
+        for(const auto* t: tracebuffer){
+            if(t->has_x_trace()){
+                double minx, maxx;
+                find_min_max(t->p_xdata->cbegin(), t->p_xdata->cend(), minx, maxx);
+                g_x_min=std::min(g_x_min,minx);
+                g_x_max=std::max(g_x_max, maxx);
+            }
+        }
+    }
+    x_min=g_x_min;
+    x_max=g_x_max;
+
+
+    //find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
+    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), g_y_min, g_y_max);
+    if(global_autoscale){
+        for(const auto* t: tracebuffer){
+            // only touch scaling for curent y-unit
+            if(t->y_unit!=yTrace.y_unit) continue;
+            double miny, maxy;
+            find_min_max(t->data.cbegin(), t->data.cend(), miny, maxy);
+                g_y_min=std::min(g_y_min,miny);
+                g_y_max=std::max(g_y_max, maxy);
+            }
+    }
+    currentYscale->y_min=g_y_min;
+    currentYscale->y_max=g_y_max;
     update();
 }
 
@@ -655,11 +689,13 @@ void RenderArea::copyToClipboard()
 void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
-    dlg.setValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
+    dlg.setValues(do_autoscale_on_load, global_autoscale,
+        x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
         show_grid_horz, show_grid_vert, shift_all_y_scales, color_grid, color_trace, color_bktrace);
     if (dlg.exec()) {
         settings_modified = true;
-        dlg.getValues(do_autoscale_on_load, x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
+        dlg.getValues(do_autoscale_on_load, global_autoscale,
+            x_min, x_max, currentYscale->y_min, currentYscale->y_max, numtraces,
             show_grid_horz, show_grid_vert, shift_all_y_scales, color_grid, color_trace, color_bktrace);
         // if numtraces has been reduced we want to get rid of excess traces
         while (tracebuffer.size() > numtraces) {
@@ -845,7 +881,8 @@ void RenderArea::loadSettings()
 {
     QSettings s;
     s.beginGroup("renderarea");
-    do_autoscale_on_load = s.value("do_autoscale_on_load", int(do_autoscale_on_load)).toInt();
+    do_autoscale_on_load = s.value("do_autoscale_on_load", do_autoscale_on_load).toBool();
+    global_autoscale = s.value("global_autoscale", global_autoscale).toBool();
     shift_all_y_scales = s.value("shift_all_y_scales", int(shift_all_y_scales)).toInt();
     show_grid_horz = s.value("show_grid_horz", int(show_grid_horz)).toInt();
     show_grid_vert = s.value("show_grid_vert", int(show_grid_vert)).toInt();
@@ -863,7 +900,8 @@ void RenderArea::saveSettings()
 {
     QSettings s;
     s.beginGroup("renderarea");
-    s.setValue("do_autoscale_on_load", int(do_autoscale_on_load));
+    s.setValue("do_autoscale_on_load", do_autoscale_on_load);
+    s.setValue("global_autoscale", global_autoscale);
     s.setValue("shift_all_y_scales", int(shift_all_y_scales));
     s.setValue("show_grid_horz", int(show_grid_horz));
     s.setValue("show_grid_vert", int(show_grid_vert));
