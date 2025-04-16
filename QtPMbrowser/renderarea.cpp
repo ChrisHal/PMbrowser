@@ -587,7 +587,7 @@ void RenderArea::autoScale()
         g_x_min = yTrace.x0;
         g_x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
     }
-    if(global_autoscale){
+    if(global_autoscale && !background_traces_hidden){
         for(const auto* t: tracebuffer){
             if(t->has_x_trace()){
                 double minx, maxx;
@@ -603,7 +603,7 @@ void RenderArea::autoScale()
 
     //find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
     find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), g_y_min, g_y_max);
-    if(global_autoscale){
+    if(global_autoscale && !background_traces_hidden){
         for(const auto* t: tracebuffer){
             // only touch scaling for curent y-unit
             if(t->y_unit!=yTrace.y_unit) continue;
