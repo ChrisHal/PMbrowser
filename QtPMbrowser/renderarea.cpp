@@ -451,14 +451,6 @@ void RenderArea::leaveEvent(QEvent* event)
     event->accept();
 }
 
-//void RenderArea::resizeEvent(QResizeEvent* event)
-//{
-//    btnWipe.move(0, 0);
-//    auto h = btnAutoScale.height();
-//    btnAutoScale.move(0, h);
-//    QWidget::resizeEvent(event);
-//}
-
 void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 {
     if (noData()) {
@@ -601,16 +593,14 @@ void RenderArea::autoScale()
     x_max=g_x_max;
 
 
-    //find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
-    find_min_max(yTrace.data().cbegin(), yTrace.data().cend(), g_y_min, g_y_max);
+    yTrace.getDataMinMax(g_y_min, g_y_max);
     if(global_autoscale && !background_traces_hidden){
         for(const auto* t: tracebuffer){
             // only touch scaling for curent y-unit
             if(t->getYUnit()!=yTrace.getYUnit()) continue;
-            double miny, maxy;
-            find_min_max(t->data().cbegin(), t->data().cend(), miny, maxy);
-                g_y_min=std::min(g_y_min,miny);
-                g_y_max=std::max(g_y_max, maxy);
+            auto [miny, maxy] = t->getDataMinMax();
+            g_y_min = std::min(g_y_min, miny);
+            g_y_max = std::max(g_y_max, maxy);
             }
     }
     currentYscale->y_min=g_y_min;

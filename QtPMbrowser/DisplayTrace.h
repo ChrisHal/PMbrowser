@@ -94,7 +94,11 @@ public:
     std::tuple<double, double> getDataMinMax() const
     {
         return { y_min, y_max };
-    }
+    };
+    void getDataMinMax(double& ymin, double& ymax) {
+        ymin = y_min;
+        ymax = y_max;
+    };
 private:
     void set_ymin_ymax();
     double m_x0{}, m_deltax{}, y_min{}, y_max{};
