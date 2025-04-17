@@ -145,7 +145,7 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
             drawMarquee(painter);
         }
         else {
-            if (isXYmode() && xTrace.data.size() != yTrace.data.size()) {
+            if (isXYmode() && xTrace.size() != yTrace.size()) {
                 font.setPixelSize(16);
                 painter.setFont(font);
                 painter.drawText(rectangle, Qt::AlignHCenter | Qt::AlignVCenter,
@@ -577,15 +577,15 @@ void RenderArea::autoScale()
         g_y_max{std::numeric_limits<double>::min()};
     // first find min/max for x
     if(isXYmode()){
-        find_min_max(xTrace.data.cbegin(), xTrace.data.cend(), g_x_min, g_x_max);
+        find_min_max(xTrace.data().cbegin(), xTrace.data().cend(), g_x_min, g_x_max);
     }
     else if (yTrace.has_x_trace()) {
         find_min_max(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend(), g_x_min, g_x_max);
     }
     else
     {
-        g_x_min = yTrace.x0;
-        g_x_max = yTrace.x0 + static_cast<double>(yTrace.data.size() - 1) * yTrace.deltax;
+        g_x_min = yTrace.x0();
+        g_x_max = yTrace.x0() + static_cast<double>(yTrace.size() - 1) * yTrace.deltax();
     }
     if(global_autoscale && !background_traces_hidden){
         for(const auto* t: tracebuffer){
@@ -602,13 +602,13 @@ void RenderArea::autoScale()
 
 
     //find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), currentYscale->y_min, currentYscale->y_max);
-    find_min_max(yTrace.data.cbegin(), yTrace.data.cend(), g_y_min, g_y_max);
+    find_min_max(yTrace.data().cbegin(), yTrace.data().cend(), g_y_min, g_y_max);
     if(global_autoscale && !background_traces_hidden){
         for(const auto* t: tracebuffer){
             // only touch scaling for curent y-unit
-            if(t->y_unit!=yTrace.y_unit) continue;
+            if(t->getYUnit()!=yTrace.getYUnit()) continue;
             double miny, maxy;
-            find_min_max(t->data.cbegin(), t->data.cend(), miny, maxy);
+            find_min_max(t->data().cbegin(), t->data().cend(), miny, maxy);
                 g_y_min=std::min(g_y_min,miny);
                 g_y_max=std::max(g_y_max, maxy);
             }
@@ -726,40 +726,44 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
 void RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& infile)
 {
     using namespace hkLib;
-    DisplayTrace newYtrace{};
     char dataformat = TrRecord->getChar(TrDataFormat);
     uint16_t tracedatakind = TrRecord->extractUInt16(TrDataKind);
     clipped = tracedatakind & ClipBit;
-    newYtrace.y_unit = qs_from_sv(TrRecord->getString<8>(TrYUnit));
-    newYtrace.x_unit = qs_from_sv(TrRecord->getString<8>(TrXUnit));
-    newYtrace.x0 = TrRecord->extractLongReal(TrXStart);
-    newYtrace.deltax = TrRecord->extractLongReal(TrXInterval);
     ndatapoints = TrRecord->extractValue<uint32_t>(TrDataPoints);
-    newYtrace.data.resize(ndatapoints);
 	try {
+        std::vector<double> new_data(ndatapoints);
 		if (dataformat == DFT_int16) {
-			ReadScaleAndConvert<int16_t>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
+			ReadScaleAndConvert<int16_t>(infile, *TrRecord, ndatapoints, new_data.data());
 		}
 		else if (dataformat == DFT_int32) {
-			ReadScaleAndConvert<int32_t>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
+			ReadScaleAndConvert<int32_t>(infile, *TrRecord, ndatapoints, new_data.data());
 		}
 		else if (dataformat == DFT_float) {
-			ReadScaleAndConvert<float>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
+			ReadScaleAndConvert<float>(infile, *TrRecord, ndatapoints, new_data.data());
 		}
 		else if (dataformat == DFT_double) {
-			ReadScaleAndConvert<double>(infile, *TrRecord, ndatapoints, newYtrace.data.data());
+			ReadScaleAndConvert<double>(infile, *TrRecord, ndatapoints, new_data.data());
 		}
 		else {
 			QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
 			return;
 		}
+        
+        addTrace(DisplayTrace(
+            qs_from_sv(TrRecord->getString<8>(TrXUnit)),
+            qs_from_sv(TrRecord->getString<8>(TrYUnit)),
+            TrRecord->extractLongReal(TrXStart),
+            TrRecord->extractLongReal(TrXInterval),
+            std::move(new_data)
+            )
+        );
 	}
 	catch (const std::exception& e) {
 //        newYtrace.data.clear();
 		QMessageBox::warning(nullptr, "File Error", e.what());
 		return;
 	}
-    addTrace(std::move(newYtrace));
+
     if (do_autoscale_on_load) { autoScale(); }
     else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
