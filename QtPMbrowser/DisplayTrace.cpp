@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2022 Christian R. Halaszovich
+	Copyright 2020 - 2022, 2025 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -26,12 +26,6 @@
 #include "renderarea.h"
 #include <vector>
 #include <qstring_helper.h>
-
-//DisplayTrace::DisplayTrace(double X0, double DeltaX, const QString& xUnit,
-//	const QString& yUnit, const QVector<double>& Data):
-//	x0{ X0 }, deltax{ DeltaX }, x_unit{ xUnit }, y_unit{ yUnit }, data{ Data }
-//{
-//}
 
 DisplayTrace::DisplayTrace(const std::vector<std::array<double, 2>>& xy_trace, const std::string_view& DACunit) : x0{ 0.0 },
 deltax{ 0.0 }, x_unit{"s"}, y_unit{ qs_from_sv(DACunit) }, data{},
@@ -110,7 +104,6 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 	}
 	if (special_color) {
 		auto old_color = painter.pen().color();
-		//painter.setPen(QColorConstants::Red); // since Qt5.14
 		painter.setPen(0xff0000);
 		painter.drawPath(path);
 		painter.setPen(old_color);
@@ -163,7 +156,6 @@ void DisplayTrace::convertToInterpolated(std::size_t numpoints, double new_x0, d
 {
 	assert(has_x_trace());
 	if (has_x_trace()) {
-		// double new_delta{ (p_xdata->back() - new_x0) / (numpoints - 1) };
 		std::vector<double> tmp(numpoints);
 		for (std::size_t i = 0; i < numpoints; ++i) {
 			tmp.at(i) = interp(new_x0 + new_delta * i);
@@ -173,5 +165,4 @@ void DisplayTrace::convertToInterpolated(std::size_t numpoints, double new_x0, d
 		data = std::move(tmp);
 		p_xdata = nullptr;
 	}
-	//return *this;
 }
