@@ -572,7 +572,7 @@ void RenderArea::autoScale()
         find_min_max(xTrace.data().cbegin(), xTrace.data().cend(), g_x_min, g_x_max);
     }
     else if (yTrace.has_x_trace()) {
-        find_min_max(yTrace.p_xdata->cbegin(), yTrace.p_xdata->cend(), g_x_min, g_x_max);
+        find_min_max(yTrace.x_data().cbegin(), yTrace.x_data().cend(), g_x_min, g_x_max);
     }
     else
     {
@@ -583,7 +583,7 @@ void RenderArea::autoScale()
         for(const auto* t: tracebuffer){
             if(t->has_x_trace()){
                 double minx, maxx;
-                find_min_max(t->p_xdata->cbegin(), t->p_xdata->cend(), minx, maxx);
+                find_min_max(t->x_data().cbegin(), t->x_data().cend(), minx, maxx);
                 g_x_min=std::min(g_x_min,minx);
                 g_x_max=std::max(g_x_max, maxx);
             }

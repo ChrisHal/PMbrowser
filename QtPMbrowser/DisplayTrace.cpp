@@ -120,6 +120,16 @@ void DisplayTrace::render(QPainter& painter, RenderArea* display)
 	}
 }
 
+const std::vector<double>& DisplayTrace::x_data() const
+{
+	if (p_xdata) {
+		return *p_xdata;
+	}
+	else {
+		throw std::runtime_error("trying to acces non-existing x-data");
+	}
+}
+
 std::tuple<double, double> DisplayTrace::getDataMinMax(int pLeft, int pRight) const
 {
 	double min_val, max_val;

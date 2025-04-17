@@ -54,6 +54,7 @@ public:
 	void render(QPainter& painter, RenderArea* display);
 	bool isValid() const { return !m_data.empty(); }
     bool has_x_trace() const { return !!p_xdata; }
+    const std::vector<double>& x_data() const;
 
     /// <summary>
     /// Converts a x-y-trace to an y-only trace (the default)
@@ -95,7 +96,7 @@ public:
     {
         return { y_min, y_max };
     };
-    void getDataMinMax(double& ymin, double& ymax) {
+    void getDataMinMax(double& ymin, double& ymax) const {
         ymin = y_min;
         ymax = y_max;
     };
@@ -104,8 +105,6 @@ private:
     double m_x0{}, m_deltax{}, y_min{}, y_max{};
     QString x_unit, y_unit;
 	std::vector<double> m_data;
-public:
     std::unique_ptr<std::vector<double> > p_xdata;
-
 };
 
