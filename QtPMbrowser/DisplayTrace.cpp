@@ -28,7 +28,7 @@
 #include <qstring_helper.h>
 
 DisplayTrace::DisplayTrace(const QString& xunit, const QString& yunit, double x0, double deltax, std::vector<double>&& data):
-	x_unit{xunit},y_unit{yunit},m_x0{x0},m_deltax{deltax},m_data{std::move(data)}
+    m_x0{x0},m_deltax{deltax},x_unit{xunit},y_unit{yunit},m_data{std::move(data)}
 {
 	set_ymin_ymax();
 }
