@@ -50,7 +50,7 @@ RenderArea::RenderArea(QWidget* parent) :
     clipped{ false },
     x_min{ 0.0 }, x_max{ 0.0 },
     a_x{}, b_x{}, a_y{}, b_y{}, numtraces{ 10 },
-    do_autoscale_on_load{ true }, global_autoscale{false},
+    do_autoscale_on_load{ true }, global_autoscale{ true },
     isTraceDragging{ false }, isPinching{false},
     isSelecting{ false }, selStart{}, selEnd{}, tempPixMap{ nullptr },
     settings_modified{ false }
