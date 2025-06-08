@@ -54,10 +54,12 @@ namespace hkLib {
         kDataFolderEndRecord = 10,
         kPlatformRecord = 20;
 
+    constexpr unsigned WARNFLAG_WNAMETRUNCATED = 1;
+
     void WriteIgorPlatformRecord(std::ostream& outfile);
     void WriteIgorProcedureRecord(std::ostream& outfile);
-    void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
-    void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, const std::string& wavename);
+    unsigned ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix);
+    unsigned ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, std::string& wavename);
 
 }
 
