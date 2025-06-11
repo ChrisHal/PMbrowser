@@ -485,7 +485,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
                 poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 err = ExportTrace(infile, *traceentry, *poutfile, wname);
                 size_t offset_end = poutfile->tellp();
-                pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
+                pfrh.numDataBytes = static_cast<std::int32_t>(offset_end - offset_record - sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_record);
                 poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_end);
