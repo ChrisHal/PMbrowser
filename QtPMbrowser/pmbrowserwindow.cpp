@@ -463,11 +463,11 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
         hkTreeNode* traceentry = v.value<hkTreeNode*>();
         auto tracelabel = QString::fromStdString(formTraceName(*traceentry, indextrace));
         QString wavename = prefix + QString("_%1_%2_%3_%4").arg(indexgroup).arg(indexseries).arg(indexsweep).arg(tracelabel);
-
         ui->textEdit->append("exporting " + wavename);
-        ui->textEdit->update();
 
         if (export_type == ExportType::Igor) {
+            auto wname = wavename.toStdString();
+            unsigned err{0};
             if (poutfile == nullptr) { // multi-file export
                 QString filename = path + wavename + ".ibw";
                 std::ofstream outfile(filename.toStdString(), std::ios::out | std::ios::binary);
@@ -476,19 +476,22 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
                     msg << "error opening file '" << filename.toStdString() << "' for writing: " << strerror(errno);
                     throw std::runtime_error(msg.str());
                 }
-                ExportTrace(infile, *traceentry, outfile, wavename.toStdString());
+                err = ExportTrace(infile, *traceentry, outfile, wname);
             }
             else {
                 PackedFileRecordHeader pfrh{};
                 pfrh.recordType = kWaveRecord;
                 size_t offset_record = poutfile->tellp();
                 poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
-                ExportTrace(infile, *traceentry, *poutfile, wavename.toStdString());
+                err = ExportTrace(infile, *traceentry, *poutfile, wname);
                 size_t offset_end = poutfile->tellp();
-                pfrh.numDataBytes = int32_t(offset_end - offset_record - sizeof(PackedFileRecordHeader));
+                pfrh.numDataBytes = static_cast<std::int32_t>(offset_end - offset_record - sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_record);
                 poutfile->write(reinterpret_cast<char*>(&pfrh), sizeof(PackedFileRecordHeader));
                 poutfile->seekp(offset_end);
+            }
+            if(err & WARNFLAG_WNAMETRUNCATED){
+                ui->textEdit->append("Warning: wavename truncated to " + QString::fromUtf8(wname));
             }
         }
         else if (export_type == ExportType::NPY) {
@@ -781,7 +784,10 @@ void PMbrowserWindow::on_actionExport_All_as_IBW_triggered()
             }
             ui->textEdit->append("exporting...");
             try {
-                ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
+                auto err = ExportAllTraces(infile, *datfile, path.toStdString(), prefix.toStdString());
+                if(err & hkLib::WARNFLAG_WNAMETRUNCATED) {
+                    ui->textEdit->append("wavename(s) truncated in export");
+                }
             }
             catch (std::exception& e) {
                 QString msg = QString("Error while exporting:\n%1").arg(QString(e.what()));

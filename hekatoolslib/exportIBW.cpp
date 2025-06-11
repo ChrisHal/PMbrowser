@@ -76,9 +76,10 @@ namespace hkLib {
 	}
 
 
-	void ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, const std::string& wavename)
+    unsigned ExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::ostream& outfile, std::string& wavename)
 	{
-		assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
+        unsigned err{0};
+        assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
 		char dataformat = TrRecord.getChar(TrDataFormat);
 
 		std::string xunit, yunit;
@@ -123,6 +124,11 @@ namespace hkLib {
 		bh.wfmSize = int32_t(numbytes_wh + sizeof(double) * trdatapoints);
 		// we will calculate checksum later, all other entries in bh remain 0
 		wh.type = NT_FP64;
+        if(wavename.length()>MAX_WAVE_NAME5){
+            err|=WARNFLAG_WNAMETRUNCATED;
+            // truncate front of wavename:
+            wavename = std::string("X") + wavename.substr(wavename.length() - MAX_WAVE_NAME5 +1);
+        }
 		wavename.copy(wh.bname, MAX_WAVE_NAME5);
 		wh.npnts = static_cast<int32_t>(trdatapoints);
 		wh.nDim[0] = static_cast<int32_t>(trdatapoints);
@@ -142,6 +148,7 @@ namespace hkLib {
 		outfile.write(reinterpret_cast<char*>(&wh), numbytes_wh);
 		outfile.write(reinterpret_cast<char*>(target.get()), sizeof(double) * trdatapoints);
 		outfile.write(note.data(), note.size());
+        return err;
 	}
 
 	// Warning: this ist not recognize as a valid record by Igor!
@@ -170,8 +177,9 @@ namespace hkLib {
 		outfile.write(reinterpret_cast<char*>(&pfhr), sizeof(PackedFileRecordHeader));
 	}
 
-	void ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)
+    unsigned ExportAllTraces(std::istream& datafile, DatFile& datf, const std::string& path, const std::string& prefix)
 	{
+        unsigned err{0};
 		int groupcount = 0;
 		for (auto& group : datf.GetPulTree().GetRootNode().Children) {
 			++groupcount;
@@ -189,11 +197,13 @@ namespace hkLib {
 						wavename << formTraceName(trace, tracecount);
 						std::string filename = path + wavename.str() + ".ibw";
 						std::ofstream outfile(filename, std::ios::binary | std::ios::out);
-						ExportTrace(datafile, trace, outfile, wavename.str());
+                        auto wname = wavename.str();
+                        err |= ExportTrace(datafile, trace, outfile, wname);
 					}
 				}
 			}
 		}
+        return err;
 	}
 
 }
