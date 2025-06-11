@@ -6,13 +6,9 @@ New User Tour
 
 We will take a quick tour around :program:`PMbrowser`, exploring typical use cases.
 
-.. image::  Screenshot_desktop_link.png
-	:align: right
-	:alt: dektop icon
-	
-After successful installation (see :doc:`installation`), you can start PMbrowser via the start menue or a link on the desktop.
+After successful installation (see :doc:`installation`), you can start PMbrowser via the start menue or from the Application folder.
 
-You can open a PatchMaster (Next) :file:`dat`-file via ``File`` --> ``Open...`` or by simply dragging the file onto the application windows.
+You can open a PatchMaster (Next) :file:`dat`-file via ``File`` --> ``Open...`` or by simply dragging the file onto the application windows [#fflatp]_.
 For this tour we will use the :file:`DemoData.dat` file provided with the PatchMaster installation.
 
 The Application Window (overview)
@@ -39,10 +35,10 @@ The application window is divided into three sections, the *tree view*, the *gra
 * In the **text area** mainly metadata will be printed according to the element being selected in the *tree view*.
 
   The menuitem ``File`` --> ``Select Parameters...`` calls up the :ref:`select-params-dlg-label` which lets you choose for each
-  level (*group*, *series*, *sweep* and *trace*) which metadata items :program:`PMbrowser` shall print.
+  level (*group*, *series*, *sweep* and *trace*) which metadata items :program:`PMbrowser` shall print and / or export.
  
  .. image:: Screenshot_tour_dlg_params.png
-	:width: 400px
+        :width: 650px
 	:align: center
 	:alt: dialog select parameters
 
@@ -73,7 +69,7 @@ Let's assume we want to specifically analyze traces from the **"Tails" experimen
 that were done with the "Toff" protocol ( = **"Toff" series**). We are only
 interested in the currents recorded, i.e. **"Imon" traces**.
 
-We go to the menuitem ``Tree`` --> ``Filter...`` to open the filter dialog. Change the *Group*, *Series* and *Trace* fields according to our
+Click the ``Filter...`` button to open the filter dialog. Change the *Group*, *Series* and *Trace* fields according to our
 whishes (see screenshot). Click "OK".
 
 .. image::  Screenshot_tour_step3.png
@@ -81,7 +77,7 @@ whishes (see screenshot). Click "OK".
 	:alt: tour step 3
 	
 Now all unwanted tree items and traces are hidden. Double-click on the tree item labled **"3 Tails"** to get a quick overview of the recording.
-(Menu ``Tree`` --> ``Show All`` will bring back the hidden items / traces.)
+(The ``undo filter`` button  will bring back the hidden items / traces.)
 
 .. image::  Screenshot_tour_step4.png
 	:width: 400px
@@ -123,4 +119,8 @@ In Igor's *Macros* menu you will find the item *Display Waves*. Select this to a
 **Metadata** will be included in the *wavenotes* of the imported waves. ``File`` --> ``Select Parameters...`` in :program:`PMbrowser`
 will bring forth a dialog that let's you choose which metadata-items to *export* in the wavenotes.
 
-.. [#] screenshots may represent older versions of the software and differ somewhat from the current version
+.. rubric:: Footnotes
+
+.. [#] Screenshots may represent older versions of the software and differ somewhat from the current version.
+
+.. [#fflatp] Drag'n'Drop is not yet suported for linux flatpak installations because of limitations of the Qt framework.
