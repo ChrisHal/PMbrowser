@@ -928,6 +928,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
             actUseStimAsX = menu.addAction("use stim. as x trace");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
+        try {
         if (response == actExport) {
             exportSubTreeAsIBW(item);
         }
@@ -958,6 +959,10 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
             else {
                 useStimAsX(node);
             }
+        }
+        }
+        catch (const std::exception& e) {
+            QMessageBox::warning(this, "Error", e.what());
         }
     }
 }
@@ -1095,14 +1100,9 @@ void PMbrowserWindow::create_stim_trace(const hkTreeNode* sweep, DisplayTrace& d
 
 void PMbrowserWindow::drawStimulus(const hkTreeNode* sweep)
 {
-    try {
-        DisplayTrace dt{};
-        create_stim_trace(sweep, dt);
-        ui->renderArea->addTrace(std::move(dt));
-    }
-    catch (const std::exception& e) {
-        QMessageBox::warning(this, "Error", e.what());
-    }
+    DisplayTrace dt{};
+    create_stim_trace(sweep, dt);
+    ui->renderArea->addTrace(std::move(dt));
 }
 
 void PMbrowserWindow::useStimAsX(const hkTreeNode* sweep)
