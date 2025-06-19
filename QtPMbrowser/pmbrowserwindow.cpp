@@ -1070,7 +1070,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         // use local amp state record
         amprecord.Data = series->Data.subspan(SeOldAmpState, AmplifierStateSize);
         std::string s;
-        formatParamList(amprecord, parametersAmpplifierState, s);
+        formatParamListPrint(amprecord, parametersAmpplifierState, s);
         ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
     }
     else {
