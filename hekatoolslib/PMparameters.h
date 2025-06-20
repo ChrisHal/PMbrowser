@@ -48,6 +48,7 @@ namespace hkLib {
             String128,
 			String80,
 			String400,
+            StringArray10x32, // arry of 10 strings, each 32 bytes long
 			Boolean,
 			Set16_Bit5, // check if bit 5 is set
 			InvLongReal, // invert double found in file, useful if e.g. conductance is given but we want resistance
@@ -55,6 +56,7 @@ namespace hkLib {
 			LongReal4, // array of 4 doubles
 			LongReal8,	// array of 8 double
             LongReal16,  // 16 double
+            LongReal10,
 			RecordingMode,
 			RelativeTime,
 			AmpModeName,
@@ -116,6 +118,7 @@ namespace hkLib {
 	extern std::array<PMparameter, 14> parametersStimSegment;
     extern std::array<PMparameter, 67> parametersChannel;
     extern std::array<PMparameter, 31> parametersStimulation;
+    extern std::array<PMparameter, 6> parametersStimRoot;
 
 	/// <summary>
 	/// Format parameters stored in node n using

@@ -217,8 +217,8 @@ namespace hkLib {
         {true,true,"chRelevantXSegment","",PMparameter::Int32,32},
         {true,true,"chRelevantYSegment","",PMparameter::Int32,36},
         {true,true,"chDacUnit","",PMparameter::String8,40},
-        {true,true,"chHolding","V",PMparameter::LongReal,48},
-        {true,true,"chLeakHolding","V",PMparameter::LongReal,56},
+        {true,true,"chHolding","",PMparameter::LongReal,48},
+        {true,true,"chLeakHolding","",PMparameter::LongReal,56},
         {true,true,"chLeakSize","",PMparameter::LongReal,64},
         {true,true,"chLeakHoldMode","",PMparameter::Byte,72},
         {true,true,"chLeakAlternate","",PMparameter::Boolean,73},
@@ -301,6 +301,15 @@ namespace hkLib {
         {true,true,"stOldEndMacro","",PMparameter::String32,208},
         {true,true,"sIsGapFree","",PMparameter::Boolean,240},
         {true,true,"sHandledExternally","",PMparameter::Boolean,241}
+    } };
+
+    std::array<PMparameter, 6> parametersStimRoot{ {
+        {true,true,"roVersion","",PMparameter::Int32,0},
+        {true,true,"roMark","",PMparameter::Int32,4},
+        {true,true,"roVersionName","",PMparameter::String32,8},
+        {true,true,"roMaxSamples","",PMparameter::Int32,40},
+        {true,true,"roParams","",PMparameter::LongReal10,48},
+        {true,true,"roParamText","",PMparameter::StringArray10x32,128}
     } };
 
 	constexpr char list_seperator{ ';' };
@@ -436,6 +445,13 @@ namespace hkLib {
 			case String400:
 				ss << iso_8859_1_to_utf8(node.getString<400>(offset));
 				break;
+            case StringArray10x32:
+                ss << '(';
+                for(int i=0;i<10;++i){
+                    ss << '"' << iso_8859_1_to_utf8(node.getString<32>(offset+i*32)) << '"' << list_seperator;
+                }
+                ss << ')';
+                break;
 			case Boolean:
 				ss << std::boolalpha << bool(node.getChar(offset));
 				break;
@@ -491,6 +507,20 @@ namespace hkLib {
 				}
 				ss << ")";
 				break;
+            case LongReal10:
+                ss << "(";
+                for (std::size_t i = 0; i < 10; ++i) {
+                    auto v = node.extractValueOpt<double>(offset + 8 * i);
+                    if (v) {
+                        ss << *v << list_seperator;
+                    }
+                    else {
+                        ss << "n/a";
+                        break;
+                    }
+                }
+                ss << ")";
+                break;
 			case LongReal16:
 				ss << "(";
 				for (std::size_t i = 0; i < 16; ++i) {
