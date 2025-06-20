@@ -27,12 +27,7 @@
 using namespace hkLib;
 
 void do_exploring(const hkTreeNode& root, int index, int ch) {
-    //std::array<double, 10> params{};
-    //char paramNames[10][32]{};
-    for (size_t i = 0; i < 10; ++i) {
-        std::cout << "p" << (i + 1) << " " << root.extractLongReal(i * 8 + 48)
-            << ", p-name: " << root.getString(128 + i * 32) << "\n";
-    }
+    formatParamListExportIBW(root,parametersStimRoot,std::cout);
     std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
     StimulationRecord stim{ stim_node };
@@ -40,12 +35,14 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
         << "\nstartSegment: " << stim.DataStartSegment
         << ", start time: " << stim.DataStartTime << '\n'
         << "num ch: " << stim.Channels.size() << ", actual DAC channels: " << stim.ActualDacChannels << '\n';
+    formatParamListExportIBW(stim_node,parametersStimulation,std::cout);
     const auto& ch_node = stim.Channels.at(ch);
     std::cout << "ch# (from 0):" << ch //<< "\ndac ch: " << ch_node.DacChannel
         << " mode: " << ch_node.DacMode << '\n' << "Linked: " << ch_node.LinkedChannel
         //<< "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
         //<< " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
         << "\n#segments: " << ch_node.Segments.size() << "\nexploring:\n";
+    formatParamListExportIBW(stim_node.Children.at(ch),parametersChannel,std::cout);
     int count{};
     for (const auto& segment : ch_node.Segments) {
         std::cout << "\nsegment " << ++count << "\n";
