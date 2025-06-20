@@ -274,10 +274,13 @@ namespace hkLib {
         }
         enum TreeLevel {
             LevelRoot = 0,
-            LevelGroup = 1,
+            LevelGroup = 1, // for pul tree
             LevelSeries = 2,
             LevelSweep = 3,
-            LevelTrace = 4
+            LevelTrace = 4,
+            StimulationLevel = 1, // for stim / pgf tree
+            ChannelLevel = 2,
+            StimSegmentLevel = 3
         };
         int32_t extractInt32(std::size_t offset) const { return extractValue<std::int32_t>(offset); };
         uint16_t extractUInt16(std::size_t offset) const { return extractValue<std::uint16_t>(offset); };

@@ -31,7 +31,8 @@ namespace hkLib {
 
 	struct PMparameter {
 		enum data_types {
-			Byte,
+            Byte,
+            Char,
 			Int16,
 			UInt16,
 			Set16, // for bitfields
@@ -44,6 +45,7 @@ namespace hkLib {
 			String8, // String of length 8
 			String16,
 			String32,
+            String128,
 			String80,
 			String400,
 			Boolean,
@@ -112,6 +114,8 @@ namespace hkLib {
 	extern const std::array<const char*, 4> AmpModeNames;
 
 	extern std::array<PMparameter, 14> parametersStimSegment;
+    extern std::array<PMparameter, 67> parametersChannel;
+    extern std::array<PMparameter, 31> parametersStimulation;
 
 	/// <summary>
 	/// Format parameters stored in node n using

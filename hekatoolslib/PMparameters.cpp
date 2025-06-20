@@ -199,6 +199,110 @@ namespace hkLib {
 		{ true,true,"seScanRate","", PMparameter::LongReal, 72}
 		} };
 
+    std::array<PMparameter, 67> parametersChannel{ {
+        {true,true,"chMark","",PMparameter::Int32,0},
+        {true,true,"chLinkedChannel","",PMparameter::Int32, 4},
+        {true,true,"chCompressionFactor","",PMparameter::Int32, 8},
+        {true,true,"chYUnit","",PMparameter::String8, 12},
+        {true,true,"chAdcChannel","",PMparameter::Int16, 20},
+        {true,true,"chAdcMode","",PMparameter::Byte, 22},
+        {true,true,"chDoWrite","",PMparameter::Boolean, 23},
+        {true,true,"stLeakStore","",PMparameter::Byte, 24},
+        {true,true,"chAmplMode","",PMparameter::Byte,25},
+        {true,true,"chOwnSegTime","",PMparameter::Boolean,26},
+        {true,true,"chSetLastSegVmemb","",PMparameter::Boolean,27},
+        {true,true,"chDacChannel","",PMparameter::Int16,28},
+        {true,true,"chDacMode","",PMparameter::Byte,30},
+        {true,true,"chHasLockInSquare","",PMparameter::Byte,31},
+        {true,true,"chRelevantXSegment","",PMparameter::Int32,32},
+        {true,true,"chRelevantYSegment","",PMparameter::Int32,36},
+        {true,true,"chDacUnit","",PMparameter::String8,40},
+        {true,true,"chHolding","V",PMparameter::LongReal,48},
+        {true,true,"chLeakHolding","V",PMparameter::LongReal,56},
+        {true,true,"chLeakSize","",PMparameter::LongReal,64},
+        {true,true,"chLeakHoldMode","",PMparameter::Byte,72},
+        {true,true,"chLeakAlternate","",PMparameter::Boolean,73},
+        {true,true,"chAltLeakAveraging","",PMparameter::Boolean,74},
+        {true,true,"chLeakPulseOn","",PMparameter::Boolean,75},
+        {true,true,"chStimToDacID","",PMparameter::Set16,76},
+        {true,true,"chCompressionMode","",PMparameter::Set16,78},
+        {true,true,"chCompressionSkip","",PMparameter::Int32,80},
+        {true,true,"chDacBit","",PMparameter::Int16,84},
+        {true,true,"chHasLockInSine","",PMparameter::Boolean,86},
+        {true,true,"chBreakMode","",PMparameter::Byte,87},
+        {true,true,"chZeroSeg","",PMparameter::Int32,88},
+        {true,true,"chStimSweep","",PMparameter::Int32,92},
+        {true,true,"chSine_Cycle","",PMparameter::LongReal,96},
+        {true,true,"chSine_Amplitude","",PMparameter::LongReal,104},
+        {true,true,"chLockIn_VReversal","V",PMparameter::LongReal,112},
+        {true,true,"chChirp_StartFreq","Hz",PMparameter::LongReal,120},
+        {true,true,"chChirp_EndFreq","Hz",PMparameter::LongReal,128},
+        {true,true,"chChirp_MinPoints","",PMparameter::LongReal,136},
+        {true,true,"chSquare_NegAmpl","",PMparameter::LongReal,144},
+        {true,true,"chSquare_DurFactor","",PMparameter::LongReal,152},
+        {true,true,"chLockIn_Skip","",PMparameter::Int32,160},
+        {true,true,"chPhoto_MaxCycles","",PMparameter::Int32,164},
+        {true,true,"chPhoto_SegmentNo","",PMparameter::Int32,168},
+        {true,true,"chLockIn_AvgCycles","",PMparameter::Int32,172},
+        {true,true,"chImaging_RoiNo","",PMparameter::Int32,176},
+        {true,true,"chChirp_Skip","",PMparameter::Int32,180},
+        {true,true,"chChirp_Amplitude","",PMparameter::LongReal,184},
+        {true,true,"chPhoto_Adapt","",PMparameter::Byte,192},
+        {true,true,"chSine_Kind","",PMparameter::Byte,193},
+        {true,true,"chChirp_PreChirp","",PMparameter::Byte,194},
+        {true,true,"chSine_Source","",PMparameter::Byte,195},
+        {true,true,"chSquare_NegSource","",PMparameter::Byte,196},
+        {true,true,"chSquare_PosSource","",PMparameter::Byte,197},
+        {true,true,"chChirp_Kind","",PMparameter::Byte,198},
+        {true,true,"chChirp_Source","",PMparameter::Byte,199},
+        {true,true,"chDacOffset","",PMparameter::LongReal,200},
+        {true,true,"chAdcOffset","",PMparameter::LongReal,208},
+        {true,true,"chTraceMathFormat","",PMparameter::Byte,216},
+        {true,true,"chHasChirp","",PMparameter::Boolean,217},
+        {true,true,"chSquare_Kind","",PMparameter::Byte,218},
+        {true,true,"chSquare_BaseIncr","",PMparameter::LongReal,224},
+        {true,true,"chSquare_Cycle","",PMparameter::LongReal,232},
+        {true,true,"chSquare_PosAmpl","",PMparameter::LongReal,240},
+        {true,true,"chCompressionOffset","",PMparameter::Int32,248},
+        {true,true,"chPhotoMode","",PMparameter::Int32,252},
+        {true,true,"chBreakLevel","",PMparameter::LongReal,256},
+        {true,true,"chTraceMath","",PMparameter::String128,264}
+    } };
+
+    std::array<PMparameter, 31> parametersStimulation{ {
+        {true,true,"stMark","",PMparameter::Int32,0},
+        {true,true,"stEntryName","",PMparameter::String32,4},
+        {true,true,"stFileName","",PMparameter::String32,36},
+        {true,true,"stAnalName","",PMparameter::String32,68},
+        {true,true,"stDataStartSegment","",PMparameter::Int32,100},
+        {true,true,"stDataStartTime","s",PMparameter::LongReal,104},
+        {true,true,"stSampleInterval","s",PMparameter::LongReal,112},
+        {true,true,"stSweepInterval","s",PMparameter::LongReal,120},
+        {true,true,"stLeakDelay","s",PMparameter::LongReal,128},
+        {true,true,"stFilterFactor","",PMparameter::LongReal,136},
+        {true,true,"stNumberSweeps","",PMparameter::Int32,144},
+        {true,true,"stNumberLeaks","",PMparameter::Int32,148},
+        {true,true,"stNumberAverages","",PMparameter::Int32,152},
+        {true,true,"stActualAdcChannels","",PMparameter::Int32,156},
+        {true,true,"stActualDacChannels","",PMparameter::Int32,160},
+        {true,true,"stExtTrigger","",PMparameter::Byte,164},
+        {true,true,"stNoStartWait","",PMparameter::Boolean,165},
+        {true,true,"stUseScanRates","",PMparameter::Boolean,166},
+        {true,true,"stNoContAq","",PMparameter::Boolean,167},
+        {true,true,"stHasLockIn","",PMparameter::Boolean,168},
+        {true,true,"stOldStartMacKind","",PMparameter::Char,169},
+        {true,true,"stOldEndMacKind","",PMparameter::Boolean,170},
+        {true,true,"stAutoRange","",PMparameter::Byte,171},
+        {true,true,"stBreakNext","",PMparameter::Boolean,172},
+        {true,true,"stIsExpanded","",PMparameter::Boolean,173},
+        {true,true,"stLeakCompMode","",PMparameter::Boolean,174},
+        {true,true,"stHasChirp","",PMparameter::Boolean,175},
+        {true,true,"stOldStartMacro","",PMparameter::String32,176},
+        {true,true,"stOldEndMacro","",PMparameter::String32,208},
+        {true,true,"sIsGapFree","",PMparameter::Boolean,240},
+        {true,true,"sHandledExternally","",PMparameter::Boolean,241}
+    } };
+
 	constexpr char list_seperator{ ';' };
 
 	void PMparameter::formatValueOnly(const hkTreeNode& node, std::ostream& ss) const
@@ -207,6 +311,7 @@ namespace hkLib {
 		try {
 			switch (data_type) {
 			case Byte:
+            case Char:
 			{
 				auto c = node.extractValueOpt<char>(offset);
 				if (c) {
@@ -325,6 +430,9 @@ namespace hkLib {
 			case String80:
 				ss << iso_8859_1_to_utf8(node.getString<80>(offset));
 				break;
+            case String128:
+                ss << iso_8859_1_to_utf8(node.getString<128>(offset));
+                break;
 			case String400:
 				ss << iso_8859_1_to_utf8(node.getString<400>(offset));
 				break;
