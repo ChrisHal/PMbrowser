@@ -1087,6 +1087,29 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 }
 
+void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
+{
+    assert(sweep->getLevel() == hkTreeNode::LevelSweep);
+    int stim_index = sweep->extractInt32(SwStimCount) - 1;
+    int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
+    const auto& stim_node = datfile->GetPgfTree().GetRootNode().Children.at(stim_index);
+    std::stringstream s;
+    s << "Stimulation record #" << (stim_index + 1) << " (sweep #" << (sweep_index+1)  << "):\n";
+    formatParamListPrint(stim_node, parametersStimSegment, s);
+    const auto Nch = stim_node.Children.size();
+    for (std::size_t i = 0; i < Nch; ++i) {
+        s << "\nChannel record #" << (i + 1) << '\n';
+        const auto& ch_node = stim_node.Children.at(i);
+        formatParamListPrint(ch_node, parametersChannel, s);
+        const auto& Nsegments = ch_node.Children.size();
+        for (std::size_t j = 0; j < Nsegments; ++j) {
+            s << "\nCh#" << (i + 1) << ", Segment record #" << (j + 1) << '\n';
+            formatParamListPrint(ch_node.Children.at(j), parametersStimSegment, s);
+        }
+    }
+    ui->textEdit->append(QString::fromUtf8(s.str()));
+}
+
 void PMbrowserWindow::create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const
 {
     assert(sweep->getLevel() == hkTreeNode::LevelSweep);
