@@ -1071,7 +1071,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         amprecord.Data = series->Data.subspan(SeOldAmpState, AmplifierStateSize);
         std::string s;
         formatParamListPrint(amprecord, parametersAmpplifierState, s);
-        ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString(s.c_str())));
+        ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString::fromUtf8(s)));
     }
     else {
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
@@ -1080,8 +1080,8 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
             auto ampstatecount = ampre.extractInt32(AmStateCount);
             amprecord.Data = ampre.Data.subspan(AmAmplifierState, AmplifierStateSize);
             std::string s;
-            formatParamList(amprecord, parametersAmpplifierState, s);
-            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString(s.c_str())));
+            formatParamListPrint(amprecord, parametersAmpplifierState, s);
+            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString::fromUtf8(s)));
         }
     }
 
