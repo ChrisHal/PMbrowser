@@ -139,15 +139,21 @@ namespace hkLib {
 	}
 
 	template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
-		const std::array<PMparameter, Nrows>& ar, std::string& str)
+		const std::array<PMparameter, Nrows>& ar, std::ostream& ss)
 	{
-		std::stringstream ss;
 		for (const PMparameter& p : ar) {
 			if (p.print) {
 				p.format(n, ss);
 				ss << "\n";
 			}
 		}
+	}
+
+	template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
+		const std::array<PMparameter, Nrows>& ar, std::string& str)
+	{
+		std::stringstream ss;
+		formatParamListPrint(n, ar, ss);
 		str = ss.str();
 	}
 
