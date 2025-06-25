@@ -23,6 +23,7 @@
 #include <array>
 #include <algorithm>
 #include <cassert>
+#include <string_view>
 #include "hkTree.h"
 #include "PMparameters.h"
 #include "time_handling.h"
@@ -30,7 +31,7 @@
 
 namespace hkLib {
 
-	const std::array<const char*, 7> RecordingModeNames = {
+    const std::array<const std::string_view, 7> RecordingModeNames = {
 		"Inside-Out",
 		"On-Cell",
 		"Outside-Out",
@@ -40,12 +41,13 @@ namespace hkLib {
 		"<none>"
 	};
 
-	const std::array<const char*, 4> AmpModeNames = {
+    const std::array<const std::string_view, 4> AmpModeNames = {
 		"TestMode",
 		"VCMode",
 		"CCMode",
 		"NoMode"
 	};
+
 
 
     std::array<PMparameter, 36> parametersTrace{ {
@@ -184,10 +186,10 @@ namespace hkLib {
 
 	std::array<PMparameter, 14> parametersStimSegment{ {
 		{true, true, "seMark", "", PMparameter::Int32, 0},
-		{ true, true, "seClass", "",  PMparameter::Byte ,4},
+        { true, true, "seClass", "",  PMparameter::StimSegmentClass ,4},
 		{ true, true, "seStoreKind", "", PMparameter::Byte, 5},
-		{ true,true,"seVoltageIncMode","",PMparameter::Byte,6},
-		{ true,true,"seDurationIncMode","",PMparameter::Byte,7},
+        { true,true,"seVoltageIncMode","",PMparameter::StimIncrementMode,6},
+        { true,true,"seDurationIncMode","",PMparameter::StimIncrementMode,7},
 		{ true,true,"seVoltage","V",PMparameter::LongReal ,8},
 		{ true,true,"seVoltageSource","",PMparameter::Int32,16},
 		{ true,true,"seDeltaVFactor", "",PMparameter::LongReal, 20},
@@ -546,6 +548,15 @@ namespace hkLib {
 			case AmpModeName:
 				ss << AmpModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
 				break;
+            case StimIncrementMode:
+                ss << IncrementModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+                break;
+            case StimSegmentClass:
+            {
+                auto index = static_cast<std::size_t>(node.getChar(offset));
+                ss << SegmentClassNames.at(index);
+            }
+                break;
 			case UserParamDesc8: {
 				formatUserParamDesc<8>(node, offset, ss);
 			}

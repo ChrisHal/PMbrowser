@@ -58,6 +58,8 @@ namespace hkLib {
             LongReal16,  // 16 double
             LongReal10,
 			RecordingMode,
+            StimIncrementMode,
+            StimSegmentClass,
 			RelativeTime,
 			AmpModeName,
 			UserParamDesc4, // 4x UserParamDesc
@@ -112,8 +114,8 @@ namespace hkLib {
 
 	extern std::array<PMparameter, 31>parametersAmpplifierState;
 
-	extern const std::array<const char*, 7>RecordingModeNames;
-	extern const std::array<const char*, 4> AmpModeNames;
+    extern const std::array<const std::string_view, 7>RecordingModeNames;
+    extern const std::array<const std::string_view, 4> AmpModeNames;
 
 	extern std::array<PMparameter, 14> parametersStimSegment;
     extern std::array<PMparameter, 67> parametersChannel;
