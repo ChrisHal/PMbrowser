@@ -915,7 +915,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         auto actPrintAllP = menu.addAction("print all parameters");
         auto actSetAsTime0 = menu.addAction("set as time reference");
         QAction* actAmpstate = nullptr, * actDrawStim = nullptr,
-            * actUseStimAsX{}, * actDrawSeriesStim = nullptr;
+            * actUseStimAsX{}, * actDrawSeriesStim = nullptr, * actStimulusProtocol{nullptr};
         const auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         if (node->getLevel() == hkTreeNode::LevelSeries) {
             menu.addSeparator();
@@ -925,6 +925,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
             actDrawStim = menu.addAction("show stimulus");
+            actStimulusProtocol = menu.addAction("print stimulus / pgf protocol");
             actUseStimAsX = menu.addAction("use stim. as x trace");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
@@ -951,6 +952,9 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         else if (actDrawStim != nullptr && actDrawStim == response) {
             drawStimulus(node);
+        }
+        else if(actStimulusProtocol != nullptr && response == actStimulusProtocol){
+            printStimProtocol(node);
         }
         else if (actUseStimAsX && actUseStimAsX == response) {
             if (ui->renderArea->noData() || ui->renderArea->YtraceHasX()) {
