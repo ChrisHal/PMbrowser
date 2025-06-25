@@ -1093,6 +1093,7 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
 {
+    try{
     assert(sweep->getLevel() == hkTreeNode::LevelSweep);
     int stim_index = sweep->extractInt32(SwStimCount) - 1;
     int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
@@ -1112,6 +1113,9 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
         }
     }
     ui->textEdit->append(QString::fromUtf8(s.str()));
+    } catch(const std::exception& e){
+        QMessageBox::warning(this,"Error","Error while printing list:\n" + QString::fromUtf8(e.what()));
+    }
 }
 
 void PMbrowserWindow::create_stim_trace(const hkTreeNode* sweep, DisplayTrace& dt) const
