@@ -49,6 +49,33 @@ namespace hkLib {
 	};
 
 
+    constexpr std::array ExtTriggerTypeNames {
+        "TrigNone"sv,
+        "TrigSeries"sv,
+        "TrigSweep"sv,
+        "TrigSweepNoLea"sv
+    };
+
+    constexpr std::array AmplModeTypeNames{
+        "AnyAmplMode"sv,
+        "VCAmplMode"sv,
+        "CCAmplMode"sv,
+        "IDensityMode"sv
+    };
+    constexpr std::array AdcTypeNames {
+        "AdcOff"sv,
+        "Analog"sv,
+        "Digitals"sv,
+        "Digital"sv,
+        "AdcVirtual"sv
+    };
+
+    std::array SegStoreTypeNames {
+        "SegNoStore"sv,
+        "SegStore"sv,
+        "SegStoreStart"sv,
+        "SegStoreEnd"sv
+    };
 
     std::array<PMparameter, 36> parametersTrace{ {
 		{false,false,"TrMark","",PMparameter::Int32,0},
@@ -187,7 +214,7 @@ namespace hkLib {
 	std::array<PMparameter, 14> parametersStimSegment{ {
 		{true, true, "seMark", "", PMparameter::Int32, 0},
         { true, true, "seClass", "",  PMparameter::StimSegmentClass ,4},
-		{ true, true, "seStoreKind", "", PMparameter::Byte, 5},
+        { true, true, "seStoreKind", "", PMparameter::SegStoreType, 5},
         { true,true,"seVoltageIncMode","",PMparameter::StimIncrementMode,6},
         { true,true,"seDurationIncMode","",PMparameter::StimIncrementMode,7},
 		{ true,true,"seVoltage","V",PMparameter::LongReal ,8},
@@ -207,14 +234,14 @@ namespace hkLib {
         {true,true,"chCompressionFactor","",PMparameter::Int32, 8},
         {true,true,"chYUnit","",PMparameter::String8, 12},
         {true,true,"chAdcChannel","",PMparameter::Int16, 20},
-        {true,true,"chAdcMode","",PMparameter::Byte, 22},
+        {true,true,"chAdcMode","",PMparameter::AdcTypeName, 22},
         {true,true,"chDoWrite","",PMparameter::Boolean, 23},
         {true,true,"stLeakStore","",PMparameter::Byte, 24},
-        {true,true,"chAmplMode","",PMparameter::Byte,25},
+        {true,true,"chAmplMode","",PMparameter::AmplModeType,25},
         {true,true,"chOwnSegTime","",PMparameter::Boolean,26},
         {true,true,"chSetLastSegVmemb","",PMparameter::Boolean,27},
         {true,true,"chDacChannel","",PMparameter::Int16,28},
-        {true,true,"chDacMode","",PMparameter::Byte,30},
+        {true,true,"chDacMode","",PMparameter::AdcTypeName,30},
         {true,true,"chHasLockInSquare","",PMparameter::Byte,31},
         {true,true,"chRelevantXSegment","",PMparameter::Int32,32},
         {true,true,"chRelevantYSegment","",PMparameter::Int32,36},
@@ -287,7 +314,7 @@ namespace hkLib {
         {true,true,"stNumberAverages","",PMparameter::Int32,152},
         {true,true,"stActualAdcChannels","",PMparameter::Int32,156},
         {true,true,"stActualDacChannels","",PMparameter::Int32,160},
-        {true,true,"stExtTrigger","",PMparameter::Byte,164},
+        {true,true,"stExtTrigger","",PMparameter::ExtTriggerTypeName,164},
         {true,true,"stNoStartWait","",PMparameter::Boolean,165},
         {true,true,"stUseScanRates","",PMparameter::Boolean,166},
         {true,true,"stNoContAq","",PMparameter::Boolean,167},
@@ -550,6 +577,18 @@ namespace hkLib {
 				break;
             case StimIncrementMode:
                 ss << IncrementModeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+                break;
+            case ExtTriggerTypeName:
+                ss << ExtTriggerTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+                break;
+            case AmplModeType:
+                ss << AmplModeTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+                break;
+            case AdcTypeName:
+                ss << AdcTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
+                break;
+            case SegStoreType:
+                ss << SegStoreTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
                 break;
             case StimSegmentClass:
             {

@@ -25,7 +25,10 @@
 #include <string>
 #include <sstream>
 #include <ostream>
+#include <string_view>
 #include "hkTree.h"
+
+using namespace std::string_view_literals;
 
 namespace hkLib {
 
@@ -62,10 +65,15 @@ namespace hkLib {
             StimSegmentClass,
 			RelativeTime,
 			AmpModeName,
+            ExtTriggerTypeName,
+            AmplModeType,
+            AdcTypeName,
+            SegStoreType,
 			UserParamDesc4, // 4x UserParamDesc
 			UserParamDesc2,
 			UserParamDesc8
 		};
+
 		bool exportIBW, print;
 		const char* const name;
 		const char* const unit;
