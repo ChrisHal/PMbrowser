@@ -63,7 +63,7 @@ namespace hkLib {
         "IDensityMode"sv
     };
     constexpr std::array AdcTypeNames {
-        "AdcOff"sv,
+        "Off"sv,
         "Analog"sv,
         "Digitals"sv,
         "Digital"sv,
