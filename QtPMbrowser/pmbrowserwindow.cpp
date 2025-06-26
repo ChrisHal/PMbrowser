@@ -1271,6 +1271,26 @@ void PMbrowserWindow::saveSettings()
         settings.setValue(p.name, p.toInt());
     }
     settings.endGroup();
+    settings.beginGroup("params_ampstate");
+    for (const auto& p : parametersAmpplifierState) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_stimulation");
+    for (const auto& p : parametersStimulation) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_channel");
+    for (const auto& p : parametersChannel) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_stimsegment");
+    for (const auto& p : parametersStimSegment) {
+        settings.setValue(p.name, p.toInt());
+    }
+    settings.endGroup();
     
 }
 
@@ -1309,6 +1329,26 @@ void PMbrowserWindow::loadSettings()
     settings.beginGroup("params_trace");
     for (auto& p : parametersTrace) {
         p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_ampstate");
+    for (auto& p : parametersAmpplifierState) {
+        p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_stimulation");
+    for (auto& p : parametersStimulation) {
+               p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_channel");
+    for (auto& p : parametersChannel) {
+               p.fromInt(settings.value(p.name, p.toInt()).toInt());
+    }
+    settings.endGroup();
+    settings.beginGroup("params_stimsegment");
+    for (auto& p : parametersStimSegment) {
+               p.fromInt(settings.value(p.name, p.toInt()).toInt());
     }
     settings.endGroup();
 
