@@ -99,7 +99,11 @@ private:
 		v_grp{ hkLib::parametersGroup.size() },
 		v_ser{ hkLib::parametersSeries.size() },
 		v_swp{ hkLib::parametersSweep.size() },
-		v_tr{ hkLib::parametersTrace.size() };
+        v_tr{ hkLib::parametersTrace.size() },
+        v_amp{ hkLib::parametersAmpplifierState.size() },
+        v_stim_stim{ hkLib::parametersStimulation.size() },
+        v_stim_ch{ hkLib::parametersChannel.size() },
+        v_stim_seg{ hkLib::parametersStimSegment.size() };
 
 	Ui::DlgSelectParameters *ui;
 };

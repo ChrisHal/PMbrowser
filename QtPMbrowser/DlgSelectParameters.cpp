@@ -31,6 +31,10 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	setScrollArea(ui->scrollAreaSer, v_ser, hkLib::parametersSeries);
 	setScrollArea(ui->scrollAreaSwp, v_swp, hkLib::parametersSweep);
 	setScrollArea(ui->scrollAreaTr, v_tr, hkLib::parametersTrace);
+    setScrollArea(ui->scrollAreaAmp, v_amp, hkLib::parametersAmpplifierState);
+    setScrollArea(ui->scrollAreaStim, v_stim_stim, hkLib::parametersStimulation);
+    setScrollArea(ui->scrollAreaStimChannel, v_stim_ch, hkLib::parametersChannel);
+    setScrollArea(ui->scrollAreaStimSegment, v_stim_seg, hkLib::parametersStimSegment);
 }
 
 DlgSelectParameters::~DlgSelectParameters()
@@ -51,4 +55,8 @@ void DlgSelectParameters::storeParams()
 	readSelections(v_ser, hkLib::parametersSeries);
 	readSelections(v_swp, hkLib::parametersSweep);
 	readSelections(v_tr, hkLib::parametersTrace);
+    readSelections(v_amp, hkLib::parametersAmpplifierState);
+    readSelections(v_stim_stim, hkLib::parametersStimulation);
+    readSelections(v_stim_ch, hkLib::parametersChannel);
+    readSelections(v_stim_seg, hkLib::parametersStimSegment);
 }
