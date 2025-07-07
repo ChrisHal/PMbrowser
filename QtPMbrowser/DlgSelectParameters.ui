@@ -47,7 +47,7 @@
    <item row="0" column="0" colspan="3">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabPulsed">
       <attribute name="title">
@@ -81,8 +81,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>243</width>
-                <height>185</height>
+                <width>254</width>
+                <height>200</height>
                </rect>
               </property>
              </widget>
@@ -120,8 +120,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>243</width>
-                <height>184</height>
+                <width>254</width>
+                <height>200</height>
                </rect>
               </property>
              </widget>
@@ -256,8 +256,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>243</width>
-                <height>429</height>
+                <width>254</width>
+                <height>452</height>
                </rect>
               </property>
              </widget>
@@ -341,8 +341,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>243</width>
-                <height>429</height>
+                <width>253</width>
+                <height>452</height>
                </rect>
               </property>
              </widget>
@@ -414,8 +414,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>243</width>
-                <height>429</height>
+                <width>253</width>
+                <height>452</height>
                </rect>
               </property>
              </widget>
@@ -440,9 +440,9 @@
          <height>511</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_9" columnstretch="0,0">
+       <layout class="QGridLayout" name="gridLayout_9" columnstretch="1,1">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_8" columnstretch="0,0,0">
+         <layout class="QGridLayout" name="gridLayout_8" columnstretch="0,0,1">
           <property name="horizontalSpacing">
            <number>1</number>
           </property>
@@ -456,8 +456,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>165</width>
-               <height>457</height>
+               <width>523</width>
+               <height>461</height>
               </rect>
              </property>
             </widget>
@@ -524,11 +524,14 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1021</width>
-         <height>481</height>
+         <width>1061</width>
+         <height>521</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_10">
+       <layout class="QGridLayout" name="gridLayout_10" rowstretch="0" columnstretch="1,1,1">
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+        </property>
         <item row="0" column="2">
          <layout class="QGridLayout" name="gridLayout_14" columnstretch="0,0,1">
           <property name="horizontalSpacing">
@@ -593,8 +596,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>329</width>
-               <height>427</height>
+               <width>345</width>
+               <height>471</height>
               </rect>
              </property>
             </widget>
@@ -666,8 +669,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>329</width>
-               <height>427</height>
+               <width>345</width>
+               <height>471</height>
               </rect>
              </property>
             </widget>
@@ -751,8 +754,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>329</width>
-               <height>427</height>
+               <width>345</width>
+               <height>471</height>
               </rect>
              </property>
             </widget>
