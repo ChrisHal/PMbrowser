@@ -921,6 +921,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
             menu.addSeparator();
             actAmpstate = menu.addAction("amplifier state");
             actDrawSeriesStim = menu.addAction("draw stimuli");
+            actStimulusProtocol = menu.addAction("print stimulus / pgf protocol");
         }
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
@@ -954,7 +955,10 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
             drawStimulus(node);
         }
         else if(actStimulusProtocol != nullptr && response == actStimulusProtocol){
-            printStimProtocol(node);
+            if(node->getLevel() == hkTreeNode::LevelSweep) {
+                printStimProtocol(node); } else if(node->getLevel() == hkTreeNode::LevelSeries){
+                printStimProtocol(&node->Children.at(0));
+            }
         }
         else if (actUseStimAsX && actUseStimAsX == response) {
             if (ui->renderArea->noData() || ui->renderArea->YtraceHasX()) {
