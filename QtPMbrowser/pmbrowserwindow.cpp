@@ -553,7 +553,8 @@ void PMbrowserWindow::exportAllVisibleTraces()
     if (choosePathAndPrefix(path, prefix, export_type, pxp_export, create_datafolders, folder_level)) {
         if (export_type==ExportType::Igor && pxp_export) {
             // we need filename for pxp file
-            auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
+            auto suggested_filename = path + currentFile.split(".").first() + ".pxp";
+            auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", suggested_filename, "pxp File (*.pxp)");
             if (filename.length() == 0) return;
             QFileInfo export_path_info(filename);
             lastexportpath = export_path_info.absolutePath() + "/";
