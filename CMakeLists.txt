@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.25)
-project(QtPMbrowser VERSION 2.4.4 LANGUAGES CXX)
+project(QtPMbrowser VERSION 2.4.5 LANGUAGES CXX)
 set(MY_COPYRIGHT "2020 - 2025 Christian R. Halaszovich")
-set(LINUX_RELEASE_DESCRIPTION "<p>This is a bugfix and improvement release.</p>")
+set(LINUX_RELEASE_DESCRIPTION "
+    <p>new feature: suggest name of dat file as pxp filename</p>
+    <p>new feature: global autoscale</p>
+    <p>new feature: intelligent truncation of long wavenames in export for IgorPro(tm)</p>
+    <p>new feature: enable printing of stimlus protocols</p>
+    <p>new feature: 'Select Parameters Dialog' now additionally features Amp and Stim parameters</p>
+    <p>modernized app icon</p>
+")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
