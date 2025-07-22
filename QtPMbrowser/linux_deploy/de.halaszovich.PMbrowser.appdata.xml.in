@@ -26,7 +26,7 @@
 	</provides>
 	<content_rating type="oars-1.0" />
 	<releases>
-		<release version="${CMAKE_PROJECT_VERSION}" type="stable" date="${my_current_day}">
+		<release version="${CMAKE_PROJECT_VERSION}" type="stable" date="${MY_RELEASE_DAY}">
 			<description>
 				${LINUX_RELEASE_DESCRIPTION}
 			</description>

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 project(QtPMbrowser VERSION 2.4.5 LANGUAGES CXX)
+set(MY_RELEASE_DAY "2025-07-21")
 set(MY_COPYRIGHT "2020 - 2025 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
     <p>new feature: suggest name of dat file as pxp filename</p>
