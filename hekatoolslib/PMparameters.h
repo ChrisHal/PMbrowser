@@ -68,6 +68,7 @@ namespace hkLib {
             ExtTriggerTypeName,
             AmplModeType,
             AdcTypeName,
+			seSourceName,
             SegStoreType,
 			UserParamDesc4, // 4x UserParamDesc
 			UserParamDesc2,

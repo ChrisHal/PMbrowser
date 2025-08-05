@@ -70,6 +70,22 @@ namespace hkLib {
         "AdcVirtual"sv
     };
 
+	constexpr std::array seSourceNames{
+		"value"sv,
+		"holding"sv,
+		"pgf-1"sv,
+		"pgf-2"sv,
+		"pgf-3"sv,
+		"pgf-4"sv,
+		"pgf-5"sv,
+		"pgf-6"sv,
+		"pgf-7"sv,
+		"pgf-8"sv,
+		"pgf-9"sv,
+		"pgf-10"sv
+	};
+
+
     std::array SegStoreTypeNames {
         "SegNoStore"sv,
         "SegStore"sv,
@@ -218,11 +234,11 @@ namespace hkLib {
         { true,true,"seVoltageIncMode","",PMparameter::StimIncrementMode,6},
         { true,true,"seDurationIncMode","",PMparameter::StimIncrementMode,7},
 		{ true,true,"seVoltage","V",PMparameter::LongReal ,8},
-		{ true,true,"seVoltageSource","",PMparameter::Int32,16},
+		{ true,true,"seVoltageSource","",PMparameter::seSourceName,16},
 		{ true,true,"seDeltaVFactor", "",PMparameter::LongReal, 20},
 		{ true,true,"seDeltaVIncrement","V", PMparameter::LongReal, 28},
 		{ true,true,"seDuration","s", PMparameter::LongReal , 36},
-		{ true,true,"seDurationSource", "",PMparameter::Int32, 44},
+		{ true,true,"seDurationSource", "",PMparameter::seSourceName, 44},
 		{ true,true,"seDeltaTFactor","", PMparameter::LongReal, 48},
 		{ true,true,"seDeltaTIncrement","s", PMparameter::LongReal, 56},
 		{ true,true,"seScanRate","", PMparameter::LongReal, 72}
@@ -587,6 +603,9 @@ namespace hkLib {
             case AdcTypeName:
                 ss << AdcTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
                 break;
+			case seSourceName:
+				ss << seSourceNames.at(node.extractValue<std::int32_t>(offset));
+				break;
             case SegStoreType:
                 ss << SegStoreTypeNames.at(static_cast<std::size_t>(node.getChar(offset)));
                 break;
