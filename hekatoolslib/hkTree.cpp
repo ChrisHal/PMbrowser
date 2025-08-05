@@ -91,7 +91,7 @@ namespace hkLib {
 	bool hkTree::InitFromStream(const std::string_view& id, std::istream& infile, int offset, unsigned int len)
 	{
 		assert(!!infile);
-		if (offset <= 0 || len == 0) throw std::runtime_error("invalid tree data offset or length");
+		if (offset < 0 || len == 0) throw std::runtime_error("invalid tree data offset or length");
 		Data = std::make_unique<char[]>(len);
 		infile.seekg(offset).read(Data.get(), len);
 		if (!infile) {
