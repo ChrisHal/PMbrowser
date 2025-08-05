@@ -53,7 +53,7 @@ namespace hkLib {
         "TrigNone"sv,
         "TrigSeries"sv,
         "TrigSweep"sv,
-        "TrigSweepNoLea"sv
+        "TrigSweepNoLeak"sv
     };
 
     constexpr std::array AmplModeTypeNames{
