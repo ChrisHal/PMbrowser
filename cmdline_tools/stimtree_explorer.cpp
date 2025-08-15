@@ -20,6 +20,7 @@
 #include<iostream>
 #include<filesystem>
 #include<fstream>
+#include<locale>
 #include"DatFile.h"
 #include "StimTree.h"
 #include"PMparameters.h"
@@ -27,7 +28,15 @@
 using namespace hkLib;
 
 void do_exploring(const hkTreeNode& root, int index, int ch) {
-    formatParamListExportIBW(root,parametersStimRoot,std::cout);
+    //formatParamListExportIBW(root,parametersStimRoot,std::cout);
+    auto headerList = hkLib::getHeaderList(parametersStimRoot, false, false, true);
+    auto pList = hkLib::getParamList(root, parametersStimRoot, false, false, true);
+    std::cout << "root:\n";
+    std::size_t N = headerList.size();
+    for (std::size_t i = 0; i < N; ++i) {
+        std::cout << headerList.at(i) << '\t' << pList.at(i) << '\n';
+    }
+
     std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
     StimulationRecord stim{ stim_node };
@@ -36,13 +45,34 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
         << ", start time: " << stim.DataStartTime << '\n'
         << "num ch: " << stim.Channels.size() << ", actual DAC channels: " << stim.ActualDacChannels << '\n';
     formatParamListExportIBW(stim_node,parametersStimulation,std::cout);
+
+    auto Nch = stim_node.Children.size();
+    headerList= hkLib::getHeaderList(parametersChannel, false, false, true);
+    std::vector<std::vector<std::string>> chData;
+    chData.reserve(Nch);
+    std::cout << "\nChannels";
+    for (std::size_t i = 0; i < Nch; ++i) {
+        std::cout << "\tChannel # " << i;
+        chData.push_back(hkLib::getParamList(stim_node.Children.at(i), parametersChannel, false, false, true));
+    }
+    std::cout << '\n';
+    N = headerList.size();
+    for (std::size_t i = 0; i < N; ++i) {
+        std::cout << headerList.at(i);
+        for (std::size_t j = 0; j < Nch; ++j) {
+            std::cout << '\t' << chData.at(j).at(i);
+        }
+        std::cout << '\n';
+    }
+
     const auto& ch_node = stim.Channels.at(ch);
     std::cout << "ch# (from 0):" << ch //<< "\ndac ch: " << ch_node.DacChannel
         << " mode: " << ch_node.DacMode << '\n' << "Linked: " << ch_node.LinkedChannel
         //<< "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
         //<< " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
         << "\n#segments: " << ch_node.Segments.size() << "\nexploring:\n";
-    formatParamListExportIBW(stim_node.Children.at(ch),parametersChannel,std::cout);
+
+    //formatParamListExportIBW(stim_node.Children.at(ch),parametersChannel,std::cout);
     int count{};
     for (const auto& segment : ch_node.Segments) {
         std::cout << "\nsegment " << ++count << "\n";
@@ -58,6 +88,7 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
 }
 
 int main(int argc, char** argv) {
+    std::locale::global(std::locale(""));
     if (argc < 2) {
         std::cerr << "usage: " << argv[0] << " <filename>.dat [<stim_index>] [<ch_index>]\n";
         return EXIT_FAILURE;
