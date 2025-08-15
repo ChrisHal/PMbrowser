@@ -26,6 +26,7 @@
 #include <sstream>
 #include <ostream>
 #include <string_view>
+#include <span>
 #include "hkTree.h"
 
 using namespace std::string_view_literals;
@@ -224,6 +225,11 @@ namespace hkLib {
 		}
 		return ss;
 	}
+
+
+	std::vector<std::string> getHeaderList(const std::span<PMparameter>& params, bool forExport = true, bool forPrint = false, bool allParams = false);
+	std::vector<std::string> getParamList(const hkTreeNode&, const std::span<PMparameter>& params, bool forExport = true, bool forPrint = false, bool allParams = false);
+
 
 	/// <summary>
 	/// format tab del. list for export as table

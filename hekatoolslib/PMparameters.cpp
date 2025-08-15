@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cassert>
 #include <string_view>
+#include <format>
 #include "helpers.h"
 #include "hkTree.h"
 #include "PMparameters.h"
@@ -732,5 +733,32 @@ namespace hkLib {
 		std::stringstream ss;
 		format(node, ss);
 		s = ss.str();
+	}
+	std::vector<std::string> getHeaderList(const std::span<PMparameter>& params, bool forExport, bool forPrint, bool allParams)
+	{
+		std::vector<std::string> result;
+		for (const auto& p : params) {
+			if (allParams || (forPrint && p.print) || (forExport && p.exportIBW)) {
+				if (*p.unit) {
+					result.push_back(std::format("{} [{}]", p.name, p.unit));
+				}
+				else {
+					result.push_back(std::format("{}", p.name));
+				}
+			}
+		}
+		return result;
+	}
+	std::vector<std::string> getParamList(const hkTreeNode& n, const std::span<PMparameter>& params, bool forExport, bool forPrint, bool allParams)
+	{
+		std::vector<std::string> result;
+		for (const auto& p : params) {
+			if (allParams || (forPrint && p.print) || (forExport && p.exportIBW)) {
+				std::stringstream s;
+				p.formatValueOnly(n, s);
+				result.push_back(s.str());
+			}
+		}
+		return result;
 	}
 }
