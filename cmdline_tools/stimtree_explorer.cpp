@@ -27,7 +27,7 @@
 
 using namespace hkLib;
 
-void do_exploring(const hkTreeNode& root, int index, int ch) {
+void do_exploring(const hkTreeNode& root, int index, int /*ch*/) {
     //formatParamListExportIBW(root,parametersStimRoot,std::cout);
     auto headerList = hkLib::getHeaderList(parametersStimRoot, false, false, true);
     auto pList = hkLib::getParamList(root, parametersStimRoot, false, false, true);
@@ -39,20 +39,21 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
 
     std::cout << "\nNum stim entries : " << root.Children.size() << '\n';
     const auto& stim_node = root.Children.at(index);
-    StimulationRecord stim{ stim_node };
-    std::cout << "entry name: " << stim.EntryName << ", file name: " << stim_node.getString(stFileName)
-        << "\nstartSegment: " << stim.DataStartSegment
-        << ", start time: " << stim.DataStartTime << '\n'
-        << "num ch: " << stim.Channels.size() << ", actual DAC channels: " << stim.ActualDacChannels << '\n';
-    formatParamListExportIBW(stim_node,parametersStimulation,std::cout);
-
+    headerList = hkLib::getHeaderList(parametersStimulation, false, false, true);
+    pList = hkLib::getParamList(stim_node, parametersStimulation, false, false, true);
+    std::cout << "\nstimulation #" << index << ":\n";
+    N = headerList.size();
+    for (std::size_t i = 0; i < N; ++i) {
+        std::cout << headerList.at(i) << '\t' << pList.at(i) << '\n';
+    }
+    
     auto Nch = stim_node.Children.size();
     headerList= hkLib::getHeaderList(parametersChannel, false, false, true);
     std::vector<std::vector<std::string>> chData;
     chData.reserve(Nch);
     std::cout << "\nChannels";
     for (std::size_t i = 0; i < Nch; ++i) {
-        std::cout << "\tChannel # " << i;
+        std::cout << "\tChannel# " << i;
         chData.push_back(hkLib::getParamList(stim_node.Children.at(i), parametersChannel, false, false, true));
     }
     std::cout << '\n';
@@ -64,27 +65,42 @@ void do_exploring(const hkTreeNode& root, int index, int ch) {
         }
         std::cout << '\n';
     }
-
-    const auto& ch_node = stim.Channels.at(ch);
-    std::cout << "ch# (from 0):" << ch //<< "\ndac ch: " << ch_node.DacChannel
-        << " mode: " << ch_node.DacMode << '\n' << "Linked: " << ch_node.LinkedChannel
-        //<< "adc ch: " << ch_node.extractValue<int16_t>(chAdcChannel)
-        //<< " mode: " << static_cast<int>(ch_node.getChar(chAdcMode)) << '\n'
-        << "\n#segments: " << ch_node.Segments.size() << "\nexploring:\n";
-
-    //formatParamListExportIBW(stim_node.Children.at(ch),parametersChannel,std::cout);
-    int count{};
-    for (const auto& segment : ch_node.Segments) {
-        std::cout << "\nsegment " << ++count << "\n";
-        formatParamListExportIBW(*segment.Node, parametersStimSegment, std::cout);
-
+    
+    headerList = hkLib::getHeaderList(parametersStimSegment, false, false, true);
+    N = headerList.size();
+    bool more_segs = true;
+    for(std::size_t seg_count = 0; more_segs; ++seg_count){
+        more_segs = false;
+        std::vector<std::vector<std::string>> seg_params(Nch);
+        for(std::size_t ch_count{0}; ch_count < Nch; ++ch_count){
+            const auto& channel_node = stim_node.Children.at(ch_count);
+            if(seg_count < channel_node.Children.size()){
+                more_segs = true;
+                const auto& segment_node = channel_node.Children.at(seg_count);
+                seg_params.at(ch_count) = hkLib::getParamList(segment_node, parametersStimSegment, false, false, true);
+            }
+        }
+        if(!more_segs) break;
+        //now print it:
+        std::cout << "\nsegment# " << seg_count << ":\n";
+        for(std::size_t i{0}; i < N; ++i) {
+            std::cout << headerList.at(i);
+            for(std::size_t ch_count{0}; ch_count < Nch; ++ch_count){
+                std::cout << '\t';
+                if(!seg_params.at(ch_count).empty()) {
+                    std::cout << seg_params.at(ch_count).at(i);
+                }
+            }
+            std::cout << '\n';
+        }
     }
-    std::cout << "\nContructing trace:\n";
-    auto pts = stim.constructStimTrace(0);
-
-    for (const auto& p : pts) {
-        std::cout << p.at(0) << '\t' << p.at(1) << '\n';
-    }
+    
+//    std::cout << "\nContructing trace:\n";
+//    auto pts = stim.constructStimTrace(0);
+//
+//    for (const auto& p : pts) {
+//        std::cout << p.at(0) << '\t' << p.at(1) << '\n';
+//    }
 }
 
 int main(int argc, char** argv) {
