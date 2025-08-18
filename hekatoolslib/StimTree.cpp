@@ -18,6 +18,7 @@
 */
 
 #include "StimTree.h"
+#include "PMparameters.h"
 #include <cassert>
 #include <cmath> // for std::pow
 
@@ -175,4 +176,66 @@ namespace hkLib {
 	{
 		assert(node.getLevel() == 3);
 	}
+
+	std::ostream& stimRecordToCSV(const hkLib::hkTreeNode& stim_node, std::ostream& os,
+		bool forExport, bool forPrint, bool allParams)
+	{
+		auto headerList = hkLib::getHeaderList(parametersStimulation, forExport, forPrint, allParams);
+		auto pList = hkLib::getParamList(stim_node, parametersStimulation, forExport, forPrint, allParams);
+		os << "\nstimulation record:\n";
+		auto N = headerList.size();
+		for (std::size_t i = 0; i < N; ++i) {
+			os << headerList.at(i) << '\t' << pList.at(i) << '\n';
+		}
+
+		auto Nch = stim_node.Children.size();
+		headerList = hkLib::getHeaderList(parametersChannel, forExport, forPrint, allParams);
+		std::vector<std::vector<std::string>> chData;
+		chData.reserve(Nch);
+		os << "\nChannel records:";
+		for (std::size_t i = 0; i < Nch; ++i) {
+			os << "\tChannel# " << (i + 1);
+			chData.push_back(hkLib::getParamList(stim_node.Children.at(i), parametersChannel, forExport, forPrint, allParams));
+		}
+		os << '\n';
+		N = headerList.size();
+		for (std::size_t i = 0; i < N; ++i) {
+			os << headerList.at(i);
+			for (std::size_t j = 0; j < Nch; ++j) {
+				os << '\t' << chData.at(j).at(i);
+			}
+			os << '\n';
+		}
+
+		headerList = hkLib::getHeaderList(parametersStimSegment, forExport, forPrint, allParams);
+		N = headerList.size();
+		bool more_segs = true;
+		for (std::size_t seg_count = 0; more_segs; ++seg_count) {
+			more_segs = false;
+			std::vector<std::vector<std::string>> seg_params(Nch);
+			for (std::size_t ch_count{ 0 }; ch_count < Nch; ++ch_count) {
+				const auto& channel_node = stim_node.Children.at(ch_count);
+				if (seg_count < channel_node.Children.size()) {
+					more_segs = true;
+					const auto& segment_node = channel_node.Children.at(seg_count);
+					seg_params.at(ch_count) = hkLib::getParamList(segment_node, parametersStimSegment, forExport, forPrint, allParams);
+				}
+			}
+			if (!more_segs) break;
+			//now print it:
+			os << "\nSegment# " << (seg_count + 1) << ":\n";
+			for (std::size_t i{ 0 }; i < N; ++i) {
+				os << headerList.at(i);
+				for (std::size_t ch_count{ 0 }; ch_count < Nch; ++ch_count) {
+					os << '\t';
+					if (!seg_params.at(ch_count).empty()) {
+						os << seg_params.at(ch_count).at(i);
+					}
+				}
+				os << '\n';
+			}
+		}
+		return os;
+	}
+
 }

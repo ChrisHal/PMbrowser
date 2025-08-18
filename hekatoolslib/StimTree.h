@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <array>
+#include <ostream>
 #include "hkTree.h"
 
 namespace hkLib {
@@ -107,5 +108,8 @@ namespace hkLib {
     private:
 
     };
+
+    std::ostream& stimRecordToCSV(const hkLib::hkTreeNode& stim_node, std::ostream& os,
+        bool forExport, bool forPrint, bool allParams);
 }
 #endif // !STIM_TREE_H
