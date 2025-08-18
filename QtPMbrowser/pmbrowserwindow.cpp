@@ -1105,18 +1105,7 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     const auto& stim_node = datfile->GetPgfTree().GetRootNode().Children.at(stim_index);
     std::stringstream s;
     s << "Stimulation record #" << (stim_index + 1) << " (sweep #" << (sweep_index+1)  << "):\n";
-    formatParamListPrint(stim_node, parametersStimulation, s);
-    const auto Nch = stim_node.Children.size();
-    for (std::size_t i = 0; i < Nch; ++i) {
-        s << "\nChannel record #" << (i + 1) << '\n';
-        const auto& ch_node = stim_node.Children.at(i);
-        formatParamListPrint(ch_node, parametersChannel, s);
-        const auto& Nsegments = ch_node.Children.size();
-        for (std::size_t j = 0; j < Nsegments; ++j) {
-            s << "\nCh#" << (i + 1) << ", Segment record #" << (j + 1) << '\n';
-            formatParamListPrint(ch_node.Children.at(j), parametersStimSegment, s);
-        }
-    }
+    hkLib::stimRecordToCSV(stim_node, s, false, true, false);
     ui->textEdit->append(QString::fromUtf8(s.str()));
     } catch(const std::exception& e){
         QMessageBox::warning(this,"Error","Error while printing list:\n" + QString::fromUtf8(e.what()));
