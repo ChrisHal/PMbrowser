@@ -1096,6 +1096,31 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 }
 
+void PMbrowserWindow::showCSVtxtInDialog(const QString& txt)
+{
+    QTextEdit* textedit = new QTextEdit;
+    textedit->append(txt);
+    textedit->setReadOnly(true);
+    textedit->setTabStopDistance(160);
+    auto btn_copy = new QPushButton("copy");
+    auto btn_close = new QPushButton("close");
+    QGridLayout* grid = new QGridLayout;
+    grid->addWidget(textedit, 0, 0, 1, 3);
+    grid->addWidget(btn_close, 1, 0);
+    grid->addWidget(btn_copy, 1, 1);
+    grid->addItem(new QSpacerItem(1, 1), 1 ,2);
+    grid->setRowStretch(0, 1);
+    grid->setColumnStretch(2, 1);
+    QDialog dlg(this);
+    dlg.setLayout(grid);
+    dlg.setGeometry(0, 0, 800, 800);
+    QObject::connect(btn_close, &QPushButton::clicked, &dlg, &QDialog::accept);
+    QObject::connect(btn_copy, &QPushButton::clicked, this, [&]{
+        QGuiApplication::clipboard()->setText(txt);
+    });
+    dlg.exec();
+}
+
 void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
 {
     try{
@@ -1106,7 +1131,9 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     std::stringstream s;
     s << "Stimulation record #" << (stim_index + 1) << " (sweep #" << (sweep_index+1)  << "):\n";
     hkLib::stimRecordToCSV(stim_node, s, false, true, false);
-    ui->textEdit->append(QString::fromUtf8(s.str()));
+    QString txt = QString::fromUtf8(s.str());
+    showCSVtxtInDialog(txt);
+    //ui->textEdit->append(QString::fromUtf8(s.str()));
     } catch(const std::exception& e){
         QMessageBox::warning(this,"Error","Error while printing list:\n" + QString::fromUtf8(e.what()));
     }
