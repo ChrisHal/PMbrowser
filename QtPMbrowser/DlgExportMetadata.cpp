@@ -33,6 +33,8 @@ DlgExportMetadata::DlgExportMetadata(PMbrowserWindow* parent)
     QObject::connect(ui->pushButtonSlectParamters, &QPushButton::clicked,
         pmbrowserwindow, &PMbrowserWindow::on_actionSelect_Parameters_triggered);
     QObject::connect(ui->pushButtonCopy, &QPushButton::clicked, this, &DlgExportMetadata::copyToClipboard);
+    QObject::connect(ui->pushButtonShow, &QPushButton::clicked, this, [this](){ this->m_doShow = true; });
+    QObject::connect(ui->pushButtonShow, &QPushButton::clicked, this, &DlgExportMetadata::accept);
 }
 
 DlgExportMetadata::~DlgExportMetadata()

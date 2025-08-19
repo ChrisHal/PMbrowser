@@ -42,6 +42,9 @@ public:
     bool doCopy() {
         return m_doCopy;
     }
+    bool doShow(){
+        return m_doShow;
+    }
     bool useSystemLocale() {
         return m_nativeEncoding;
     }
@@ -51,6 +54,7 @@ private:
 	int selection;
     Ui::DlgExportMetadata* ui;
     PMbrowserWindow* pmbrowserwindow;
+    bool m_doShow{ false };
     bool m_doCopy{ false };
     bool m_nativeEncoding{ false };
 };

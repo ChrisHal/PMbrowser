@@ -824,10 +824,12 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
             else {
                 ++selected; // first item in box is level 1
             }
-            if (dlg.doCopy()) {
+            if (dlg.doCopy() || dlg.doShow()) {
                 std::ostringstream s;
                 this->formatStimMetadataAsTableExport(s, selected);
-                QGuiApplication::clipboard()->setText(s.str().c_str());
+                QString txt = QString::fromUtf8(s.str());
+                if(dlg.doCopy()) QGuiApplication::clipboard()->setText(txt);
+                else if (dlg.doShow()) showCSVtxtInDialog(txt);
             }
             else {
                 auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
