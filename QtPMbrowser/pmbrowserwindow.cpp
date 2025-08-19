@@ -926,8 +926,8 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
         }
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
-            actDrawStim = menu.addAction("show stimulus");
-            actStimulusProtocol = menu.addAction("print stimulus / pgf protocol");
+            actDrawStim = menu.addAction("show stimulus trace");
+            actStimulusProtocol = menu.addAction("show stimulus / pgf protocol");
             actUseStimAsX = menu.addAction("use stim. as x trace");
         }
         auto response = menu.exec(ui->treePulse->mapToGlobal(pos));
