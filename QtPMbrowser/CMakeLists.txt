@@ -33,6 +33,7 @@ qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     DlgExportMetadata.h DlgExportMetadata.cpp
     main.cpp
     pmbrowserwindow.cpp pmbrowserwindow.h
+	"PMparametersModel.cpp" "PMparametersModel.h"
     renderarea.cpp renderarea.h 
 
     DlgPreferences.cpp
