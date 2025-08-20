@@ -22,7 +22,6 @@ QVariant PMparametersModel::data(const QModelIndex& index, int role) const
 {
     int row = index.row();
     int col = index.column();
-    constexpr std::array<const char*, 2> lables{"export", "print"};
     const auto& p = parameters[row];
     switch (role) {
     case Qt::CheckStateRole:
@@ -33,9 +32,9 @@ QVariant PMparametersModel::data(const QModelIndex& index, int role) const
             return p.print ? Qt::Checked : Qt::Unchecked;
         }
         break;
-    case Qt::DisplayRole:
-        return QString::fromUtf8(lables.at(col));
-        break;
+    //case Qt::DisplayRole:
+    //    return QString::fromUtf8(lables.at(col));
+    //    break;
     }
     return QVariant();
 }
@@ -44,6 +43,9 @@ QVariant PMparametersModel::headerData(int section, Qt::Orientation orientation,
 {
     if (role == Qt::DisplayRole && orientation == Qt::Vertical) {
         return QString::fromUtf8(parameters[section].name);
+    }
+    else if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        return QString::fromUtf8(lables.at(section));
     }
     return QVariant();
 }

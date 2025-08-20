@@ -9,6 +9,7 @@ class PMparametersModel  : public QAbstractTableModel
 	Q_OBJECT
 
 private:
+	static constexpr std::array<const char*, 2> lables{ "export", "print" };
 	QSpan<hkLib::PMparameter> parameters;
 
 public:
