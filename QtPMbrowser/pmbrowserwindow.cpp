@@ -1104,6 +1104,7 @@ void PMbrowserWindow::showCSVtxtInDialog(const QString& txt)
     textedit->append(txt);
     textedit->setReadOnly(true);
     textedit->setTabStopDistance(160);
+    textedit->setLineWrapMode(QTextEdit::NoWrap);
     auto btn_copy = new QPushButton("copy");
     auto btn_close = new QPushButton("close");
     QGridLayout* grid = new QGridLayout;
@@ -1115,7 +1116,7 @@ void PMbrowserWindow::showCSVtxtInDialog(const QString& txt)
     grid->setColumnStretch(2, 1);
     QDialog dlg(this);
     dlg.setLayout(grid);
-    dlg.setGeometry(0, 0, 800, 800);
+    dlg.setGeometry(0, 0, 600, 400);
     QObject::connect(btn_close, &QPushButton::clicked, &dlg, &QDialog::accept);
     QObject::connect(btn_copy, &QPushButton::clicked, this, [&]{
         QGuiApplication::clipboard()->setText(txt);
