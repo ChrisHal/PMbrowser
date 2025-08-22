@@ -8,12 +8,12 @@ PMparametersModel::PMparametersModel(QSpan<hkLib::PMparameter> p, QObject* paren
 PMparametersModel::~PMparametersModel()
 {}
 
-int PMparametersModel::rowCount(const QModelIndex & parent) const
+int PMparametersModel::rowCount(const QModelIndex&) const
 {
 	return parameters.size();
 }
 
-int PMparametersModel::columnCount(const QModelIndex& parent) const
+int PMparametersModel::columnCount(const QModelIndex&) const
 {
 	return 2;
 }
