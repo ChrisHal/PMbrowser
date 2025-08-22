@@ -37,7 +37,7 @@ class DlgSelectParameters : public QDialog
 
 public:
 	DlgSelectParameters(QWidget *parent = Q_NULLPTR);
-	~DlgSelectParameters();;
+	~DlgSelectParameters();
 
 private:
 
