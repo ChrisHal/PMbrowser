@@ -32,9 +32,9 @@ QVariant PMparametersModel::data(const QModelIndex& index, int role) const
             return p.print ? Qt::Checked : Qt::Unchecked;
         }
         break;
-    //case Qt::DisplayRole:
-    //    return QString::fromUtf8(lables.at(col));
-    //    break;
+    case Qt::DisplayRole:
+        return QString::fromUtf8(lables.at(col));
+        break;
     }
     return QVariant();
 }
