@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2024 Christian R. Halaszovich
+	Copyright 2020 - 2025 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -26,37 +26,19 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui = new Ui::DlgSelectParameters();
 	ui->setupUi(this);
 
-	setScrollArea(ui->scrollAreaRoot, v_root, hkLib::parametersRoot);
-	setScrollArea(ui->scrollAreaGrp, v_grp, hkLib::parametersGroup);
-	setScrollArea(ui->scrollAreaSer, v_ser, hkLib::parametersSeries);
-	setScrollArea(ui->scrollAreaSwp, v_swp, hkLib::parametersSweep);
-	setScrollArea(ui->scrollAreaTr, v_tr, hkLib::parametersTrace);
-    setScrollArea(ui->scrollAreaAmp, v_amp, hkLib::parametersAmpplifierState);
-    setScrollArea(ui->scrollAreaStim, v_stim_stim, hkLib::parametersStimulation);
-    setScrollArea(ui->scrollAreaStimChannel, v_stim_ch, hkLib::parametersChannel);
-    setScrollArea(ui->scrollAreaStimSegment, v_stim_seg, hkLib::parametersStimSegment);
+	ui->tableViewRoot->setModel(&m_root);
+	ui->tableViewGrp->setModel(&m_grp);
+	ui->tableViewSer->setModel(&m_ser);
+	ui->tableViewSwp->setModel(&m_swp);
+	ui->tableViewTrace->setModel(&m_tr);
+	ui->tableViewAmp->setModel(&m_amp);
+	ui->tableViewStim->setModel(&m_stim_stim);
+	ui->tableViewChannel->setModel(&m_stim_ch);
+	ui->tableViewSegment->setModel(&m_stim_seg);
+
 }
 
 DlgSelectParameters::~DlgSelectParameters()
 {
 	delete ui;
-}
-
-void DlgSelectParameters::accept()
-{
-	storeParams();
-	QDialog::accept();
-}
-
-void DlgSelectParameters::storeParams()
-{
-	readSelections(v_root, hkLib::parametersRoot);
-	readSelections(v_grp, hkLib::parametersGroup);
-	readSelections(v_ser, hkLib::parametersSeries);
-	readSelections(v_swp, hkLib::parametersSweep);
-	readSelections(v_tr, hkLib::parametersTrace);
-    readSelections(v_amp, hkLib::parametersAmpplifierState);
-    readSelections(v_stim_stim, hkLib::parametersStimulation);
-    readSelections(v_stim_ch, hkLib::parametersChannel);
-    readSelections(v_stim_seg, hkLib::parametersStimSegment);
 }

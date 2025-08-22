@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 - 2024 Christian R. Halaszovich
+	Copyright 2020 - 2025 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -27,6 +27,7 @@
 #include <QScrollArea>
 #include <vector>
 #include "PMparameters.h"
+#include "PMparametersModel.h"
 
 namespace Ui { class DlgSelectParameters; }
 
@@ -34,76 +35,21 @@ class DlgSelectParameters : public QDialog
 {
 	Q_OBJECT
 
-		struct chk_row {
-		QCheckBox do_export, do_print;
-		QLabel label;
-	};
-
 public:
 	DlgSelectParameters(QWidget *parent = Q_NULLPTR);
 	~DlgSelectParameters();
-	void accept() override;
-	void storeParams();
 
 private:
-	static constexpr int chkbox_width = 40;
-	template<std::size_t Nrows> QGridLayout* createGrid(std::vector<chk_row>& v,
-		const std::array<hkLib::PMparameter, Nrows>& ar)
-	{
-		auto grid = new QGridLayout;
-		//v.resize(Nrows);
-		for (int i = 0; i < int(ar.size()); ++i) {
-			auto& row = v.at(i);
-			auto* chk1 = &row.do_export;
-			chk1->setChecked(ar[i].exportIBW);
-			chk1->setMinimumWidth(chkbox_width);
-			chk1->setMaximumWidth(chkbox_width);
-			auto* chk2 = &row.do_print;
-			chk2->setChecked(ar[i].print);
-			chk2->setMinimumWidth(chkbox_width);
-			chk2->setMaximumWidth(chkbox_width);
-			auto* lb = &row.label;
-			lb->setText(ar[i].name);
-			grid->addWidget(chk1, i, 0);// , Qt::AlignLeft | Qt::AlignVCenter);
-			grid->addWidget(chk2, i, 1);// , Qt::AlignLeft | Qt::AlignVCenter);
-			grid->addWidget(lb, i, 2);// , Qt::AlignLeft | Qt::AlignVCenter);
-		}
-		grid->addItem(new QSpacerItem(0, 0), static_cast<int>(ar.size()), 0, 1, 3);
-		grid->setRowStretch(static_cast<int>(ar.size()), 1);
-		grid->setColumnStretch(0, 0);
-		grid->setColumnStretch(1, 0);
-		grid->setColumnStretch(2, 1);
-		grid->setHorizontalSpacing(1);
-		return grid;
-	}
 
-	template<std::size_t Nrows> void setScrollArea(QScrollArea* area,
-		std::vector<chk_row>& v,
-		const std::array<hkLib::PMparameter, Nrows>& ar) {
-		auto w = new QWidget;
-		w->setLayout(createGrid(v, ar));
-		w->setBackgroundRole(QPalette::Base);
-		area->setWidget(w);
-	}
-
-	template<std::size_t Nrows> void readSelections(const std::vector<chk_row>& v,
-		std::array<hkLib::PMparameter, Nrows>& ar)
-	{
-		for (std::size_t i = 0; i < ar.size(); ++i) {
-			ar.at(i).exportIBW = v.at(i).do_export.isChecked();
-			ar.at(i).print = v.at(i).do_print.isChecked();
-		}
-	}
-
-	std::vector<chk_row> v_root{ hkLib::parametersRoot.size() },
-		v_grp{ hkLib::parametersGroup.size() },
-		v_ser{ hkLib::parametersSeries.size() },
-		v_swp{ hkLib::parametersSweep.size() },
-        v_tr{ hkLib::parametersTrace.size() },
-        v_amp{ hkLib::parametersAmpplifierState.size() },
-        v_stim_stim{ hkLib::parametersStimulation.size() },
-        v_stim_ch{ hkLib::parametersChannel.size() },
-        v_stim_seg{ hkLib::parametersStimSegment.size() };
+	PMparametersModel m_root{ hkLib::parametersRoot },
+		m_grp{ hkLib::parametersGroup },
+		m_ser{ hkLib::parametersSeries },
+		m_swp{ hkLib::parametersSweep },
+		m_tr{ hkLib::parametersTrace },
+		m_amp{ hkLib::parametersAmpplifierState },
+		m_stim_stim{ hkLib::parametersStimulation },
+		m_stim_ch{ hkLib::parametersChannel },
+		m_stim_seg{ hkLib::parametersStimSegment };
 
 	Ui::DlgSelectParameters *ui;
 };

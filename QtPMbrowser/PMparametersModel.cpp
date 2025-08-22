@@ -8,12 +8,12 @@ PMparametersModel::PMparametersModel(QSpan<hkLib::PMparameter> p, QObject* paren
 PMparametersModel::~PMparametersModel()
 {}
 
-int PMparametersModel::rowCount(const QModelIndex & parent) const
+int PMparametersModel::rowCount(const QModelIndex&) const
 {
 	return parameters.size();
 }
 
-int PMparametersModel::columnCount(const QModelIndex& parent) const
+int PMparametersModel::columnCount(const QModelIndex&) const
 {
 	return 2;
 }
@@ -22,7 +22,6 @@ QVariant PMparametersModel::data(const QModelIndex& index, int role) const
 {
     int row = index.row();
     int col = index.column();
-    constexpr std::array<const char*, 2> lables{"export", "print"};
     const auto& p = parameters[row];
     switch (role) {
     case Qt::CheckStateRole:
@@ -44,6 +43,9 @@ QVariant PMparametersModel::headerData(int section, Qt::Orientation orientation,
 {
     if (role == Qt::DisplayRole && orientation == Qt::Vertical) {
         return QString::fromUtf8(parameters[section].name);
+    }
+    else if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        return QString::fromUtf8(lables.at(section));
     }
     return QVariant();
 }
