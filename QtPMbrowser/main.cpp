@@ -18,6 +18,9 @@
 */
 
 #include <locale>
+#include <string>
+#include <exception>
+#include <iostream>
 #include "pmbrowserwindow.h"
 #include <QApplication>
 #include <QSettings>
@@ -40,8 +43,15 @@ int main(int argc, char *argv[])
             QLocale::setDefault(QLocale::c());
         }
         QLocale loc;
-        std::locale::global(std::locale(loc.name().toUtf8()));
-        qDebug() << std::locale().name();
+        try {
+            std::string loc_name = loc.name().toStdString();
+            qDebug() << "Attempting to set locale " << loc_name;
+            std::locale::global(std::locale(loc_name.c_str()));
+            qDebug() << std::locale().name();
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error while setting locale: '" << e.what() << "'\n";
+        }
     }
     PMbrowserWindow w;
     w.show();
