@@ -43,14 +43,27 @@ int main(int argc, char *argv[])
             QLocale::setDefault(QLocale::c());
         }
         QLocale loc;
+        bool locale_set{ false };
+        std::string loc_name;
         try {
-            std::string loc_name = loc.name().toStdString();
+            loc_name = loc.name().toStdString();
             qDebug() << "Attempting to set locale " << loc_name;
-            std::locale::global(std::locale(loc_name.c_str()));
+            std::locale::global(std::locale(loc_name));
+            locale_set = true;
             qDebug() << std::locale().name();
         }
         catch (const std::exception& e) {
             std::cerr << "Error while setting locale: '" << e.what() << "'\n";
+        }
+        if (!locale_set) {
+            loc_name.append(".UTF-8");
+            std::cerr << "Attmpting to set locale with name " << loc_name << '\n';
+            try {
+                std::locale::global(std::locale(loc_name));
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error while setting locale: '" << e.what() << "'\n";
+            }
         }
     }
     PMbrowserWindow w;
