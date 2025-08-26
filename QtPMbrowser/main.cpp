@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
             qDebug() << "Attempting to set locale " << loc_name;
             std::locale::global(std::locale(loc_name));
             locale_set = true;
-            qDebug() << std::locale().name();
         }
         catch (const std::exception& e) {
             std::cerr << "Error while setting locale: '" << e.what() << "'\n";
@@ -65,6 +64,7 @@ int main(int argc, char *argv[])
                 std::cerr << "Error while setting locale: '" << e.what() << "'\n";
             }
         }
+        qDebug() << std::locale().name();
     }
     PMbrowserWindow w;
     w.show();
