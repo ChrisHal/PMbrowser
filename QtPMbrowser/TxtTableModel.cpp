@@ -35,12 +35,12 @@ TxtTableModel::TxtTableModel(const QString& txt, bool hasHorizontalHeader, bool 
 TxtTableModel::~TxtTableModel()
 {}
 
-int TxtTableModel::rowCount(const QModelIndex& parent) const
+int TxtTableModel::rowCount(const QModelIndex& /*parent*/) const
 {
 	return static_cast<int>(rows.size());
 }
 
-int TxtTableModel::columnCount(const QModelIndex& parent) const
+int TxtTableModel::columnCount(const QModelIndex& /*parent*/) const
 {
 	return colCount;
 }
