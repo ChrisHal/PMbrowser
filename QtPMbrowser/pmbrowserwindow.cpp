@@ -33,6 +33,7 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QTableView>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -50,6 +51,7 @@
 #include "PMparameters.h"
 #include "DlgSelectParameters.h"
 #include "DlgPreferences.h"
+#include "TxtTableModel.h"
 #include "qstring_helper.h"
 #include "Config.h"
 
@@ -829,7 +831,7 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
                 this->formatStimMetadataAsTableExport(s, selected);
                 QString txt = QString::fromUtf8(s.str());
                 if(dlg.doCopy()) QGuiApplication::clipboard()->setText(txt);
-                else if (dlg.doShow()) showCSVtxtInDialog(txt);
+                else if (dlg.doShow()) showCSVtxtInDialog(txt, true, false);
             }
             else {
                 auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
@@ -1098,17 +1100,15 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 
 }
 
-void PMbrowserWindow::showCSVtxtInDialog(const QString& txt)
+void PMbrowserWindow::showCSVtxtInDialog(const QString& txt, bool hasHorzHeader, bool hasVertHeader)
 {
-    QTextEdit* textedit = new QTextEdit;
-    textedit->append(txt);
-    textedit->setReadOnly(true);
-    textedit->setTabStopDistance(160);
-    textedit->setLineWrapMode(QTextEdit::NoWrap);
+    TxtTableModel model(txt,hasHorzHeader, hasVertHeader);
+    auto tv = new QTableView();
+    tv->setModel(&model);
     auto btn_copy = new QPushButton("copy");
     auto btn_close = new QPushButton("close");
     QGridLayout* grid = new QGridLayout;
-    grid->addWidget(textedit, 0, 0, 1, 3);
+    grid->addWidget(tv, 0, 0, 1, 3);
     grid->addWidget(btn_close, 1, 0);
     grid->addWidget(btn_copy, 1, 1);
     grid->addItem(new QSpacerItem(1, 1), 1 ,2);
@@ -1116,7 +1116,7 @@ void PMbrowserWindow::showCSVtxtInDialog(const QString& txt)
     grid->setColumnStretch(2, 1);
     QDialog dlg(this);
     dlg.setLayout(grid);
-    dlg.setGeometry(0, 0, 600, 400);
+    //dlg.setGeometry(0, 0, 600, 400);
     QObject::connect(btn_close, &QPushButton::clicked, &dlg, &QDialog::accept);
     QObject::connect(btn_copy, &QPushButton::clicked, this, [&]{
         QGuiApplication::clipboard()->setText(txt);
@@ -1135,7 +1135,7 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     s << "Stimulation record #" << (stim_index + 1) << " (sweep #" << (sweep_index+1)  << "):\n";
     hkLib::stimRecordToCSV(stim_node, s, false, true, false);
     QString txt = QString::fromUtf8(s.str());
-    showCSVtxtInDialog(txt);
+    showCSVtxtInDialog(txt, false, true);
     //ui->textEdit->append(QString::fromUtf8(s.str()));
     } catch(const std::exception& e){
         QMessageBox::warning(this,"Error","Error while printing list:\n" + QString::fromUtf8(e.what()));

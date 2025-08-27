@@ -88,7 +88,7 @@ private:
     void printAllParameters(const QTreeWidgetItem* item);
     void printAllParameters(const hkLib::hkTreeNode* node);
     void printAmplifierState(const hkLib::hkTreeNode* series);
-    void showCSVtxtInDialog(const QString& txt);
+    void showCSVtxtInDialog(const QString& txt, bool hasHorzHeader, bool hasVertHeader);
     void printStimProtocol(const hkLib::hkTreeNode* sweep);
     void drawStimulus(const hkLib::hkTreeNode* sweep);
     void useStimAsX(const hkLib::hkTreeNode* sweep);

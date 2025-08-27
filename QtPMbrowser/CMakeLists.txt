@@ -28,6 +28,7 @@ qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
     main.cpp
     pmbrowserwindow.cpp pmbrowserwindow.h
 	"PMparametersModel.cpp" "PMparametersModel.h"
+	"TxtTableModel.cpp" "TxtTableModel.h" 
     renderarea.cpp renderarea.h 
 
     DlgPreferences.cpp
