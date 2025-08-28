@@ -926,7 +926,7 @@ void PMbrowserWindow::prepareTreeContextMenu(const QPoint& pos)
             menu.addSeparator();
             actAmpstate = menu.addAction("amplifier state");
             actDrawSeriesStim = menu.addAction("draw stimuli");
-            actStimulusProtocol = menu.addAction("print stimulus / pgf protocol");
+            actStimulusProtocol = menu.addAction("show stimulus / pgf protocol");
         }
         if (node->getLevel() == hkTreeNode::LevelSweep) {
             menu.addSeparator();
