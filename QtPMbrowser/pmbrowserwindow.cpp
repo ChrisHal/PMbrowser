@@ -1117,7 +1117,12 @@ void PMbrowserWindow::showCSVtxtInDialog(const QString& txt, bool hasHorzHeader,
     QDialog dlg(this);
     dlg.setWindowFlag(Qt::WindowMaximizeButtonHint, true);
     dlg.setLayout(grid);
-    //dlg.setGeometry(0, 0, 600, 400);
+    const QRect availableGeometry = this->screen()->availableGeometry();
+    dlg.resize(availableGeometry.width() * 2 / 3, availableGeometry.height() * 2 / 3);
+    dlg.move(availableGeometry.left() +
+        (availableGeometry.width() - dlg.width()) / 2,
+        availableGeometry.top() +
+        (availableGeometry.height() - dlg.height()) / 2);
     QObject::connect(btn_close, &QPushButton::clicked, &dlg, &QDialog::accept);
     QObject::connect(btn_copy, &QPushButton::clicked, this, [&]{
         QGuiApplication::clipboard()->setText(txt);
