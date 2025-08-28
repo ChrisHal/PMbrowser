@@ -1115,6 +1115,7 @@ void PMbrowserWindow::showCSVtxtInDialog(const QString& txt, bool hasHorzHeader,
     grid->setRowStretch(0, 1);
     grid->setColumnStretch(2, 1);
     QDialog dlg(this);
+    dlg.setWindowFlag(Qt::WindowMaximizeButtonHint, true);
     dlg.setLayout(grid);
     //dlg.setGeometry(0, 0, 600, 400);
     QObject::connect(btn_close, &QPushButton::clicked, &dlg, &QDialog::accept);
