@@ -1,5 +1,6 @@
 #include "TxtTableModel.h"
 #include <QTextStream>
+#include <QFont>
 #include <algorithm>
 
 TxtTableModel::TxtTableModel(const QString& txt, bool hasHorizontalHeader, bool hasVerticalHeader, QObject* parent)
@@ -73,6 +74,12 @@ QVariant TxtTableModel::headerData(int section, Qt::Orientation orientation, int
 			}
 			break;
 		}
+	}
+	else if (role == Qt::FontRole && orientation == Qt::Vertical && vertHeader.size() > section
+		&& vertHeader[section].endsWith(':')) {
+		QFont boldFont;
+		boldFont.setBold(true);
+		return boldFont;
 	}
 	return QVariant();
 }
