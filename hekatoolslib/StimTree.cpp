@@ -182,7 +182,7 @@ namespace hkLib {
 	{
 		auto headerList = hkLib::getHeaderList(parametersStimulation, forExport, forPrint, allParams);
 		auto pList = hkLib::getParamList(stim_node, parametersStimulation, forExport, forPrint, allParams);
-		os << "stimulation record:\n";
+		os << "Stimulation record:\n";
 		auto N = headerList.size();
 		for (std::size_t i = 0; i < N; ++i) {
 			os << headerList.at(i) << '\t' << pList.at(i) << '\n';
