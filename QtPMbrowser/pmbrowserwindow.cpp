@@ -1138,7 +1138,7 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
     const auto& stim_node = datfile->GetPgfTree().GetRootNode().Children.at(stim_index);
     std::stringstream s;
-    s << "Stimulation record #" << (stim_index + 1) << " (sweep #" << (sweep_index+1)  << "):\n";
+    //s << "Stimulation record #\t" << (stim_index + 1) << "\nsweep #\t" << (sweep_index+1)  << "\n";
     hkLib::stimRecordToCSV(stim_node, s, false, true, false);
     QString txt = QString::fromUtf8(s.str());
     showCSVtxtInDialog(txt, false, true);
