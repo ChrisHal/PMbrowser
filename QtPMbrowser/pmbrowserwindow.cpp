@@ -1135,7 +1135,7 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     try{
     assert(sweep->getLevel() == hkTreeNode::LevelSweep);
     int stim_index = sweep->extractInt32(SwStimCount) - 1;
-    int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
+    //int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
     const auto& stim_node = datfile->GetPgfTree().GetRootNode().Children.at(stim_index);
     std::stringstream s;
     //s << "Stimulation record #\t" << (stim_index + 1) << "\nsweep #\t" << (sweep_index+1)  << "\n";
