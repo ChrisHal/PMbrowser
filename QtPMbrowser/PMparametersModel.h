@@ -11,6 +11,8 @@ class PMparametersModel  : public QAbstractTableModel
 private:
 	static constexpr std::array<const char*, 2> lables{ "export", "print" };
 	QSpan<hkLib::PMparameter> parameters;
+	int countCheckedPrint() const;
+	int countCheckedExport() const;
 
 public:
 	explicit PMparametersModel(QSpan<hkLib::PMparameter> PMparameters, QObject *parent = nullptr);
