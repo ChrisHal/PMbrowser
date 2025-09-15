@@ -135,7 +135,7 @@ bool PMparametersModel::setData(const QModelIndex& index, const QVariant& value,
                 }
             }
             else return false;
-            emit dataChanged(this->index(0, index.column()), this->index(parameters.size() + 1, index.column()));
+            emit dataChanged(this->index(0, index.column()), this->index(parameters.size(), index.column()));
             return true;
         }
         --row;
@@ -145,7 +145,7 @@ bool PMparametersModel::setData(const QModelIndex& index, const QVariant& value,
         } else if (index.column() == 1) {
             p.print = state != Qt::Unchecked;
         }
-        emit dataChanged(this->index(0, index.column()), this->index(parameters.size() + 1, index.column()));
+        emit dataChanged(this->index(0, index.column()), this->index(parameters.size(), index.column()));
         return true;
     }
     return false;
