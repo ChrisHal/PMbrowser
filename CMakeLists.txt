@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3" CACHE STRING "needs at least 13.3")
 project(QtPMbrowser VERSION 2.4.5 LANGUAGES CXX)
 set(MY_RELEASE_DAY "2025-07-21")
 set(MY_COPYRIGHT "2020 - 2025 Christian R. Halaszovich")
