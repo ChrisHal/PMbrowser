@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
+    <width>474</width>
     <height>360</height>
    </rect>
   </property>
@@ -17,6 +17,16 @@
    <locale language="English" country="UnitedStates"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -105,7 +115,14 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="3">
+   <item row="1" column="1">
+    <widget class="QCheckBox" name="checkBoxSysLocale">
+     <property name="text">
+      <string>Use System Locale (takes effect only after re-start!)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Orientation::Vertical</enum>
@@ -118,20 +135,10 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QCheckBox" name="checkBoxSysLocale">
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="checkBoxZapSettings">
      <property name="text">
-      <string>Use System Locale (takes effect only after re-start!)</string>
+      <string>Clear Settings (takes effect at next program start)</string>
      </property>
     </widget>
    </item>

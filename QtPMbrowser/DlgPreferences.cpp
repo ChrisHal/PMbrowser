@@ -28,6 +28,8 @@ DlgPreferences::DlgPreferences(QWidget *parent)
 {
 	QSettings settings;
 	ui->setupUi(this);
+
+	bool zap_settings = settings.value("zap_settings", false).toBool();
 	settings.beginGroup("Preferences");
 	
 	int selection = settings.value("selectionButton", 0).toInt();
@@ -37,6 +39,7 @@ DlgPreferences::DlgPreferences(QWidget *parent)
 	ui->lineEditVmon->setText(settings.value("Vmon", "Vmon").toString());
 	ui->lineEditImon->setText(settings.value("Imon", "Imon").toString());
 	ui->checkBoxSysLocale->setChecked(!settings.value("use_C_locale", false).toBool());
+	ui->checkBoxZapSettings->setChecked(zap_settings);
 
 	settings.endGroup();
 }
@@ -49,6 +52,8 @@ DlgPreferences::~DlgPreferences()
 void DlgPreferences::accept()
 {
 	QSettings settings;
+	bool zap_settings = ui->checkBoxZapSettings->isChecked();
+	settings.setValue("zap_settings", zap_settings);
 	settings.beginGroup("Preferences");
 	int selection{};
 	if (ui->radioButtonDefaultExt->isChecked()) selection = 0;
@@ -72,6 +77,5 @@ void DlgPreferences::accept()
 		hkLib::global_hkSettings.ext_Imon = ui->lineEditImon->text().toStdString();
 		hkLib::global_hkSettings.ext_Vmon = ui->lineEditVmon->text().toStdString();
 	}
-
 	QDialog::accept();
 }

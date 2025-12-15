@@ -1327,6 +1327,8 @@ void PMbrowserWindow::saveSettings()
 void PMbrowserWindow::loadSettings()
 {
     QSettings settings;
+    bool zap_settings = settings.value("zap_settings", false).toBool();
+    if(zap_settings) settings.clear();
 	settings.beginGroup("pmbrowserwindow");
     lastloadpath = settings.value("lastloadpath", lastloadpath).toString();
     lastexportpath = settings.value("lastexportpath", lastexportpath).toString();
