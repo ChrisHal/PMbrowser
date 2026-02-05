@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
 
     {
         QSettings settings;
+        bool zap_settings = settings.value("zap_settings", false).toBool();
+        if(zap_settings) settings.clear();
         const bool use_C_locale = settings.value("Preferences/use_C_locale", false).toBool();
         if (use_C_locale) {
             QLocale::setDefault(QLocale::c());
