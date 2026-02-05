@@ -133,6 +133,15 @@ namespace hkLib {
 		return true;
 	}
 
+	hkTreeNode& hkTree::GetRootNode() 
+	{ 
+		if(isValid()) {
+		return RootNode;
+		} else {
+			throw std::runtime_error("trying to get root node from invalid hkTree");
+		}
+	}
+
 	bool hkTree::isValid()
 	{
 		return LevelSizes.size()!=0 && !RootNode.Data.empty();

@@ -364,7 +364,7 @@ namespace hkLib {
         /// <param name="len">length in bytes of buffer (buffer contains the total of the tree)</param>
         /// <returns>true on success</returns>
         bool InitFromBuffer(const std::string_view& id, char* buffer, std::size_t len);
-        hkTreeNode& GetRootNode() { return RootNode; };
+        hkTreeNode& GetRootNode();
         std::size_t GetNumLevels() { return LevelSizes.size(); };    //!< return number of levels this tree has
         bool getIsSwapped() const { return isSwapped; };
         bool isValid();

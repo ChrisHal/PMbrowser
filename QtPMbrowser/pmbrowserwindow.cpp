@@ -315,17 +315,22 @@ void PMbrowserWindow::loadFile(QString filename)
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
         }
         try {
-            const auto& amprootnode = datfile->GetAmpTree().GetRootNode();
-            auto ampname = amprootnode.getString<32>(RoAmplifierName);
-            // turns out, the following files are somewhat obscure/useless
-            // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
-            // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
-            txt.append(QString("\nAmplifier: ") + qs_from_sv(ampname));
+            auto& amp_tree = datfile->GetAmpTree();
+            if(amp_tree.isValid()) {
+                const auto& amprootnode = amp_tree.GetRootNode();
+                auto ampname = amprootnode.getString<32>(RoAmplifierName);
+                // turns out, the following files are somewhat obscure/useless
+                // auto amptype = static_cast<int>(amprootnode.getChar(RoAmplifier));
+                // auto adboard = static_cast<int>(amprootnode.getChar(RoADBoard));
+                txt.append(QString("\nAmplifier: ") + qs_from_sv(ampname));
+            } else {
+                txt.append("\nAmplifier: unknown");
+            }
         }
-        catch (std::out_of_range& e) {
-            (void)e;
-            //Note: we usually get here if there is no Amp-Tree
-            //txt.append("\n(unknown amplifier)");
+        catch (std::exception& e) {
+            qDebug() << e.what();
+            //Note: we usually get here if there is a problem with the amp tree
+            txt.append("\nAmplifier: unknown");
         }
         ui->textEdit->append(txt);
         ui->textEdit->append(QString::fromUtf8("file date: ")
