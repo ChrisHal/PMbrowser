@@ -14,6 +14,7 @@
 	</description>
 	<launchable type="desktop-id">de.halaszovich.PMbrowser.desktop</launchable>
 	<url type="homepage">https://www.halaszovich.de/pmbrowser/html/index.html</url>
+	<url type="vcs-browser">https://github.com/ChrisHal/PMbrowser</url>
 	<screenshots>
 		<screenshot type="default">
 			<caption>The PMbrowser main window.</caption>
@@ -33,3 +34,4 @@
 		</release>
 	</releases>
 </component>
+
