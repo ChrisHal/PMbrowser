@@ -194,7 +194,7 @@ namespace hkLib {
 		{false,false, "RoMaxSamples","",PMparameter::Int32,528}
 	} };
 
-	std::array<PMparameter, 31> parametersAmpplifierState{ {
+	std::array<PMparameter, 47> parametersAmpplifierState{ {
 		{false, true, "StateVersion", "", PMparameter::String8, 0},
 		{false, true, "CurrentGain", "V/A", PMparameter::LongReal, 8},
 		{false, true, "F2Bandwidth", "Hz", PMparameter::LongReal,16},
@@ -214,15 +214,31 @@ namespace hkLib {
 		{false, true, "VpOffset", "V", PMparameter::LongReal,128},
 		{false,true,"VLiquidJunction","V",PMparameter::LongReal,136},
 		{false,true,"CCIHold","A",PMparameter::LongReal,144},
+		{false,true,"sCSlowStimVolts","V",PMparameter::LongReal,152},
+		{false,true,"sCCTrackVHold","V",PMparameter::LongReal,160},
+		{false,true,"sTimeoutCSlow","s",PMparameter::LongReal,168},
+		{false,true,"sSearchDelay","s",PMparameter::LongReal,176},
 		{false,true,"MConductance","S",PMparameter::LongReal,184},
 		{false,true,"MCapacitance","F",PMparameter::LongReal,192},
+		{false,true,"SerialNumber","",PMparameter::String8,200},
+		{false,true,"sE9Boards","",PMparameter::Int16,208},
+		{false,true,"sCSlowCycles","",PMparameter::Int16,210},
 		{false,true,"IMonAdc","",PMparameter::Int16,212},
-		{false,true,"VMonAdc","",PMparameter::Int16,192},
+		{false,true,"VMonAdc","",PMparameter::Int16,214},
+		{false,true,"sMuxAdc","",PMparameter::Int16,216},
+		{false,true,"sTestDac","",PMparameter::Int16,218},
 		{false,true,"StimDac","",PMparameter::Int16,220},
-		{false,true,"StimFilterOn","",PMparameter::Byte,282},
+		{false,true,"sStimDacOffset","",PMparameter::Int16,222},
+		{false,true,"sMaxDigitalBit","",PMparameter::Int16,224},
+		{false,true,"sHasCFastHigh","",PMparameter::Boolean,226},
+		{false,true,"sCFastHigh","",PMparameter::Byte,227},
+		{false,true,"sHasBathSense","",PMparameter::Boolean,228},
+		{false,true,"BathSense","",PMparameter::Byte,229},
+		{false,true,"sHasF2Bypass","",PMparameter::Boolean,230},
+		{false,true,"sF2Mode","",PMparameter::Byte,231},
+		{false,true,"StimFilterOn","",PMparameter::Boolean,282},
 		{false,true,"StimFilter","Hz",PMparameter::LongReal,296},
 		{false,true,"Mode","",PMparameter::AmpModeName,237},
-		{false,true,"SerialNumber","",PMparameter::String8,200},
 		{false,true,"VmonFactor","x",PMparameter::LongReal,336},
 		{false,true,"VmonOffset","V",PMparameter::LongReal,360},
 		{false,true,"CalibDate","",PMparameter::String16,344}

@@ -122,7 +122,7 @@ namespace hkLib {
 	extern std::array<PMparameter, 5>parametersGroup;
 	extern std::array<PMparameter, 8>parametersRoot;
 
-	extern std::array<PMparameter, 31>parametersAmpplifierState;
+	extern std::array<PMparameter, 47>parametersAmpplifierState;
 
     extern const std::array<const std::string_view, 7>RecordingModeNames;
     extern const std::array<const std::string_view, 4> AmpModeNames;
