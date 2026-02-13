@@ -1080,6 +1080,7 @@ void ::PMbrowserWindow::printAllParameters(const hkTreeNode* n)
 void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
 {
     assert(series->getLevel() == hkTreeNode::LevelSeries);
+    std::ostringstream s;
     hkTreeNode amprecord;
     amprecord.isSwapped = series->getIsSwapped();
     auto ampstateflag = series->extractInt32(SeAmplStateFlag),
@@ -1087,9 +1088,9 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
     if (ampstateflag > 0 || ampstateref == 0) {
         // use local amp state record
         amprecord.Data = series->Data.subspan(SeOldAmpState, AmplifierStateSize);
-        std::string s;
-        formatParamListPrint(amprecord, parametersAmpplifierState, s);
-        ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString::fromUtf8(s)));
+        s << "Amplifier State:\n"sv;
+        formatParamTabbedListPrint(amprecord, parametersAmpplifierState, s);
+        //ui->textEdit->append(QString("Amplifier State:\n%1\n").arg(QString::fromUtf8(s)));
     }
     else {
         const auto& amproot = datfile->GetAmpTree().GetRootNode();
@@ -1097,12 +1098,13 @@ void PMbrowserWindow::printAmplifierState(const hkTreeNode* series)
         for(const auto& ampre : ampse.Children) { // there might be multiple amplifiers
             auto ampstatecount = ampre.extractInt32(AmStateCount);
             amprecord.Data = ampre.Data.subspan(AmAmplifierState, AmplifierStateSize);
-            std::string s;
-            formatParamListPrint(amprecord, parametersAmpplifierState, s);
-            ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString::fromUtf8(s)));
+            s << "Amplifier State (Amp #"sv << ampstatecount << "):\n"sv;
+            formatParamTabbedListPrint(amprecord, parametersAmpplifierState, s);
+            s << '\n';
+            //ui->textEdit->append(QString("Amplifier State (Amp #%1):\n%2\n").arg(ampstatecount).arg(QString::fromUtf8(s)));
         }
     }
-
+    showCSVtxtInDialog(QString::fromUtf8(s.str()), false, true);
 }
 
 void PMbrowserWindow::showCSVtxtInDialog(const QString& txt, bool hasHorzHeader, bool hasVertHeader)
