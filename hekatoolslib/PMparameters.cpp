@@ -750,6 +750,22 @@ namespace hkLib {
 		format(node, ss);
 		s = ss.str();
 	}
+
+	void formatParamTabbedListPrint(const hkTreeNode& n, const std::span<PMparameter>& ar, std::ostream& ss)
+	{
+		for (const PMparameter& p : ar) {
+			if (p.print) {
+				ss << p.name;
+				if (*p.unit) {
+					ss << " ["sv << p.unit << ']';
+				}
+				ss << '\t';
+				p.formatValueOnly(n, ss);
+				ss << "\n";
+			}
+		}
+	}
+
 	std::vector<std::string> getHeaderList(const std::span<PMparameter>& params, bool forExport, bool forPrint, bool allParams)
 	{
 		std::vector<std::string> result;

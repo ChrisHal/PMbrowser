@@ -161,6 +161,9 @@ namespace hkLib {
 		}
 	}
 
+	void formatParamTabbedListPrint(const hkTreeNode& n,
+		const std::span<PMparameter>& ar, std::ostream& ss);
+
 	template<std::size_t Nrows> void formatParamListPrint(const hkTreeNode& n,
 		const std::array<PMparameter, Nrows>& ar, std::string& str)
 	{
