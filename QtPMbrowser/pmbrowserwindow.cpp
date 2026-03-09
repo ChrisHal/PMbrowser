@@ -287,7 +287,8 @@ void PMbrowserWindow::loadFile(QString filename)
         closeFile();
     }
     ui->textEdit->append("loading file " + filename);
-    infile.open(filename.toStdString(), std::ios::in|std::ios::binary);
+    auto encoded_filename = QFile::encodeName(filename);
+    infile.open(encoded_filename, std::ios::in | std::ios::binary);
     if (!infile) {
         QMessageBox::warning(this, QString("File Error"),
             QString("error opening file:\n") + QString(std::strerror(errno)));
