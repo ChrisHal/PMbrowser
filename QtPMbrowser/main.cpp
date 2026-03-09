@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     PMbrowserWindow w;
     w.show();
     if (argc > 1) {
-        w.loadFile(argv[1]);
+        w.loadFile(QString::fromLocal8Bit(argv[1]));
     }
     return a.exec();
 }
