@@ -37,6 +37,7 @@ qt_add_executable(QtPMbrowser WIN32 MACOSX_BUNDLE
 
 	QtPMbrowser.qrc
 	${PROJECT_BINARY_DIR}/QtPMbrowser.rc
+	"QtPMbrowser.exe.manifest"
 	${app_icon_macos}
 
     DlgChoosePathAndPrefix.ui
