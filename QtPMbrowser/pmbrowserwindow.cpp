@@ -482,7 +482,7 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
             unsigned err{0};
             if (poutfile == nullptr) { // multi-file export
                 QString filename = path + wavename + ".ibw";
-                std::ofstream outfile(filename.toStdString(), std::ios::out | std::ios::binary);
+                std::ofstream outfile(QFile::encodeName(filename), std::ios::out | std::ios::binary);
                 if (!outfile) {
                     std::stringstream msg;
                     msg << "error opening file '" << filename.toStdString() << "' for writing: " << strerror(errno);
@@ -506,13 +506,22 @@ void PMbrowserWindow::exportSubTree(QTreeWidgetItem* item, const QString& path, 
                 ui->textEdit->append("Warning: wavename truncated to " + QString::fromUtf8(wname));
             }
         }
-        else if (export_type == ExportType::NPY) {
-            QString filename = path + wavename + ".npy";
-            NPYorBINExportTrace(infile, *traceentry, filename.toStdString(), true);
-        }
-        else if (export_type == ExportType::BIN) {
-            QString filename = path + wavename + ".bin";
-            NPYorBINExportTrace(infile, *traceentry, filename.toStdString(), true);
+        else
+        {
+            QString filename{path + wavename};
+            if (export_type == ExportType::NPY)
+            {
+                filename.append(".npy");
+            }
+            else if (export_type == ExportType::BIN)
+            {
+                filename.append(".bin");
+            }
+            else
+            {
+                throw std::runtime_error("unexpected export type");
+            }
+            NPYorBINExportTrace(infile, *traceentry, QDir(filename).filesystemPath(), true);
         }
     }
 }
@@ -572,7 +581,7 @@ void PMbrowserWindow::exportAllVisibleTraces()
             lastexportpath = export_path_info.absolutePath() + "/";
             QSettings settings;
             settings.setValue("pmbrowserwindow/lastexportpath", lastexportpath);
-            outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
+            outfile.open(QFile::encodeName(filename), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
                 QMessageBox::warning(this, QString("Error"), msg);
@@ -582,7 +591,7 @@ void PMbrowserWindow::exportAllVisibleTraces()
         try {
             if(export_type==ExportType::NPYarray) {
                 auto tree = getVisibleNodes();
-                hkLib::NPYExportTreeSweepsAsArray(infile, tree, path.toStdString(),
+                hkLib::NPYExportTreeSweepsAsArray(infile, tree, QFile::encodeName(path),
                     prefix.toStdString(), true);
             }
             else {
@@ -675,7 +684,7 @@ void PMbrowserWindow::exportSubTreeAsIBW(QTreeWidgetItem* root)
             // we need filename for pxp file
             auto filename = QFileDialog::getSaveFileName(this, "Save IgorPro PXP File", path + "untitled.pxp", "pxp File (*.pxp)");
             if (filename.length() == 0) return;
-            outfile.open(filename.toStdString(), std::ios::binary | std::ios::out);
+            outfile.open(QFile::encodeName(filename), std::ios::binary | std::ios::out);
             if (!outfile) {
                 QString msg = QString("Error while opening file:\n%1").arg(filename);
                 QMessageBox::warning(this, QString("Error"), msg);
@@ -847,7 +856,7 @@ void PMbrowserWindow::on_actionExport_Metadata_as_Table_triggered()
                 auto export_file_name = QFileDialog::getSaveFileName(this, "Export Metadata as TXT",
                     lastexportpath, "tab separated file (*.txt *.csv)");
                 if (export_file_name.length() > 0) {
-                    std::ofstream export_file(export_file_name.toStdString());
+                    std::ofstream export_file(QFile::encodeName(export_file_name));
                     if (!export_file) {
                         QMessageBox::warning(this, "Error",
                             QString("Cannot open file '%1'\nfor saving").arg(export_file_name));
