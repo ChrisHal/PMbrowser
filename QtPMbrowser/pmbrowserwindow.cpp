@@ -591,7 +591,9 @@ void PMbrowserWindow::exportAllVisibleTraces()
         try {
             if(export_type==ExportType::NPYarray) {
                 auto tree = getVisibleNodes();
-                hkLib::NPYExportTreeSweepsAsArray(infile, tree, QFile::encodeName(path),
+                auto encoded_filename = QFile::encodeName(path);
+                hkLib::NPYExportTreeSweepsAsArray(infile, tree,
+                    {encoded_filename.data(), static_cast<std::size_t>(encoded_filename.size())},
                     prefix.toStdString(), true);
             }
             else {
