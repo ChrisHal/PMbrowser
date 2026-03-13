@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3" CACHE STRING "needs at least 13.3")
-project(QtPMbrowser VERSION 2.4.5 LANGUAGES CXX)
-set(MY_RELEASE_DAY "2025-07-21")
+project(QtPMbrowser VERSION 2.5.0 LANGUAGES CXX)
+set(MY_RELEASE_DAY "2026-03-13")
 set(MY_COPYRIGHT "2020 - 2025 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
-    <p>new feature: suggest name of dat file as pxp filename</p>
-    <p>new feature: global autoscale</p>
-    <p>new feature: intelligent truncation of long wavenames in export for IgorPro(tm)</p>
-    <p>new feature: enable printing of stimlus protocols</p>
-    <p>new feature: 'Select Parameters Dialog' now additionally features Amp and Stim parameters</p>
-    <p>modernized app icon</p>
+    <p>improved feature: show stimulus protocols in table view</p>
+    <p>improved feature: 'Select Parameters Dialog' allows selecting / de-selecting all options of a section</p>
+    <p>improved feature: show amplifier state in table view</p>
+    <p>bugfix: handle unicode in filenames (for loading and exporting)</p>
 ")
 
 set(CMAKE_CXX_STANDARD 20)
