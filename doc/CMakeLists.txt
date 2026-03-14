@@ -2,11 +2,14 @@ project(QtPMbrowser)
 find_package(Sphinx REQUIRED)
 
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
+set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/html)
+
 if(APPLE)
-    set(SPHINX_BUILD $<TARGET_BUNDLE_DIR:QtPMbrowser>/Contents/share/doc/QtPMbrowser/html)
+  install(DIRECTORY ${SPHINX_BUILD}
+  DESTINATION "$<TARGET_BUNDLE_DIR_NAME:QtPMbrowser>/Contents/share/doc/QtPMbrowser"
+)
 else()
-     set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/docs/html)
-     install(DIRECTORY ${SPHINX_BUILD} TYPE DOC)
+  install(DIRECTORY ${SPHINX_BUILD} TYPE DOC)
 endif()
 
 configure_file(	"${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
