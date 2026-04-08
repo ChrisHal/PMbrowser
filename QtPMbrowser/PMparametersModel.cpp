@@ -121,22 +121,32 @@ bool PMparametersModel::setData(const QModelIndex& index, const QVariant& value,
             return false;
         auto state = value.value<Qt::CheckState>();
         int row = index.row();
-        if (row == 0) {
-            if (state == Qt::Checked || state == Qt::Unchecked) {
-                if (index.column() == 0) {
-                    for (auto& p : parameters) {
+        if (row == 0)
+        {
+            // handle top row: contains "check all" box
+            if (state == Qt::Checked || state == Qt::Unchecked)
+            {
+                if (index.column() == 0)
+                {
+                    for (auto &p : parameters)
+                    {
                         p.exportIBW = state == Qt::Checked;
                     }
                 }
-                else if (index.column() == 1) {
-                    for (auto& p : parameters) {
+                else if (index.column() == 1)
+                {
+                    for (auto &p : parameters)
+                    {
                         p.print = state == Qt::Checked;
                     }
                 }
+                emit dataChanged(this->index(0, index.column()), this->index(parameters.size(), index.column()));
+                return true;
             }
-            else return false;
-            emit dataChanged(this->index(0, index.column()), this->index(parameters.size(), index.column()));
-            return true;
+            else
+            {
+                return false;
+            }
         }
         --row;
         auto& p = parameters[row];
