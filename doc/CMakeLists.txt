@@ -27,7 +27,7 @@ add_custom_target(Sphinx ALL
 
 # check if Doxygen is installed
 find_package(Doxygen)
-if (DOXYGEN_FOUND)
+if (DOXYGEN_FOUND)        
     # set input and output files
     set(DOXYGEN_IN Doxyfile.in)
     set(DOXYGEN_OUT Doxyfile)
