@@ -35,8 +35,16 @@ namespace hkLib {
 			tree->time0 = extractValue(RoStartTime, 0.0);
 			break;
 		case LevelGroup:
-			// resort to root time
-			tree->time0 = Parent->extractValue(RoStartTime, 0.0);
+		// there is no time info in Group records
+			if (Children.empty())
+			{
+				// resort to root time
+				tree->time0 = Parent->extractValue(RoStartTime, 0.0);
+			}
+			else
+			{
+				tree->time0 = Children.at(0).extractValue(SeTime, 0.0);
+			}
 			break;
 		case LevelSeries:
 			tree->time0 = extractValue(SeTime, 0.0);
