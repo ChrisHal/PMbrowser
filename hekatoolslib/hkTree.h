@@ -314,7 +314,8 @@ namespace hkLib {
         double getTime0() const;
 
         /// <summary>
-        /// use time recorded in node as time reference for rel. times
+        /// use time recorded in node as time reference for rel. times,
+        /// for group record, this falls back to the time of 1st series
         /// </summary>
         void setAsTime0();
 
