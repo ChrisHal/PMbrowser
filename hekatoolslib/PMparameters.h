@@ -28,6 +28,7 @@
 #include <string_view>
 #include <span>
 #include "hkTree.h"
+#include "DatFile.h"
 
 using namespace std::string_view_literals;
 
@@ -265,6 +266,12 @@ namespace hkLib {
 		formatParamListExportTable(n, ar, ss);
 		return ss.str();
 	}
+
+	/// @brief Format Amplifier Paramter associated with series record as tab delimited list for export as table
+	/// @param series 
+	/// @param datfile 
+	/// @return string containing table
+	std::string createAmpRecordTable(const hkTreeNode& series, DatFile& datfile);
 }
 
 #endif // !PM_PARAMETERS_H

@@ -27,6 +27,7 @@
 #include <format>
 #include "helpers.h"
 #include "hkTree.h"
+#include "DatFile.h"
 #include "PMparameters.h"
 #include "time_handling.h"
 
@@ -792,5 +793,36 @@ namespace hkLib {
 			}
 		}
 		return result;
+	}
+
+	std::string createAmpRecordTable(const hkTreeNode &series, DatFile &datfile)
+	{
+		assert(series.getLevel() == hkTreeNode::LevelSeries);
+		std::ostringstream s;
+		hkTreeNode amprecord;
+		amprecord.isSwapped = series.getIsSwapped();
+		auto ampstateflag = series.extractInt32(SeAmplStateFlag);
+		auto ampstateref = series.extractInt32(SeAmplStateRef);
+		if (ampstateflag > 0 || ampstateref == 0)
+		{
+			// use local amp state record
+			amprecord.Data = series.Data.subspan(SeOldAmpState, AmplifierStateSize);
+			s << "Amplifier State:\n"sv;
+			formatParamTabbedListPrint(amprecord, parametersAmpplifierState, s);
+		}
+		else
+		{
+			const auto &amproot = datfile.GetAmpTree().GetRootNode();
+			const auto &ampse = amproot.Children.at(static_cast<std::size_t>(ampstateref) - 1); // Is this correct? Or seCount?
+			for (const auto &ampre : ampse.Children)
+			{ // there might be multiple amplifiers
+				auto ampstatecount = ampre.extractInt32(AmStateCount);
+				amprecord.Data = ampre.Data.subspan(AmAmplifierState, AmplifierStateSize);
+				s << "Amplifier State (Amp #"sv << ampstatecount << "):\n"sv;
+				formatParamTabbedListPrint(amprecord, parametersAmpplifierState, s);
+				s << '\n';
+			}
+		}
+		return s.str();
 	}
 }
