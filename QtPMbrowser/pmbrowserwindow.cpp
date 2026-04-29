@@ -237,7 +237,6 @@ void PMbrowserWindow::sweepSelected(const QTreeWidgetItem* item, const hkTreeNod
     formatParamListPrint(*sweep, parametersSweep, str);
     // to restore compatibility with Qt6.4:
     txt.append(QString::fromUtf8(str.data(), str.size()));
-    //txt.append(QUtf8StringView(str));
     ui->textEdit->append(txt);
 }
 
@@ -551,8 +550,6 @@ bool PMbrowserWindow::choosePathAndPrefix(QString& path, QString& prefix, Export
 
         QSettings settings;
         settings.setValue("pmbrowserwindow/lastexportpath", lastexportpath);
-        //settings_modified = true;
-
         return true;
     }
     else {
@@ -1037,9 +1034,8 @@ void PMbrowserWindow::on_treePulse_itemDoubleClicked(QTreeWidgetItem* item, int 
     if (item != nullptr) {
         auto node = item->data(0, Qt::UserRole).value<hkTreeNode*>();
         auto level = node->getLevel();
-        if (/*level >= hkTreeNode::LevelSeries &&*/ level < hkTreeNode::LevelTrace) {
+        if (level < hkTreeNode::LevelTrace) {
             QString info = QString("Rendering child traces for '%1'.").arg(item->text(0));
-            // ui->renderArea->wipeAll(); // think about this, maybe as a setting?
             std::vector<hkTreeNode*> child_traces;
             collectChildTraces(item, level, child_traces);
             animateTraceList(info, child_traces);
@@ -1134,14 +1130,11 @@ void PMbrowserWindow::printStimProtocol(const hkLib::hkTreeNode* sweep)
     try{
     assert(sweep->getLevel() == hkTreeNode::LevelSweep);
     int stim_index = sweep->extractInt32(SwStimCount) - 1;
-    //int sweep_index = sweep->extractInt32(SwSweepCount) - 1;
     const auto& stim_node = datfile->GetPgfTree().GetRootNode().Children.at(stim_index);
     std::stringstream s;
-    //s << "Stimulation record #\t" << (stim_index + 1) << "\nsweep #\t" << (sweep_index+1)  << "\n";
     hkLib::stimRecordToCSV(stim_node, s, false, true, false);
     QString txt = QString::fromUtf8(s.str());
     showCSVtxtInDialog(txt, false, true);
-    //ui->textEdit->append(QString::fromUtf8(s.str()));
     } catch(const std::exception& e){
         QMessageBox::warning(this,"Error","Error while printing list:\n" + QString::fromUtf8(e.what()));
     }
