@@ -105,6 +105,41 @@ void DatFile::InitFromStream(std::istream& infile)
     if (!PgfTree.isValid())throw std::runtime_error("no valid Pgf in file");
 }
 
+void hkLib::DatFile::InitFromStream(std::istream& infile, std::istream& pulstream, std::uintmax_t pullength, std::istream& pgfstream,
+    std::uintmax_t pgflength, std::istream* ampstream, std::uintmax_t amplength)
+{
+    if (!infile) {
+        throw std::runtime_error("cannot access file");
+    }
+    auto bh = std::make_unique<BundleHeader>();
+    infile.read(reinterpret_cast<char*>(bh.get()), BundleHeaderSize);
+    if (!infile) {
+        throw std::runtime_error("cannot read file");
+    }
+
+    bool has_header = std::memcmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
+    // Note: if it has a valid signature, it should not be handeled by this function
+    if (has_header) {
+        Version = bh->Version;
+        Time = bh->Time;
+        isSwapped = bool(bh->IsLittleEndian) != MachineIsLittleEndian();
+        if (isSwapped) {
+            swapInPlace(Time);
+        }
+    }
+    if(!PulTree.InitFromStream(ExtPul, pulstream, 0, static_cast<unsigned int>(pullength))){
+        throw std::runtime_error("error processing pulse tree");
+	}
+    if (!PgfTree.InitFromStream(ExtPgf, pgfstream, 0, static_cast<unsigned int>(pgflength))) {
+        throw std::runtime_error("error processing pgf tree");
+    }
+    if (ampstream && amplength) {
+        if (!AmpTree.InitFromStream(ExtAmp, *ampstream, 0, static_cast<unsigned int>(amplength))) {
+            throw std::runtime_error("error processing amp tree");
+		}
+    }
+}
+
 std::string DatFile::getFileDate() const
 {
 #ifndef NDEBUG

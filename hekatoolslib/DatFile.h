@@ -78,7 +78,24 @@ namespace hkLib {
 			PgfTree{}, AmpTree{} {};
 		DatFile(const DatFile&) = delete;
 		DatFile operator=(const DatFile&) = delete;
-		void InitFromStream(std::istream& istream);
+		/// <summary>
+		/// initialize from bundle file stream, reads header and tree data, but not raw data
+		/// </summary>
+		/// <param name="istream">input stream of the bundle file</param>
+		void InitFromStream(std::istream& infile);
+		/// <summary>
+		/// initialized from unbundles dat file, requires separate streams for each tree, and their lengths
+		/// </summary>
+		/// <param name="infile">dat file stream</param>
+		/// <param name="pulstream">pul file stream</param>
+		/// <param name="pullength">length of pul file</param>
+		/// <param name="pgfstream">pgf file stream</param>
+		/// <param name="pgflength">length of pgf file</param>
+		/// <param name="ampstream">pointer to optional amp file stream, can be nullptr</param>
+		/// <param name="amplength"length of amp file, 0 if no amp file</param>
+		void InitFromStream(std::istream& infile, std::istream& pulstream, std::uintmax_t pullength,
+			std::istream& pgfstream, std::uintmax_t pgflength,
+			std::istream* ampstream, std::uintmax_t amplength);
 		std::string getFileDate() const; // return formatted file creation date
 		hkTree& GetPulTree() { return PulTree; };
 		hkTree& GetPgfTree() { return PgfTree; };

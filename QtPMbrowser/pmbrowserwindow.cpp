@@ -36,6 +36,7 @@
 #include <QTableView>
 #include <string>
 #include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <ctime>
 #include <cstring>
@@ -306,10 +307,46 @@ void PMbrowserWindow::loadFile(QString filename)
         datfile->InitFromStream(infile);
     }
     catch (const std::exception& e) {
-        QMessageBox::warning(this, QString("File Error"), 
-            QString("error while processing dat file:\n") + QString(e.what()));
+        //QMessageBox::warning(this, QString("File Error"), 
+        //    QString("error while processing dat file:\n") + QString(e.what()));
+		qDebug() << e.what();
         datfile = nullptr;
-        infile.close();
+        infile.seekg(0, std::ios_base::beg);
+        //infile.close();
+    }
+    if (!datfile) {
+        try {
+            // we might habe an unbundled dat file
+            datfile = std::make_unique<DatFile>();
+            std::filesystem::path path(QFile::encodeName(filename).constData());
+            path.replace_extension(hkLib::ExtPul);
+            std::ifstream pulstream(path, std::ios_base::binary | std::ios_base::in);
+            if (!pulstream) {
+                throw std::runtime_error(std::string("could not open pul file, ") + ::strerror(errno));
+            }
+            auto pullength = std::filesystem::file_size(path);
+            path.replace_extension(hkLib::ExtPgf);
+            std::ifstream pgfstream(path, std::ios_base::binary | std::ios_base::in);
+            if (!pgfstream) {
+                throw std::runtime_error(std::string("could not open pgf file, ") + ::strerror(errno));
+            }
+            auto pgflength = std::filesystem::file_size(path);
+            path.replace_extension(hkLib::ExtAmp);
+            std::ifstream ampstream(path, std::ios_base::binary | std::ios_base::in);
+            if (!ampstream) {
+                datfile->InitFromStream(infile, pulstream, pullength, pgfstream, pgflength, nullptr, 0);
+            }
+            else {
+                datfile->InitFromStream(infile, pulstream, pullength, pgfstream, pgflength, &ampstream, std::filesystem::file_size(path));
+            }
+        }
+        catch (const std::exception& e) {
+            qDebug() << e.what();
+            QMessageBox::warning(this, QString("File Error"),
+                QString("error while processing unbundled dat file:\n") + QString(e.what()));
+            datfile = nullptr;
+            infile.close();
+        }
     }
     if(datfile) {
         populateTreeView();
