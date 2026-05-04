@@ -106,7 +106,7 @@ void DatFile::InitFromStream(std::istream& infile)
 }
 
 void hkLib::DatFile::InitFromStream(std::istream& infile, std::istream& pulstream, std::uintmax_t pullength, std::istream& pgfstream,
-    std::uintmax_t pgflength, std::istream& ampstream, std::uintmax_t amplength)
+    std::uintmax_t pgflength, std::istream* ampstream, std::uintmax_t amplength)
 {
     if (!infile) {
         throw std::runtime_error("cannot access file");
@@ -133,8 +133,8 @@ void hkLib::DatFile::InitFromStream(std::istream& infile, std::istream& pulstrea
     if (!PgfTree.InitFromStream(ExtPgf, pgfstream, 0, static_cast<unsigned int>(pgflength))) {
         throw std::runtime_error("error processing pgf tree");
     }
-    if (0 != amplength) {
-        if (!AmpTree.InitFromStream(ExtAmp, ampstream, 0, static_cast<unsigned int>(amplength))) {
+    if (ampstream && amplength) {
+        if (!AmpTree.InitFromStream(ExtAmp, *ampstream, 0, static_cast<unsigned int>(amplength))) {
             throw std::runtime_error("error processing amp tree");
 		}
     }
