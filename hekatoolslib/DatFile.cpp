@@ -49,10 +49,10 @@ void DatFile::InitFromStream(std::istream& infile)
     if (!isValid) {
         bool isInvalidBundle = std::memcmp(bh->Signature, BundleSignatureInvalid, 8) == 0;
         if (isInvalidBundle) {
-            throw std::runtime_error("invalid bundle signature");
+            throw fileformat_error("invalid bundle signature");
         }
         else {
-            throw std::runtime_error("invalid file (not a PM dat file)");
+            throw fileformat_error("invalid file (not a PM dat file)");
         }
     }
 

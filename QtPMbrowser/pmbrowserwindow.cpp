@@ -303,18 +303,25 @@ void PMbrowserWindow::loadFile(QString filename)
     QSettings settings;
     settings.setValue("pmbrowserwindow/lastloadpath", lastloadpath);
     datfile = std::make_unique<DatFile>();
+    bool do_retry = false;
     try {
         datfile->InitFromStream(infile);
     }
-    catch (const std::exception& e) {
-        //QMessageBox::warning(this, QString("File Error"), 
-        //    QString("error while processing dat file:\n") + QString(e.what()));
-		qDebug() << e.what();
+    catch (const hkLib::fileformat_error& e) {
         datfile = nullptr;
         infile.seekg(0, std::ios_base::beg);
-        //infile.close();
+        qDebug() << e.what();
+        do_retry = true;
     }
-    if (!datfile) {
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, QString("File Error"), 
+            QString("error while processing dat file:\n") + QString(e.what()));
+		qDebug() << e.what();
+        datfile = nullptr;
+        //infile.seekg(0, std::ios_base::beg);
+        infile.close();
+    }
+    if (do_retry && !datfile) {
         try {
             // we might habe an unbundled dat file
             datfile = std::make_unique<DatFile>();
