@@ -3,7 +3,7 @@
  */
 
 /*
-	Copyright 2020 - 2023 Christian R. Halaszovich
+	Copyright 2020 - 2026 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 

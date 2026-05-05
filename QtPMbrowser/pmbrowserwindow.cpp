@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2025 Christian R. Halaszovich
+    Copyright 2020 - 2026 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
