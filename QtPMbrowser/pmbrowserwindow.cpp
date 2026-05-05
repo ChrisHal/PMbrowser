@@ -172,7 +172,9 @@ void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vect
         if (progress.wasCanceled()) {
             break;
         }
-        ui->renderArea->renderTrace(trace_list.at(i), infile);
+        if(!ui->renderArea->renderTrace(trace_list.at(i), infile)) {
+            break;
+        }
         ui->renderArea->repaint();
 #ifdef __APPLE__
         // unfortunately, on macOS Qt doesn't support QWdiget::repaint
