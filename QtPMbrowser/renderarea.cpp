@@ -713,7 +713,7 @@ void RenderArea::zoomIn(double x_center, double y_center, double factor)
     update();
 }
 
-void RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& infile)
+bool RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& infile)
 {
     using namespace hkLib;
     char dataformat = TrRecord->getChar(TrDataFormat);
@@ -736,7 +736,7 @@ void RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& in
 		}
 		else {
 			QMessageBox::warning(this, QString("Data Format Error"), QString("Unknown Dataformat"));
-			return;
+			return false;
 		}
         
         addTrace(DisplayTrace(
@@ -751,12 +751,13 @@ void RenderArea::renderTrace(const hkLib::hkTreeNode* TrRecord, std::istream& in
 	catch (const std::exception& e) {
 //        newYtrace.data.clear();
 		QMessageBox::warning(nullptr, "File Error", e.what());
-		return;
+		return false;
 	}
 
     if (do_autoscale_on_load) { autoScale(); }
     else { update(); } // update is usually done within autoScale()
     setMouseTracking(true);
+    return true; // success
     }
 
 void RenderArea::addTrace(DisplayTrace&& dt)

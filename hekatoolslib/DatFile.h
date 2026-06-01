@@ -3,7 +3,7 @@
  */
 
 /*
-	Copyright 2020 - 2023 Christian R. Halaszovich
+	Copyright 2020 - 2026 Christian R. Halaszovich
 
 	 This file is part of PMbrowser.
 
@@ -33,11 +33,17 @@
 #include <algorithm>
 #include <type_traits>
 #include <cassert>
+#include <stdexcept>
 #include "machineinfo.h"
 #include "hkTree.h"
 #include "helpers.h"
 
 namespace hkLib {
+	/// @brief thrown if file is not a bundled dat file
+	class fileformat_error : public std::runtime_error {
+	public:
+		fileformat_error(const std::string& msg) : std::runtime_error(msg) {}
+	};
 
 	/// <summary>
 	/// each BundleItem describes offset and length of

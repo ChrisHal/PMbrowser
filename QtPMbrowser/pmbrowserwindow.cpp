@@ -1,5 +1,5 @@
 /*
-    Copyright 2020 - 2025 Christian R. Halaszovich
+    Copyright 2020 - 2026 Christian R. Halaszovich
 
      This file is part of PMbrowser.
 
@@ -172,7 +172,9 @@ void PMbrowserWindow::animateTraceList(const QString& info_text, const std::vect
         if (progress.wasCanceled()) {
             break;
         }
-        ui->renderArea->renderTrace(trace_list.at(i), infile);
+        if(!ui->renderArea->renderTrace(trace_list.at(i), infile)) {
+            break;
+        }
         ui->renderArea->repaint();
 #ifdef __APPLE__
         // unfortunately, on macOS Qt doesn't support QWdiget::repaint
@@ -303,18 +305,25 @@ void PMbrowserWindow::loadFile(QString filename)
     QSettings settings;
     settings.setValue("pmbrowserwindow/lastloadpath", lastloadpath);
     datfile = std::make_unique<DatFile>();
+    bool do_retry = false;
     try {
         datfile->InitFromStream(infile);
     }
-    catch (const std::exception& e) {
-        //QMessageBox::warning(this, QString("File Error"), 
-        //    QString("error while processing dat file:\n") + QString(e.what()));
-		qDebug() << e.what();
+    catch (const hkLib::fileformat_error& e) {
         datfile = nullptr;
         infile.seekg(0, std::ios_base::beg);
-        //infile.close();
+        qDebug() << e.what();
+        do_retry = true;
     }
-    if (!datfile) {
+    catch (const std::exception& e) {
+        QMessageBox::warning(this, QString("File Error"), 
+            QString("error while processing dat file:\n") + QString(e.what()));
+		qDebug() << e.what();
+        datfile = nullptr;
+        //infile.seekg(0, std::ios_base::beg);
+        infile.close();
+    }
+    if (do_retry && !datfile) {
         try {
             // we might habe an unbundled dat file
             datfile = std::make_unique<DatFile>();
