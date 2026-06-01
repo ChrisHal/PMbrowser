@@ -5,6 +5,5 @@ Name=PM browser
 Comment=Browse PM dat files
 Terminal=false
 Categories=Science
-Exec=QtPMbrowser %u
-#MimeType=application/octet-stream
+Exec=QtPMbrowser %f
 Icon=${MY_APP_ID}
