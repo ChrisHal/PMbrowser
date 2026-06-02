@@ -451,7 +451,7 @@ void PMbrowserWindow::on_actionOpen_triggered()
     QString filename = QFileDialog::getOpenFileName(this,
         "Open DAT File",
         loaddir,
-        "DAT-file (*.dat)");
+        "DAT-file (*.dat)", nullptr, QFileDialog::ReadOnly);
     if (!filename.isEmpty()) {
         loadFile(filename);
     }
