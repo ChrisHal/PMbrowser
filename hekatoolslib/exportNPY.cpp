@@ -121,6 +121,8 @@ namespace hkLib {
     void NPYorBINExportTrace(std::istream& datafile, hkTreeNode& TrRecord, std::filesystem::path filename, bool createJSON = true)
     {
         assert(TrRecord.getLevel() == hkTreeNode::LevelTrace);
+        locale_manager lm;
+        lm.setLocale("C");
         auto yunit = TrRecord.getString(TrYUnit);
         auto xunit = TrRecord.getString(TrXUnit);
         auto x0 = TrRecord.extractLongReal(TrXStart);
@@ -140,8 +142,6 @@ namespace hkLib {
         }
 
         if (createJSON) {
-            locale_manager lm;
-            lm.setLocale("C");
             filename.replace_extension("json");
             std::ofstream jsonfile(filename);
             if (!jsonfile) {
