@@ -428,6 +428,7 @@ PMbrowserWindow::PMbrowserWindow(QWidget *parent)
     QObject::connect(ui->actionYT_mode, &QAction::triggered, ui->renderArea, &RenderArea::setYTmode);
     QObject::connect(ui->actionClear_Persitant_Traces, &QAction::triggered, ui->renderArea, &RenderArea::wipeBuffer);
     QObject::connect(ui->actionCopy, &QAction::triggered, ui->renderArea, &RenderArea::copyToClipboard);
+    QObject::connect(ui->actionPrint, &QAction::triggered, ui->renderArea, &RenderArea::doPrint);
     QAction* aboutQtAct = ui->menuHelp->addAction("About &Qt", qApp, &QApplication::aboutQt);
     aboutQtAct->setStatusTip("Show the Qt library's About box");
     QObject::connect(ui->pushButtonTreeFilter, &QPushButton::clicked, this, &PMbrowserWindow::on_actionFilter_triggered);

@@ -27,6 +27,7 @@
 #include <QQueue>
 #include <QPointF>
 #include <QPixmap>
+#include <QPrinter>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QGridLayout>
@@ -90,6 +91,8 @@ public slots:
     void setXYmode();
     void setYTmode();
     void copyToClipboard();
+    void printPreview(QPrinter* printer);
+    void doPrint();
 
 protected:
     bool event(QEvent* event) override;
@@ -111,7 +114,7 @@ protected:
 private:
     bool gestureEvent(QGestureEvent* event);
     void pinchTriggered(QPinchGesture*);
-    void setScaling(double x_0, double x_1, double y_0, double y_1);
+    void setScaling(double x_0, double x_1, double y_0, double y_1, bool isPrintPreview = false);
     QPointF scaleToQPF(double x, double y);
     void scaleFromPixToXY(double px, double py, double& x, double& y);
     void scaleFromPixToXY(const QPointF& p, double& x, double& y);
@@ -119,7 +122,7 @@ private:
     void zoomIn(double x_center, double y_center, double factor);
     void drawMarquee(QPainter& painter);
     void drawGrid(QPainter& painter, bool horizontal = true, bool vertical = true);
-    void paint(QPainter& painter, const QRect& bounding_rectangle);
+    void paint(QPainter& painter, const QRect& bounding_rectangle, bool isPrintPreview = false);
     void doContextMenu(QContextMenuEvent* event);
 
     QPushButton btnWipe, btnAutoScale, btnVertShrink, btnHrzShrink;
@@ -139,6 +142,8 @@ private:
     priv_Scale* currentYscale{};
     double a_x, b_x, a_y, b_y; // for scaling
     int numtraces; // number of traces in persistance buffer
+    int width_for_printing;
+    int height_for_printing;
     bool do_autoscale_on_load;
     bool global_autoscale;
     bool show_grid_horz{ true }, show_grid_vert{ true };

@@ -22,6 +22,9 @@
 #include <QMimeData>
 #include <QBuffer>
 #include <QSvgGenerator>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintPreviewDialog>
 #include <QToolTip>
 #include <QMenu>
 #include <QDebug>
@@ -127,7 +130,7 @@ void RenderArea::drawMarquee(QPainter& painter)
     //painter.restore();
 }
 
-void RenderArea::paint(QPainter& painter, const QRect& rectangle)
+void RenderArea::paint(QPainter& painter, const QRect& rectangle, bool isPrintPreview)
 {
     painter.setRenderHint(QPainter::Antialiasing, true);
     QFont font = painter.font();
@@ -157,19 +160,19 @@ void RenderArea::paint(QPainter& painter, const QRect& rectangle)
             else {
                 const double y_min = currentYscale->y_min;
                 const double y_max = currentYscale->y_max;
-                setScaling(x_min, x_max, y_min, y_max);
+                setScaling(x_min, x_max, y_min, y_max, isPrintPreview);
                 drawGrid(painter, show_grid_horz, show_grid_vert);
                 if (!background_traces_hidden) {
                     // paint traces in persistance buffer
                     painter.setPen(color_bktrace);
                     for (auto trace : std::as_const(tracebuffer)) {
                         priv_Scale ys = yScales[trace->getYUnit()];
-                        setScaling(x_min, x_max, ys.y_min, ys.y_max);
+                        setScaling(x_min, x_max, ys.y_min, ys.y_max, isPrintPreview);
                         trace->render(painter, this);
                     }
                     painter.setPen(color_trace);
                 }
-                setScaling(x_min, x_max, y_min, y_max);
+                setScaling(x_min, x_max, y_min, y_max, isPrintPreview);
                 yTrace.render(painter, this);
 
                 font = painter.font();
@@ -703,6 +706,23 @@ void RenderArea::copyToClipboard()
     QGuiApplication::clipboard()->setMimeData(mime_data);
 }
 
+void RenderArea::printPreview(QPrinter* printer)
+{
+    QPainter painter(printer);
+    width_for_printing = printer->width();
+    height_for_printing = printer->height();
+    paint(painter, QRect(0, 0, width_for_printing, height_for_printing), true);
+}
+
+void RenderArea::doPrint()
+{
+    QPrintPreviewDialog dialog(this);
+    QObject::connect(&dialog, &QPrintPreviewDialog::paintRequested, this, &RenderArea::printPreview);
+    if (dialog.exec() == QDialog::Accepted) {
+        printPreview(dialog.printer());
+    }
+}
+
 void RenderArea::showSettingsDialog()
 {
     DlgGraphSettings dlg(this);
@@ -847,12 +867,20 @@ void RenderArea::pinchTriggered(QPinchGesture* gesture)
     }
 }
 
-void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1)
+void RenderArea::setScaling(double x_0, double x_1, double y_0, double y_1, bool isPrintPreview)
 {
-    double h = height() - 1 - button_row_height, w = width() - 1;
+    double h, w;
+    if(isPrintPreview) {
+        h = height_for_printing;
+        w = width_for_printing;
+    } else {
+        h = height() - 1 - button_row_height;
+        w = width() - 1;
+    }
     a_x = -w*x_0/(x_1-x_0);
     b_x = w/(x_1-x_0);
-    a_y = h*y_1/(y_1-y_0) + button_row_height;
+    a_y = h*y_1/(y_1-y_0);
+    if(!isPrintPreview) a_y += button_row_height;
     b_y = -h/(y_1-y_0);
 }
 
