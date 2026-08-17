@@ -11,12 +11,14 @@ class PMparametersModel  : public QAbstractTableModel
 private:
 	static constexpr std::array<const char*, 2> lables{ "export", "print" };
 	QSpan<hkLib::PMparameter> parameters;
+	bool hide_export{ false };
 	int countCheckedPrint() const;
 	int countCheckedExport() const;
 
 public:
 	explicit PMparametersModel(QSpan<hkLib::PMparameter> PMparameters, QObject *parent = nullptr);
 	~PMparametersModel();
+	void hideExport(bool flag = true) { hide_export = flag; };
 	int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 	int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;

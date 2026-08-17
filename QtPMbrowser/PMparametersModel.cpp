@@ -34,13 +34,20 @@ int PMparametersModel::rowCount(const QModelIndex&) const
 
 int PMparametersModel::columnCount(const QModelIndex&) const
 {
-	return 2;
+    if (hide_export) {
+        return 1;
+    }
+    else
+    {
+        return 2;
+    }
 }
 
 QVariant PMparametersModel::data(const QModelIndex& index, int role) const
 {
     int row = index.row();
     int col = index.column();
+    if (hide_export) ++col; // col 0 will be print col
     if (row == 0) {
         switch (role) {
         case Qt::CheckStateRole:
@@ -104,6 +111,7 @@ QVariant PMparametersModel::headerData(int section, Qt::Orientation orientation,
         }
     }
     else if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        if (hide_export) ++section; // skip export column
         return QString::fromUtf8(lables.at(section));
     }
     else if (role == Qt::FontRole && orientation == Qt::Vertical && section == 0) {
@@ -126,14 +134,14 @@ bool PMparametersModel::setData(const QModelIndex& index, const QVariant& value,
             // handle top row: contains "check all" box
             if (state == Qt::Checked || state == Qt::Unchecked)
             {
-                if (index.column() == 0)
+                if (!hide_export && index.column() == 0)
                 {
                     for (auto &p : parameters)
                     {
                         p.exportIBW = state == Qt::Checked;
                     }
                 }
-                else if (index.column() == 1)
+                else if (hide_export || index.column() == 1)
                 {
                     for (auto &p : parameters)
                     {
@@ -150,9 +158,9 @@ bool PMparametersModel::setData(const QModelIndex& index, const QVariant& value,
         }
         --row;
         auto& p = parameters[row];
-        if (index.column() == 0) {
+        if (!hide_export && index.column() == 0) {
             p.exportIBW = state != Qt::Unchecked;
-        } else if (index.column() == 1) {
+        } else if (hide_export || index.column() == 1) {
             p.print = state != Qt::Unchecked;
         }
         emit dataChanged(this->index(0, index.column()), this->index(parameters.size(), index.column()));

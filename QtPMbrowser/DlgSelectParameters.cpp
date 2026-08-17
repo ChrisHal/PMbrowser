@@ -31,9 +31,13 @@ DlgSelectParameters::DlgSelectParameters(QWidget *parent)
 	ui->tableViewSer->setModel(&m_ser);
 	ui->tableViewSwp->setModel(&m_swp);
 	ui->tableViewTrace->setModel(&m_tr);
+	m_amp.hideExport();
 	ui->tableViewAmp->setModel(&m_amp);
+	m_stim_stim.hideExport();
 	ui->tableViewStim->setModel(&m_stim_stim);
+	m_stim_ch.hideExport();
 	ui->tableViewChannel->setModel(&m_stim_ch);
+	m_stim_seg.hideExport();
 	ui->tableViewSegment->setModel(&m_stim_seg);
 
 }
