@@ -19,6 +19,9 @@
 
 #include <QGuiApplication>
 #include <QClipboard>
+#include <QMimeData>
+#include <QBuffer>
+#include <QSvgGenerator>
 #include <QToolTip>
 #include <QMenu>
 #include <QDebug>
@@ -673,11 +676,31 @@ void RenderArea::setYTmode()
 
 void RenderArea::copyToClipboard()
 {
+    // copy pixel representation to clipboard
     QPixmap pixmap(this->size());
     pixmap.fill(); // fill with white
     QPainter painter(&pixmap);
     paint(painter, pixmap.rect());
-    QGuiApplication::clipboard()->setPixmap(pixmap);
+    auto mime_data = new QMimeData();
+    mime_data->setImageData(pixmap.toImage());
+
+    // copy SVG representation to clipboard, also as text (mainly for macOS)
+    QBuffer buffer;
+	buffer.open(QIODevice::WriteOnly);
+    QSvgGenerator generator;
+	generator.setOutputDevice(&buffer);
+    generator.setSize(size());
+	generator.setViewBox(QRect(0, 0, width(), height()));
+    generator.setTitle("PM browser Drawing");
+    generator.setDescription("An SVG drawing created by the PM browser application.");
+    QPainter painter2;
+    painter2.begin(&generator);
+	paint(painter2, QRect(0, 0, width(), height()));
+    painter2.end();
+    buffer.close();
+    mime_data->setData("image/svg+xml", buffer.data());
+    mime_data->setText(QString::fromUtf8(buffer.data()));
+    QGuiApplication::clipboard()->setMimeData(mime_data);
 }
 
 void RenderArea::showSettingsDialog()

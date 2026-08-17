@@ -11,7 +11,7 @@ set(MACOSX_BUNDLE_ICON_FILE PMbrowser.icns)
 # qt_standard_project_setup() does not set CMAKE_AUTORCC
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg)
 qt_standard_project_setup(REQUIRES 6.7)
 
 set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/PMbrowser.icns")
@@ -53,6 +53,7 @@ target_link_libraries(QtPMbrowser PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+	Qt6::Svg
 )
 
 target_link_libraries(QtPMbrowser PUBLIC hekatoolslib)
