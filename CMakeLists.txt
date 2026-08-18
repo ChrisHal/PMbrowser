@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.25)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3" CACHE STRING "needs at least 13.3")
-project(QtPMbrowser VERSION 2.5.1 LANGUAGES CXX)
-set(MY_RELEASE_DAY "2026-05-4")
+project(QtPMbrowser VERSION 2.5.2 LANGUAGES CXX)
+set(MY_RELEASE_DAY "2026-08-18")
 set(MY_COPYRIGHT "2020 - 2026 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
-    <p>new feature: support unbundled PM files</p>
+    <p>new feature: print graph</p>
+	<p>enhancement: copy graph also in SVG format</p>
+	<p>Select Parameters Dialog: hide export checkboxes for parameters that are never exported</p>
 ")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -24,7 +26,7 @@ set(CPACK_PACKAGE_DESCRIPTION "tool to browse HEKA dat files and export to IgorP
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "tool to browse HEKA dat files and export to IgorPro")
 set(CPACK_PACKAGE_VENDOR "CRHalaszovichMD")
 set(CPACK_DEBIAN_PACKAGE_SECTION "science/utils")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6gui6,libqt6core6,libqt6widgets6,qt6-qpa-plugins,libxkbcommon0")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6svg6,libqt6printsupport6,libqt6gui6,libqt6core6,libqt6widgets6,qt6-qpa-plugins,libxkbcommon0")
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.halaszovich.de/pmbrowser/html/index.html")
 set(CPACK_WIX_VERSION 4)
 set(CPACK_WIX_UPGRADE_GUID FED5BE2C-2537-49A8-B5D8-39C00D289CC6)
