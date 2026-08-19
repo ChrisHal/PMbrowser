@@ -25,7 +25,7 @@
 		<binary>QtPMbrowser</binary>
 		<id>de.halaszovich.PMbrowser.desktop</id>
 	</provides>
-	<content_rating type="oars-1.0" />
+	<content_rating type="oars-1.1" />
 	<releases>
 		<release version="${CMAKE_PROJECT_VERSION}" type="stable" date="${MY_RELEASE_DAY}">
 			<description>
