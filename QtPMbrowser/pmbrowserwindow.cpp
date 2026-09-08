@@ -359,7 +359,7 @@ void PMbrowserWindow::loadFile(QString filename)
     }
     if(datfile) {
         populateTreeView();
-        this->setWindowTitle(myAppName + " - " + filename.split("/").back());
+        this->setWindowTitle(myAppName + " - " + QFileInfo(filename).fileName());
         QString txt = QString("PM Version ") + QString::fromStdString(datfile->getVersion());
         if (datfile->getIsSwapped()) {
             txt.append(QString::fromUtf8(" [byte order: big endian]"));
