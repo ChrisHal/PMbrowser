@@ -7,3 +7,4 @@ CMakeSettings.json
 /CMakeUserPresets.json
 /CMakePresets.json
 build/
+.vscode/launch.json
