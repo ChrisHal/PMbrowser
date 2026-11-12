@@ -30,6 +30,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    #ifdef Q_OS_MACOS
+       a.setStyle("fusion");
+    #endif
     QCoreApplication::setOrganizationName("CRHalaszovichMD");
     QCoreApplication::setOrganizationDomain("halaszovich.de");
     QCoreApplication::setApplicationName("PM browser");
