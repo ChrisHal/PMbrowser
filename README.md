@@ -1,5 +1,5 @@
 # PMbrowser
-Copyright 2020 - 2027 Christian R. Halaszovich
+Copyright 2020 - 2026 Christian R. Halaszovich
 
 Created using Qt under GPLv3.
 
