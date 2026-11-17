@@ -98,7 +98,7 @@ In the *Choose Path \& Prefix* dialog, we change the
 	:align: center
 	:alt: tour step 5 export dialog
 	
-Select the radio button "Export for Igor Pro" (not shown in image).
+Select the radio button "Export for Igor Pro".
 
 We want to create a single experiment file that contains all data. Also we want to create have datafolders according to the tree
 structure in this file. Therefore we select "create pxp file" and "create folder structure". As last folder level we select "series".
