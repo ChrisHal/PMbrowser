@@ -123,4 +123,5 @@ will bring forth a dialog that let's you choose which metadata-items to *export*
 
 .. [#] Screenshots may represent older versions of the software and differ somewhat from the current version.
 
-.. [#fflatp] Drag'n'Drop is not yet suported for linux flatpak installations because of limitations of the Qt framework.
+.. [#fflatp] Drag'n'Drop is limited for linux flatpak installations because of limitations of the Qt framework and might
+	require changing application permissions.

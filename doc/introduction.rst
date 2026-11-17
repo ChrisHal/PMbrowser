@@ -4,7 +4,7 @@ What can :program:`PMbrowser` do for you?
 -----------------------------------------
 
 It can open data (bundled and unbundled) files (:file:`.dat`) created by :program:`PATCHMASTER` or
-:program:`PATCHMASTER NEXT`.
+:program:`PATCHMASTER NEXT` (version >= 1.6 not yet supported).
 
 It has been tested with files created by versions of :program:`PATCHMASTER`
 as old as v2.0, which is now more than 15 years old [#f1]_.
