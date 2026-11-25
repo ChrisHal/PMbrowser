@@ -3,7 +3,7 @@ project(QtPMbrowser VERSION 2.5.3 LANGUAGES CXX)
 set(MY_RELEASE_DAY "2026-11-25")
 set(MY_COPYRIGHT "2020 - 2026 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
-    <p>bugfix: creation of suggested filename in pxp export was broken/p>
+    <p>bugfix: creation of suggested filename in pxp export was broken</p>
 ")
 
 set(CMAKE_CXX_STANDARD 20)
