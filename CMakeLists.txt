@@ -3,9 +3,7 @@ project(QtPMbrowser VERSION 2.5.3 LANGUAGES CXX)
 set(MY_RELEASE_DAY "2026-11-25")
 set(MY_COPYRIGHT "2020 - 2026 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
-    <p>new feature: print graph</p>
-	<p>enhancement: copy graph also in SVG format</p>
-	<p>Select Parameters Dialog: hide export checkboxes for parameters that are never exported</p>
+    <p>bugfix: creation of suggested filename in pxp export was broken/p>
 ")
 
 set(CMAKE_CXX_STANDARD 20)
