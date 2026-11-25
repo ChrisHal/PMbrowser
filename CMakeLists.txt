@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
-project(QtPMbrowser VERSION 2.5.2 LANGUAGES CXX)
-set(MY_RELEASE_DAY "2026-08-18")
+project(QtPMbrowser VERSION 2.5.3 LANGUAGES CXX)
+set(MY_RELEASE_DAY "2026-11-25")
 set(MY_COPYRIGHT "2020 - 2026 Christian R. Halaszovich")
 set(LINUX_RELEASE_DESCRIPTION "
     <p>new feature: print graph</p>
