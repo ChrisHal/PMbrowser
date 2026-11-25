@@ -30,7 +30,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    #ifdef Q_OS_MACOS
+    #if defined(Q_OS_MACOS) && QT_VERSION < QT_VERSION_CHECK(6, 12, 1)
        a.setStyle("fusion");
     #endif
     QCoreApplication::setOrganizationName("CRHalaszovichMD");
